@@ -1,0 +1,184 @@
+@import './roboto.css';
+@import '../theme/variables.scss';
+
+html,
+body {
+	height: 100%;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+
+	// Basic Typography
+	&,
+	button {
+		font-family: 'Roboto', sans-serif;
+		font-style: normal; 
+		font-weight: 400;
+		font-size: 14px;
+		line-height: 24px;
+		word-break: break-word;
+	}
+}
+
+::selection {
+	background: var($--theme-core-selection-color);
+}
+
+.layout {
+	color: var($--theme-core-text-color);
+
+	h1,
+	.h1,
+	h2,
+	.h2,
+	h3,
+	.h3,
+	h4,
+	.h4,
+	h5,
+	.h5,
+	h6,
+	.h6 {
+		color: var($--theme-core-heading-color);
+		margin-top: 60px;
+		margin-bottom: 20px;
+
+		&:hover {
+			color: var($--theme-core-heading-color);
+		}
+	}
+
+	h1,
+	.h1 {
+		font-size: 48px;
+		line-height: 56px;
+		font-weight: 100;
+	}
+
+	h2,
+	.h2 {
+		font-size: 32px;
+		line-height: 38px;
+		font-weight: 100;
+	}
+
+	h3,
+	.h3 {
+		font-size: 24px;
+		line-height: 32px;
+		font-weight: 300;
+	}
+
+	h4,
+	.h4 {
+		font-size: 18px;
+		line-height: 24px;
+		font-weight: 400;
+	}
+
+	h5,
+	.h5 {
+		font-size: 16px;
+		line-height: 20px;
+		font-weight: 400;
+	}
+
+	h6,
+	.h6 {
+		font-size: 14px;
+		line-height: 20px;
+		font-weight: 500;
+	}
+
+	.h7 {
+		font-size: 14px;
+		line-height: 20px;
+		font-weight: 700;
+		text-transform: uppercase;
+		display: block;
+		margin-top: 40px;
+		margin-bottom: 12px;
+		color: var($--theme-core-heading-seven-color);
+	}
+
+	p {
+		margin-top: 0;
+		margin-bottom: 10px;
+	}
+
+	ol,
+	ul {
+		padding-left: 27px;
+		margin: 10px 0;
+		li {
+			line-height: 20px;
+			margin-bottom: 4px;
+		}
+	}
+
+	// // Display numbered lists as 1 > a > i > 1 > a > i
+	ol {
+		list-style-type: decimal;
+		ol {
+			list-style-type: lower-alpha;
+			ol {
+				list-style-type: lower-roman;
+				ol {
+					list-style-type: decimal;
+					ol {
+						list-style-type: lower-alpha;
+						ol {
+							list-style-type: lower-roman;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	a,
+	a:link,
+	a:active,
+	a:visited,
+	a:focus,
+	a:hover {
+		color: var($--theme-core-link-color);
+		text-decoration: none;
+	}
+
+	a {
+		&:hover {
+			text-decoration: none;
+			color: var($--theme-core-link-hover-color);
+		}
+
+		// Don't style non-href anchors like links
+		&:not([href]):not([class]),
+		&:not([href]):not([class]):hover {
+			color: inherit;
+			text-decoration: none;
+		}
+	}
+
+	code {
+		padding: 2px 4px;
+		border-radius: 4px;
+		color: var($--theme-core-code-color);
+		background-color: var($--theme-core-code-background-color);
+	}
+
+	// Standardized indentation
+	@mixin indent-tier($tier) {
+		.indent-#{$tier} {
+			margin-left: $tier * 30px;
+		}
+	}
+	@include indent-tier(1);
+	@include indent-tier(2);
+	@include indent-tier(3);
+	@include indent-tier(4);
+	@include indent-tier(5);
+	@include indent-tier(6);
+	@include indent-tier(7);
+	@include indent-tier(8);
+}

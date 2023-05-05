@@ -1,42 +1,240 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+@import './theme/variables.scss';
+
+.default-layout {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	align-items: stretch;
+	gap: 0;
+	background-color: var($--theme-core-background-color);
+	color: var($--theme-core-text-color);
+
+	.layout-body {
+		flex-grow: 1;
+		overflow: auto;
+		.layout-navigation {
+			position: fixed;
+			left: 0;
+			bottom: 0;
+			top: 65px;
+			z-index: 2;
+			width: 350px;
+			background-color: var($--theme-core-background-color);
+			overflow-x: hidden;
+			overflow-y: auto;
+
+			.site-navigation {
+				width: 323px;
+			}
+
+			.nav-collapse-icon {
+				position: relative;
+				float: right;
+				top: 16px;
+				right: 16px;
+				font-size: 12px;
+				line-height: 0;
+				padding: 6px;
+				border: 1px solid var($--theme-core-layout-border-color);
+				border-radius: 20px;
+				cursor: pointer;
+
+				&:hover {
+					color: var($--theme-core-nav-level-1-color-selected);
+					border-color: var($--theme-core-nav-level-1-color-selected);
+				}
+			}
+		}
+
+		.layout-content {
+			flex-grow: 1;
+			overflow: auto;
+			padding: 20px 30px 0 30px;
+			margin-left: 350px;
+
+			img {
+				max-width: 100%;
+			}
+
+			.zoomzoom {
+				position: absolute;
+				z-index: 10;
+				bottom: 30px;
+				right: 330px;
+				font-size: 49px;
+				line-height: 0;
+				padding: 0;
+				margin: 0;
+				color: var($--theme-core-punch-color);
+				background-color: var($--theme-core-background-color);
+				border-radius: 30px;
+				cursor: pointer;
+				box-shadow: 0px 2px 10px var($--theme-core-box-shadow-color);
+			}
+		}
+
+		.layout-sidebar {
+			position: fixed;
+			right: 0;
+			bottom: 0;
+			top: 65px;
+			z-index: 2;
+			width: 350px;
+			background-color: var($--theme-core-background-color);
+			overflow-x: hidden;
+			overflow-y: auto;
+
+			.sidebar-collapse-icon {
+				position: relative;
+				float: left;
+				top: 16px;
+				left: 6px;
+				font-size: 12px;
+				line-height: 0;
+				padding: 6px;
+				border: 1px solid var($--theme-core-layout-border-color);
+				border-radius: 20px;
+				cursor: pointer;
+
+				&:hover {
+					color: var($--theme-core-nav-level-1-color-selected);
+					border-color: var($--theme-core-nav-level-1-color-selected);
+				}
+			}
+		}
+
+		.layout-footer {
+			margin-left: -30px;
+			margin-right: -30px;
+		}
+
+		&.nav-collapsed {
+			.layout-navigation {
+				transition: width 0.3s ease-out;
+				width: 57px;
+				border-right: 1px solid var($--theme-core-layout-border-color);
+
+				.site-navigation {
+					transition: opacity 0.1s ease-out, display 0.1s ease-out;
+					display: none;
+					opacity: 0;
+				}
+
+				&:hover {
+					transition: width 0.3s ease-in;
+					width: 350px;
+
+					.site-navigation {
+						transition: opacity 0.4s ease-in, display 0.4s ease-in;
+						display: block;
+						opacity: 1;
+					}
+				}
+			}
+
+			.layout-content {
+				margin-left: 58px;
+			}
+		}
+
+		&.sidebar-visible {
+			margin-right: 365px;
+		}
+
+		&.sidebar-collapsed {
+			margin-right: 60px; //this makes the scrollbar on the main content visible
+			.layout-sidebar {
+				transition: width 0.3s ease-out;
+				width: 57px;
+				border-left: 1px solid var($--theme-core-layout-border-color);
+
+				.sidebar-collapse-icon {
+					left: 16px;
+				}
+
+				.layout-sidebar-content {
+					transition: opacity 0.1s ease-out, display 0.1s ease-out;
+					display: none;
+					opacity: 0;
+				}
+
+				&:hover {
+					transition: width 0.3s ease-in;
+					width: 350px;
+
+					.sidebar-collapse-icon {
+						left: 6px;
+					}
+
+					.layout-sidebar-content {
+						transition: opacity 0.4s ease-in, display 0.4s ease-in;
+						display: block;
+						opacity: 1;
+					}
+				}
+			}
+
+			.layout-content {
+				margin-right: 51px;
+			}
+		}
+	}
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+/***
+ * Scrollbars
+ ***/
+
+// Webkit scrollbars (Chrome, Opera, Safari, Edge... every browser but firefox
+// https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-scrollbar
+::-webkit-scrollbar {
+	-webkit-appearance: none;
+	width: 7px;
+	height: 7px;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+::-webkit-scrollbar-thumb {
+	border-radius: 4px;
+	background-color: var($--theme-core-scrollbar-color);
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+::-webkit-scrollbar-corner {
+	background: transparent;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+// Just firefox
+// https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-color
+body {
+	scrollbar-color: var($--theme-core-scrollbar-color) transparent;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.scrollbar-toggle-button {
+	position: fixed;
+	top: 7px;
+	left: 750px;
+	width: 220px;
 }
 
-.card {
-  padding: 2em;
-}
+.layout.default-layout.disappearing-scrollbars {
+	.layout-body,
+	.layout-navigation,
+	.layout-sidebar {
+		// Firefox
+		scrollbar-color: transparent transparent;
 
-.read-the-docs {
-  color: #888;
+		// Chrome
+		&::-webkit-scrollbar-thumb {
+			background-color: transparent;
+		}
+
+		&:hover {
+			// Firefox
+			scrollbar-color: var($--theme-core-scrollbar-color) transparent;
+
+			// Chrome
+			&::-webkit-scrollbar-thumb {
+				background-color: var($--theme-core-scrollbar-color);
+			}
+		}
+	}
 }

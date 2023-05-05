@@ -1,0 +1,169 @@
+@import '../../../../theme/variables.scss';
+
+@mixin nav-level-x($level) {
+	.nav-level-#{$level},
+	a.nav-level-#{$level},
+	a:link.nav-level-#{$level},
+	a:visited.nav-level-#{$level},
+	a:hover.nav-level-#{$level} {
+		color: var(--theme-core-nav-level-4-color);
+		font-weight: 400;
+		font-size: 14px;
+		margin: 0 0 0 (($level - 2) * -20px);
+		padding-left: ($level - 1) * 20px;
+
+		&:hover,
+		&.active {
+			color: var(--theme-core-nav-level-4-color-selected);
+			background-color: var(--theme-core-nav-level-4-background-color-selected);
+		}
+
+		&.active {
+			font-weight: 700;
+		}
+	}
+}
+
+// Default styles, not overridden by L5+
+.site-navigation {
+	.nav-item {
+		display: block;
+		cursor: pointer;
+		padding: 5px 24px 5px 20px;
+		font-size: 14px;
+		line-height: 24px;
+		color: var(--theme-core-nav-level-1-color);
+
+		&.active {
+			font-weight: 700;
+		}
+
+		.tag {
+			margin-left: 4px;
+		}
+	}
+
+	.nav-item,
+	a.nav-item,
+	a:link.nav-item,
+	a:visited.nav-item,
+	a:hover.nav-item {
+		color: var(--theme-core-nav-level-1-color);
+	}
+
+	.group-title {
+		padding-right: 0;
+	}
+
+	.nav-group {
+		padding-left: 20px;
+	}
+
+	// Strip indentation from root elements
+	& > .nav-group {
+		border-left: 1px solid var(--theme-core-nav-line-color);
+		padding-left: 0;
+		margin-left: 10px;
+	}
+	& > .nav-item {
+		padding-left: 0;
+		margin-left: 0;
+	}
+
+	.group-title {
+		cursor: pointer;
+		display: flex;
+		flex-flow: row nowrap;
+		justify-content: space-between;
+		align-items: center;
+
+		&.active {
+			font-weight: 700;
+		}
+
+		.expando-button {
+			cursor: pointer;
+			border: 0;
+			padding: 0;
+			margin: 0 10px 0 12px;
+			background: unset;
+			color: var($--theme-core-expando-button-color);
+			font-size: 10px;
+			line-height: 0;
+
+			.nav-group-image {
+				margin: 3px;
+			}
+		}
+	}
+}
+
+// Level overrides
+.site-navigation {
+	// L1 style override
+	.nav-level-1 {
+		color: var(--theme-core-nav-level-1-color);
+		font-weight: 500;
+		font-size: 14px;
+		line-height: 30px;
+
+		&:hover,
+		&.active {
+			font-weight: 500;
+			background-color: unset;
+			color: var(--theme-core-nav-level-1-color-selected);
+		}
+	}
+
+	// L2 style override
+	.nav-level-2,
+	a.nav-level-2,
+	a:link.nav-level-2,
+	a:visited.nav-level-2,
+	a:hover.nav-level-2 {
+		color: var(--theme-core-nav-level-2-color);
+		font-weight: 400;
+
+		&:hover,
+		&.active {
+			background-color: unset;
+			color: var(--theme-core-nav-level-2-color-selected);
+			font-weight: 400;
+		}
+
+		&.active {
+			border-left: 2px solid var(--theme-core-nav-level-2-color-selected);
+			padding-left: 18px;
+		}
+	}
+
+	// L3 style override
+	.nav-level-3,
+	a.nav-level-3,
+	a:link.nav-level-3,
+	a:visited.nav-level-3,
+	a:hover.nav-level-3 {
+		color: var(--theme-core-nav-level-3-color);
+		font-weight: 400;
+		font-size: 14px;
+		margin-left: -20px;
+		padding-left: 40px;
+
+		&:hover,
+		&.active {
+			color: var(--theme-core-nav-level-3-color-selected);
+			background-color: var(--theme-core-nav-level-3-background-color-selected);
+		}
+
+		&.active {
+			font-weight: 700;
+		}
+	}
+
+	@include nav-level-x(4);
+	@include nav-level-x(5);
+	@include nav-level-x(6);
+	@include nav-level-x(7);
+	@include nav-level-x(8);
+	@include nav-level-x(9);
+}

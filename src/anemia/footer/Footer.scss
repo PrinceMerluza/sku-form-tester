@@ -1,0 +1,60 @@
+@import '../../../../theme/variables.scss';
+
+.layout-footer {
+	background-color: var($--theme-core-footer-background-color);
+	padding: 40px;
+	border-top: 1px solid var($--theme-core-footer-border-color);
+	margin-top: 70px;
+
+	.footer-links {
+		display: flex;
+		flex-flow: row nowrap;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin: 0 120px 0 0;
+
+		.footer-logo {
+			height: 32px;
+		}
+
+		.link-group {
+			display: flex;
+			flex-flow: column nowrap;
+			justify-content: flex-start;
+			align-items: flex-start;
+			margin-top: 13px;
+			font-weight: normal;
+			font-size: 12px;
+			line-height: 14px;
+			color: var($--theme-core-footer-text-color);
+
+			.group-title {
+				font-weight: bold;
+				font-size: 14px;
+				margin-bottom: 12px;
+			}
+
+			a {
+				margin-bottom: 10px;
+				color: var($--theme-core-footer-text-color);
+			}
+		}
+	}
+
+	.footer-footer {
+		font-size: 12px;
+		line-height: 16px;
+		color: var($--theme-core-footer-text-color);
+		margin-top: 60px;
+		display: flex;
+		flex-flow: row nowrap;
+		justify-content: space-between;
+		align-items: baseline;
+
+		.bottom-right-links {
+			a {
+				color: var($--theme-core-footer-text-color);
+			}
+		}
+	}
+}

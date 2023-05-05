@@ -1,0 +1,225 @@
+@import '../../../../theme/variables.scss';
+
+.dev-toolbox {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	z-index: 80;
+	// This padding creates deadspace around the contents
+	padding: 10px 0 0 10px;
+
+	.toolbox-closed {
+		padding: 15px;
+		border-top: 17px solid var($--theme-core-punch-color);
+		border-radius: 8px 0 0 0;
+		box-shadow: 0px 2px 10px var($--theme-core-box-shadow-color);
+		background-color: var($--theme-toolbox-background-color);
+		border-left: 1px solid var($--theme-toolbox-border-color);
+
+		.icon {
+			display: inline-block;
+			padding: 18px;
+			border: 1px solid var($--theme-toolbox-border-color);
+			border-radius: 4px;
+			color: var($--theme-core-punch-color);
+			font-size: 45px;
+			line-height: 0;
+			cursor: pointer;
+		}
+	}
+
+	.toolbox-open {
+		display: flex;
+		flex-flow: column nowrap;
+		box-shadow: 0px 2px 10px var($--theme-core-box-shadow-color);
+		background-color: var($--theme-toolbox-background-color);
+		border-radius: 8px 8px 0 0;
+
+		.header-bar {
+			display: flex;
+			flex-flow: row nowrap;
+			justify-content: space-between;
+			align-items: center;
+			height: 47px;
+			background-color: var($--theme-core-punch-color);
+			color: var($--theme-core-punch-text-color);
+			border-radius: 8px 8px 0 0;
+
+			.header-grip {
+				margin: -14px 0 0 2px;
+
+				.icon {
+					cursor: nwse-resize;
+					font-size: 16px;
+				}
+			}
+
+			.icon {
+				display: inline-block;
+				padding: 4px;
+				margin-right: 20px;
+				color: var($--theme-core-punch-text-color);
+				font-size: 24px;
+				line-height: 0;
+				cursor: pointer;
+				align-self: center;
+			}
+		}
+
+		.content-panel {
+			height: 100%;
+			display: flex;
+			flex-flow: row nowrap;
+			justify-content: flex-start;
+			min-height: 500px;
+			background-color: var($--theme-toolbox-background-color);
+			border-left: 1px solid var($--theme-toolbox-border-color);
+
+			.toolbox-navigation {
+				flex-grow: 0;
+				flex-shrink: 0;
+				width: 305px;
+				display: flex;
+				flex-flow: column nowrap;
+				justify-content: space-between;
+				margin: 0;
+				border-right: 1px solid var($--theme-toolbox-border-color);
+
+				.toolbox-app-title {
+					display: flex;
+					flex-direction: row nowrap;
+					align-items: baseline;
+					gap: 10px;
+
+					h1 {
+						font-weight: 300;
+						font-size: 32px;
+						line-height: 37px;
+						margin: 20px 0 10px 20px;
+					}
+					
+					.tag {
+						font-weight: normal;
+						align-self: center;
+						margin-top: 14px;
+						display: block;
+					}
+
+					.toolbox-app-help {
+						color: var($--theme-core-link-color);
+						cursor: pointer;
+						font-size: 18px;
+						line-height: 0;
+						// align-self: baseline;
+					}
+				}
+
+				.item-filter {
+					margin: 10px 20px;
+				}
+
+				.toolbox-items {
+					overflow: auto;
+					list-style-type: none;
+					padding: 0 10px 0 0;
+					margin: 0 0 0 20px;
+					flex-grow: 1;
+
+					li {
+						padding: 5px 0;
+						margin: 0;
+						display: flex;
+						flex-flow: row nowrap;
+						gap: 8px;
+						justify-content: space-between;
+						align-items: center;
+						font-size: 14px;
+						line-height: 24px;
+
+						&.active {
+							color: var($--theme-core-nav-level-1-color-selected);
+							font-weight: bold;
+						}
+
+						span {
+							flex-grow: 1;
+							white-space: nowrap;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							cursor: pointer;
+						}
+
+						.icon {
+							display: none;
+							flex-grow: 0;
+							flex-shrink: 0;
+							line-height: 0;
+							color: var($--theme-core-nav-level-1-color-selected);
+							cursor: pointer;
+							padding: 2px;
+
+							&.icon-app-expand {
+								font-size: 13px;
+							}
+							&.icon-app-times {
+								font-size: 11px;
+							}
+						}
+
+						&:hover {
+							span {
+								color: var($--theme-core-nav-level-1-color-selected);
+							}
+							.icon {
+								display: block;
+							}
+						}
+					}
+				}
+
+				.toolbox-apps {
+					padding: 10px;
+					border-top: 1px solid var($--theme-toolbox-border-color);
+
+					ul {
+						list-style-type: none;
+						padding: 0;
+						margin: 0 0 0 15px;
+
+						li {
+							margin: 20px 0;
+							display: flex;
+							flex-flow: row nowrap;
+							gap: 20px;
+							align-items: center;
+							font-size: 14px;
+							line-height: 0;
+							cursor: pointer;
+
+							&.active,
+							&:hover {
+								color: var($--theme-core-punch-color);
+							}
+
+							.icon {
+								font-size: 32px;
+								line-height: 0;
+								color: var($--theme-core-punch-color);
+							}
+
+							.tag {
+								margin-left: -10px;
+							}
+						}
+					}
+				}
+			}
+
+			.toolbox-app-panel {
+				flex: 1;
+				overflow: auto;
+				padding: 20px;
+			}
+		}
+	}
+}

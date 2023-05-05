@@ -1,0 +1,31 @@
+@import '../../../../theme/variables.scss';
+
+.in-page-nav {
+	font-size: 12px;
+	line-height: 18px;
+	margin: 40px 40px 160px 40px;
+
+	ul.heading-list {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		width: 210px;
+
+		li {
+			margin: 10px 0;
+			padding: 0;
+
+			&.active {
+				a,
+				a:visited {
+					color: var($--theme-core-nav-level-1-color-selected);
+				}
+			}
+
+			a,
+			a:visited {
+				color: var($--theme-core-nav-level-1-color);
+			}
+		}
+	}
+}

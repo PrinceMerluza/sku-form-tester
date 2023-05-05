@@ -1,0 +1,83 @@
+@import '../../../theme/variables.scss';
+
+/***************************************
+ * STUFF THAT SHOULD BE IN A COMPONENT *
+ ***************************************/
+
+// TOC links
+.toc-list {
+	list-style-position: inside;
+	padding: 0 !important;
+
+	& li::marker {
+		margin-right: 0;
+	}
+
+	.toc-list-1 {
+		padding-left: 10px;
+	}
+	.toc-list-2 {
+		padding-left: 20px;
+	}
+	.toc-list-3 {
+		padding-left: 30px;
+	}
+	.toc-list-4 {
+		padding-left: 40px;
+	}
+	.toc-list-5 {
+		padding-left: 50px;
+	}
+	.toc-list-6 {
+		padding-left: 60px;
+	}
+}
+
+.toc-link {
+	display: block;
+	text-decoration: none;
+	scroll-margin-top: 30px;
+
+	h1,
+	.h1,
+	h2,
+	.h2,
+	h3,
+	.h3,
+	h4,
+	.h4,
+	h5,
+	.h5,
+	h6,
+	.h6 {
+		color: var($--theme-core-heading-color);
+
+		&:hover {
+			color: var($--theme-core-heading-color);
+		}
+	}
+
+	&-icon {
+		display: none;
+		font-size: 60%;
+		line-height: 60%;
+		padding: 0 0 0 5px;
+		margin: 0;
+	}
+
+	h4,
+	.h4,
+	h5,
+	.h5,
+	h6,
+	.h6 {
+		.toc-link-icon {
+			font-size: 80%;
+			line-height: 80%;
+		}
+	}
+
+	&:hover .toc-link-icon {
+		display: inline;
+	}
+}
