@@ -13,8 +13,11 @@
     "file-saver": "^2.0.5",
     "genesys-dev-icons": "^0.3.1",
     "genesys-react-components": "^0.4.1",
+    "moment": "^2.29.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-syntax-highlighter": "^15.5.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.37",
