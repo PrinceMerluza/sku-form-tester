@@ -5,6 +5,12 @@
 			border-color: red;
 		}
 	}
+ 
+	.error-box{
+		border: 1px solid red;
+		background-color: #f1c2c2;
+		padding: 8px;
+	}
 }
 
 ImageUploader {

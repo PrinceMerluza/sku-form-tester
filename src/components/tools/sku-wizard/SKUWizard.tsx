@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { DxButton, DxTextbox, DxItemGroup, DxItemGroupItem } from 'genesys-react-components';
 import Validator from '../utils/validation/Validator';
 import ValidationFieldContainer from '../utils/validation/ValidationFieldContainer';
-import MarkdownDisplay from '../../markdowndisplay/MarkdownDisplay';
 import SKUForm from './SKUForm';
 import { PremiumAppSKUs, SKU } from './types';
 

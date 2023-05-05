@@ -29,8 +29,10 @@ export default function ValidationFieldContainer(props: IProps) {
 			{props.children}
 			{props.info && props.isFocused ? props.info : undefined}
 			{props.errors[props.name] && !props.isFocused ? (
-				<div> 
-					<div>{`${props.name} error`}</div>
+				<div className="error-box">
+					<div>
+						<strong>{`${props.name} error`}</strong>{' '}
+					</div>
 					{props.errors[props.name].map((error, idx) => (
 						<p key={idx}>{props.errors[props.name][idx]}</p>
 					))}
