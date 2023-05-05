@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import AlertBlock from '../../../markdown/alertblock/AlertBlock';
-import MarkdownDisplay from '../../../markdowndisplay/MarkdownDisplay';
 
 import './ValidationFieldContainer.scss';
 
@@ -29,13 +27,14 @@ export default function ValidationFieldContainer(props: IProps) {
 	return (
 		<div className={`field-validation-container ${isValid ? '' : 'invalid'}`}>
 			{props.children}
-			{props.info && props.isFocused ? <MarkdownDisplay markdown={props.info} /> : undefined}
+			{props.info && props.isFocused ? props.info : undefined}
 			{props.errors[props.name] && !props.isFocused ? (
-				<AlertBlock title={`${props.name} error`} className="validation-error" alertType="critical">
+				<div> 
+					<div>{`${props.name} error`}</div>
 					{props.errors[props.name].map((error, idx) => (
 						<p key={idx}>{props.errors[props.name][idx]}</p>
 					))}
-				</AlertBlock>
+				</div>
 			) : undefined}
 		</div>
 	);
