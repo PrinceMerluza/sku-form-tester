@@ -1,0 +1,11 @@
+@import '../../../theme/variables.scss';
+
+.sku-preview-container {
+	border: 1px solid var(--theme-core-layout-border-color);
+	padding: 10px;
+}
+
+.optional-fee-container {
+	display: flex;
+	flex-direction: row;
+}

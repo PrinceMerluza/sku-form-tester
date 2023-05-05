@@ -1,0 +1,222 @@
+@import './variables.scss';
+
+:root {
+	// DxButton (primary)
+	.dx-button-primary {
+		background-color: var($--theme-dxbutton-primary-background-color);
+		border-color: var($--theme-dxbutton-primary-background-color);
+		color: var($--theme-dxbutton-primary-text-color);
+
+		&:hover {
+			background-color: var($--theme-dxbutton-primary-hover-background-color);
+			border-color: var($--theme-dxbutton-primary-hover-background-color);
+		}
+
+		&:focus {
+			background-color: var($--theme-dxbutton-primary-background-color);
+			border-color: var($--theme-dxbutton-primary-background-color);
+			box-shadow: 0 0 0 2px var($--theme-dxbutton-primary-shadow-color);
+		}
+
+		&:disabled {
+			background-color: var($--theme-dxbutton-primary-disabled-background-color);
+			border-color: var($--theme-dxbutton-primary-disabled-background-color);
+		}
+	}
+
+	// DxButton (secondary)
+	.dx-button-secondary {
+		color: var($--theme-dxbutton-secondary-border-color);
+		border-color: var($--theme-dxbutton-secondary-border-color);
+		background-color: var($--theme-dxbutton-secondary-background-color);
+
+		&:hover {
+			color: var($--theme-dxbutton-secondary-hover-border-color);
+			border-color: var($--theme-dxbutton-secondary-border-color);
+		}
+
+		&:focus {
+			color: var($--theme-dxbutton-secondary-border-color);
+			border-color: var($--theme-dxbutton-secondary-border-color);
+			box-shadow: 0 0 0 2px var($--theme-dxbutton-secondary-shadow-color);
+		}
+
+		&:disabled {
+			color: var($--theme-dxbutton-secondary-disabled-text-color);
+			background-color: var($--theme-dxbutton-secondary-disabled-background-color);
+			border-color: var($--theme-dxbutton-secondary-disabled-background-color);
+		}
+	}
+
+	// DxButton (link)
+	.dx-button-link {
+		color: var($--theme-core-link-color);
+
+		&:hover {
+			color: var($--theme-core-link-hover-color);
+			border-color: var($--theme-dxbutton-secondary-border-color);
+		}
+	}
+
+	// DxCheckbox (checkbox and radio buttons)
+	.dx-checkbox {
+		.label-text {
+			color: var($--theme-dxcheckbox-text-color);
+		}
+
+		input[type='checkbox'] {
+			border-color: var($--theme-dxcheckbox-border-color);
+			background-color: var($--theme-dxcheckbox-background-color);
+		}
+
+		// Fill in background on check
+		input[type='checkbox']:checked {
+			background-color: var($--theme-dxcheckbox-border-color);
+		}
+
+		// Display checkmark on check
+		input[type='checkbox']:checked::before {
+			color: var($--theme-dxcheckbox-background-color);
+		}
+
+		// Hover - radio button
+		input[type='checkbox']:not(:disabled):hover {
+			border-color: var($--theme-dxcheckbox-hover-color);
+		}
+
+		// Focus - radio button
+		input[type='checkbox']:not(:disabled):focus {
+			outline-color: var($--theme-dxcheckbox-outline-color);
+		}
+
+		input[type='radio'] {
+			border-color: var($--theme-dxcheckbox-border-color);
+		}
+
+		// Display filled radio button
+		input[type='radio']:checked::before {
+			background-color: var($--theme-dxcheckbox-border-color);
+		}
+
+		// Hover - radio button
+		input[type='radio']:not(:disabled):hover {
+			border-color: var($--theme-dxcheckbox-hover-color);
+		}
+
+		// Focus - radio button
+		input[type='radio']:not(:disabled):focus {
+			outline-color: var($--theme-dxcheckbox-outline-color);
+		}
+
+		&.disabled {
+			input {
+				border-color: var($--theme-dxcheckbox-disabled-border-color);
+			}
+
+			// Fill in background on check
+			input:checked {
+				background-color: var($--theme-dxcheckbox-disabled-border-color);
+			}
+		}
+	}
+
+	// DxToggle
+	.dx-toggle-container {
+		.dx-toggle {
+			background: var($--theme-core-control-background-color);
+			border-color: var($--theme-core-control-border-color);
+
+			&:hover {
+				.slider {
+					border-color: var($--theme-core-control-focus-color);
+				}
+			}
+
+			.icon {
+				color: var($--theme-core-control-border-color);
+			}
+
+			.slider {
+				background-color: var($--theme-core-control-punch-color);
+				box-shadow: 0px 1px 2px var($--theme-core-box-shadow-color);
+
+				.icon {
+					color: var($--theme-core-control-background-color);
+				}
+			}
+		}
+
+		&.disabled {
+			.dx-toggle {
+				opacity: 0.7;
+				border-color: var($--theme-core-control-border-color);
+				color: var($--theme-core-control-background-color);
+
+				.slider {
+					opacity: 0.7;
+					color: var($--theme-core-control-background-color);
+					background-color: var($--theme-core-control-punch-color);
+				}
+			}
+		}
+	}
+
+	// DxAccordion
+	.dx-accordion {
+		.accordion-heading,
+		.accordion-content {
+			color: var($--theme-core-text-color);
+			border-color: var($--theme-core-layout-border-color);
+		}
+	}
+
+	// DxLabel
+	.dx-label {
+		.label-text {
+			color: var($--theme-core-control-label-color);
+		}
+	}
+
+	// DxTextbox
+	.dx-textbox,
+	.dx-textarea {
+		background: var($--theme-core-control-alt-background-color);
+		border-color: var($--theme-core-control-border-color);
+		color: var($--theme-core-control-textbox-text-color);
+		background-color: var($--theme-core-control-textbox-background-color);
+		border-color: var($--theme-core-control-textbox-border-color);
+
+		.dx-input {
+			color: var($--theme-core-control-textbox-text-color);
+
+			&::placeholder {
+				color: var($--theme-core-control-textbox-placeholder-text-color);
+			}
+		}
+
+		&:focus-within {
+			outline: var($--theme-core-control-focus-color) solid 2px;
+		}
+
+		.icon {
+			color: var($--theme-core-control-textbox-text-color);
+		}
+	}
+
+	// DxTabbedContent
+	.dx-tabbed-content {
+		.tab-titles {
+			border-bottom-color: var($--theme-core-layout-border-color);
+
+			.tab-title {
+				&.active {
+					border-bottom-color: var($--theme-core-control-punch-color);
+				}
+				
+				&:hover {
+					border-bottom-color: var($--theme-core-control-punch-color);
+				}
+			}
+		}
+	}
+}

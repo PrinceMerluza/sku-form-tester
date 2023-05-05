@@ -1,0 +1,397 @@
+/*** 
+ * Core colors
+ ***/
+$--theme-core-text-color: --theme-core-text-color;
+$--theme-core-background-color: --theme-core-background-color;
+$--theme-core-box-shadow-color: --theme-core-box-shadow-color;
+$--theme-core-layout-border-color: --theme-core-layout-border-color;
+$--theme-core-input-border-color: --theme-core-input-border-color;
+$--theme-core-selection-color: --theme-core-selection-color;
+$--theme-core-control-text-color: --theme-core-control-text-color;
+$--theme-core-control-background-color: --theme-core-control-background-color;
+$--theme-core-control-alt-background-color: --theme-core-control-alt-background-color;
+$--theme-core-control-punch-color: --theme-core-control-punch-color;
+$--theme-core-control-hover-background-color: --theme-core-control-hover-background-color;
+$--theme-core-control-border-color: --theme-core-control-border-color;
+$--theme-core-control-focus-color: --theme-core-control-focus-color;
+$--theme-core-control-label-color: --theme-core-control-label-color;
+$--theme-core-control-textbox-text-color: --theme-core-control-textbox-text-color;
+$--theme-core-control-textbox-placeholder-text-color: --theme-core-control-textbox-placeholder-text-color;
+$--theme-core-control-textbox-background-color: --theme-core-control-textbox-background-color;
+$--theme-core-control-textbox-border-color: --theme-core-control-textbox-border-color;
+$--theme-core-tag-background-color: --theme-core-tag-background-color;
+$--theme-core-tag-text-color: --theme-core-tag-text-color;
+$--theme-core-punch-color: --theme-core-punch-color;
+$--theme-core-punch-text-color: --theme-core-punch-text-color;
+$--theme-core-star-color: --theme-core-star-color;
+$--theme-core-link-color: --theme-core-link-color;
+$--theme-core-link-hover-color: --theme-core-link-hover-color;
+$--theme-core-code-color: --theme-core-code-color;
+$--theme-core-code-background-color: --theme-core-code-background-color;
+$--theme-core-heading-color: --theme-core-heading-color;
+$--theme-core-heading-seven-color: --theme-core-heading-seven-color;
+$--theme-core-expando-button-color: --theme-core-expando-button-color;
+$--theme-core-nav-line-color: --theme-core-nav-line-color;
+$--theme-core-nav-level-1-color: --theme-core-nav-level-1-color;
+$--theme-core-nav-level-1-color-selected: --theme-core-nav-level-1-color-selected;
+$--theme-core-nav-level-2-color: --theme-core-nav-level-2-color;
+$--theme-core-nav-level-2-color-selected: --theme-core-nav-level-2-color-selected;
+$--theme-core-nav-level-3-color: --theme-core-nav-level-3-color;
+$--theme-core-nav-level-3-color-selected: --theme-core-nav-level-3-color-selected;
+$--theme-core-nav-level-3-background-color-selected: --theme-core-nav-level-3-background-color-selected;
+$--theme-core-nav-level-4-color: --theme-core-nav-level-4-color;
+$--theme-core-nav-level-4-color-selected: --theme-core-nav-level-4-color-selected;
+$--theme-core-nav-level-4-background-color-selected: --theme-core-nav-level-4-background-color-selected;
+$--theme-core-scrollbar-color: --theme-core-scrollbar-color;
+$--theme-core-footer-background-color: --theme-core-footer-background-color;
+$--theme-core-footer-border-color: --theme-core-footer-border-color;
+$--theme-core-footer-text-color: --theme-core-footer-text-color;
+
+/*** 
+ * Component-specific properties 
+ ***/
+
+// AlertBlock
+$--theme-alertblock-default-text-color: --theme-alertblock-default-text-color;
+$--theme-alertblock-default-background-color: --theme-alertblock-default-background-color;
+$--theme-alertblock-default-border-color: --theme-alertblock-default-border-color;
+$--theme-alertblock-default-icon-color: --theme-alertblock-default-icon-color;
+
+$--theme-alertblock-info-text-color: --theme-alertblock-info-text-color;
+$--theme-alertblock-info-background-color: --theme-alertblock-info-background-color;
+$--theme-alertblock-info-border-color: --theme-alertblock-info-border-color;
+$--theme-alertblock-info-icon-color: --theme-alertblock-info-icon-color;
+
+$--theme-alertblock-warning-text-color: --theme-alertblock-warning-text-color;
+$--theme-alertblock-warning-background-color: --theme-alertblock-warning-background-color;
+$--theme-alertblock-warning-border-color: --theme-alertblock-warning-border-color;
+$--theme-alertblock-warning-icon-color: --theme-alertblock-warning-icon-color;
+
+$--theme-alertblock-critical-text-color: --theme-alertblock-critical-text-color;
+$--theme-alertblock-critical-background-color: --theme-alertblock-critical-background-color;
+$--theme-alertblock-critical-border-color: --theme-alertblock-critical-border-color;
+$--theme-alertblock-critical-icon-color: --theme-alertblock-critical-icon-color;
+
+$--theme-alertblock-success-text-color: --theme-alertblock-success-text-color;
+$--theme-alertblock-success-background-color: --theme-alertblock-success-background-color;
+$--theme-alertblock-success-border-color: --theme-alertblock-success-border-color;
+$--theme-alertblock-success-icon-color: --theme-alertblock-success-icon-color;
+
+$--theme-alertblock-toast-text-color: --theme-alertblock-toast-text-color;
+$--theme-alertblock-toast-background-color: --theme-alertblock-toast-background-color;
+$--theme-alertblock-toast-border-color: --theme-alertblock-toast-border-color;
+$--theme-alertblock-toast-icon-color: --theme-alertblock-toast-icon-color;
+
+// Card
+$--theme-card-text-color: --theme-card-text-color;
+$--theme-card-background-color: --theme-card-background-color;
+$--theme-card-border-color: --theme-card-border-color;
+$--theme-card-image-background-color: --theme-card-image-background-color;
+$--theme-card-icon-color: --theme-card-icon-color;
+
+// CodeFence
+$--theme-codefence-header-background-color: --theme-codefence-header-background-color;
+$--theme-codefence-header-text-color: --theme-codefence-header-text-color;
+$--theme-codefence-background-color: --theme-codefence-background-color;
+$--theme-codefence-border-color: --theme-codefence-border-color;
+
+// DataTable
+$--theme-datatable-background-color: --theme-datatable-background-color;
+$--theme-datatable-text-color: --theme-datatable-text-color;
+$--theme-datatable-border-color: --theme-datatable-border-color;
+$--theme-datatable-filter-background-color: --theme-datatable-filter-background-color;
+
+// DxButton
+$--theme-dxbutton-primary-background-color: --theme-dxbutton-primary-background-color;
+$--theme-dxbutton-primary-text-color: --theme-dxbutton-primary-text-color;
+$--theme-dxbutton-primary-shadow-color: --theme-dxbutton-primary-shadow-color;
+$--theme-dxbutton-primary-hover-background-color: --theme-dxbutton-primary-hover-background-color;
+$--theme-dxbutton-primary-disabled-background-color: --theme-dxbutton-primary-disabled-background-color;
+$--theme-dxbutton-secondary-background-color: --theme-dxbutton-secondary-background-color;
+$--theme-dxbutton-secondary-border-color: --theme-dxbutton-secondary-border-color;
+$--theme-dxbutton-secondary-shadow-color: --theme-dxbutton-secondary-shadow-color;
+$--theme-dxbutton-secondary-hover-border-color: --theme-dxbutton-secondary-hover-border-color;
+$--theme-dxbutton-secondary-disabled-text-color: --theme-dxbutton-secondary-disabled-text-color;
+$--theme-dxbutton-secondary-disabled-background-color: --theme-dxbutton-secondary-disabled-background-color;
+
+// DxCheckbox
+$--theme-dxcheckbox-text-color: --theme-dxcheckbox-text-color;
+$--theme-dxcheckbox-border-color: --theme-dxcheckbox-border-color;
+$--theme-dxcheckbox-background-color: --theme-dxcheckbox-background-color;
+$--theme-dxcheckbox-hover-color: --theme-dxcheckbox-hover-color;
+$--theme-dxcheckbox-outline-color: --theme-dxcheckbox-outline-color;
+$--theme-dxcheckbox-disabled-border-color: --theme-dxcheckbox-disabled-border-color;
+
+// Feedback
+$--theme-feedback-text-color: --theme-feedback-text-color;
+$--theme-feedback-background-color: --theme-feedback-background-color;
+$--theme-feedback-border-color: --theme-feedback-border-color;
+
+// LoadingPlaceholder
+$--theme-loadingplaceholder-text-color: --theme-loadingplaceholder-text-color;
+$--theme-loadingplaceholder-wave-color: --theme-loadingplaceholder-wave-color;
+
+// PrivacyBanner
+$--theme-privacybanner-background-color: --theme-privacybanner-background-color;
+$--theme-privacybanner-border-color: --theme-privacybanner-border-color;
+
+// Toolbox
+$--theme-toolbox-background-color: --theme-toolbox-background-color;
+$--theme-toolbox-border-color: --theme-toolbox-border-color;
+
+/*** 
+ * Theme definitions
+ ***/
+
+$theme-anemia: (
+	// Core
+	$--theme-core-text-color: #272d2d,
+	$--theme-core-background-color: #ffffff,
+	$--theme-core-box-shadow-color: #c1cad688,
+	$--theme-core-layout-border-color: #dfe9f1,
+	$--theme-core-input-border-color: #c6cbd1,
+	$--theme-core-selection-color: #009fc736,
+	$--theme-core-control-text-color: #272d2d,
+	$--theme-core-control-background-color: #ffffff,
+	$--theme-core-control-alt-background-color: #ffffff,
+	$--theme-core-control-punch-color: #419bb2,
+	$--theme-core-control-hover-background-color: #f5f8fb,
+	$--theme-core-control-border-color: #c6cbd1,
+	$--theme-core-control-focus-color: #aac9ff,
+	$--theme-core-control-label-color: #75757a,
+	$--theme-core-control-textbox-text-color: #272d2d,
+	$--theme-core-control-textbox-background-color: #ffffff,
+	$--theme-core-control-textbox-border-color: #c6cbd1,
+	$--theme-core-control-textbox-placeholder-text-color: #757576,
+	$--theme-core-tag-background-color: #1ca2ab,
+	$--theme-core-tag-text-color: #ffffff,
+	$--theme-core-punch-color: #ff4f1f,
+	$--theme-core-punch-text-color: #ffffff,
+	$--theme-core-star-color: #fba10f,
+	$--theme-core-link-color: #2f7bb1,
+	$--theme-core-link-hover-color: #1c5176,
+	$--theme-core-code-color: #8452cf,
+	$--theme-core-code-background-color: #eff0f5,
+	$--theme-core-heading-color: #272d2d,
+	$--theme-core-heading-seven-color: #2f7bb1,
+	$--theme-core-expando-button-color: #2f7bb1,
+	$--theme-core-nav-line-color: #d1dce4,
+	$--theme-core-nav-level-1-color: #4d5061,
+	$--theme-core-nav-level-1-color-selected: #2f7bb1,
+	$--theme-core-nav-level-2-color: #6b7480,
+	$--theme-core-nav-level-2-color-selected: #2f7bb1,
+	$--theme-core-nav-level-3-color: #6b7480,
+	$--theme-core-nav-level-3-color-selected: #6b7480,
+	$--theme-core-nav-level-3-background-color-selected: #f5f8fb,
+	$--theme-core-nav-level-4-color: #6b7480,
+	$--theme-core-nav-level-4-color-selected: #6b7480,
+	$--theme-core-nav-level-4-background-color-selected: #dfe9f1,
+	$--theme-core-scrollbar-color: #b0b2b5,
+	$--theme-core-footer-background-color: #f9fbfc,
+	$--theme-core-footer-border-color: #e5e5e5,
+	$--theme-core-footer-text-color: #54565a,
+	// AlertBlock
+	$--theme-alertblock-default-text-color: #4d5061,
+	$--theme-alertblock-default-background-color: #ffffff,
+	$--theme-alertblock-default-border-color: #d2d3d7,
+	$--theme-alertblock-default-icon-color: #4d5061,
+	$--theme-alertblock-info-text-color: #4d5061,
+	$--theme-alertblock-info-background-color: #eaf2f7,
+	$--theme-alertblock-info-border-color: #2f7bb1,
+	$--theme-alertblock-info-icon-color: #2f7bb1,
+	$--theme-alertblock-warning-text-color: #4d5061,
+	$--theme-alertblock-warning-background-color: #fff8eb,
+	$--theme-alertblock-warning-border-color: #fbbe3b,
+	$--theme-alertblock-warning-icon-color: #fbbe3b,
+	$--theme-alertblock-critical-text-color: #4d5061,
+	$--theme-alertblock-critical-background-color: #faebeb,
+	$--theme-alertblock-critical-border-color: #cc3336,
+	$--theme-alertblock-critical-icon-color: #cc3336,
+	$--theme-alertblock-success-text-color: #4d5061,
+	$--theme-alertblock-success-background-color: #d2dfd8,
+	$--theme-alertblock-success-border-color: #24a357,
+	$--theme-alertblock-success-icon-color: #69a358,
+	$--theme-alertblock-toast-text-color: #4d5061,
+	$--theme-alertblock-toast-background-color: #def0fd,
+	$--theme-alertblock-toast-border-color: #2f7bb1,
+	$--theme-alertblock-toast-icon-color: #2f7bb1,
+	// Card
+	$--theme-card-text-color: #54565a,
+	$--theme-card-background-color: #ffffff,
+	$--theme-card-border-color: #d2d3d7,
+	$--theme-card-image-background-color: #f2f5f9,
+	$--theme-card-icon-color: #ff4f1f,
+	// CodeFence
+	$--theme-codefence-header-background-color: #272d2d,
+	$--theme-codefence-header-text-color: #eaeaea,
+	$--theme-codefence-background-color: #343538,
+	$--theme-codefence-border-color: #54565a,
+	// DataTable
+	$--theme-datatable-background-color: unset,
+	$--theme-datatable-text-color: unset,
+	$--theme-datatable-border-color: #cfdfeb,
+	$--theme-datatable-filter-background-color: #f9fbfc,
+	// DxButton
+	$--theme-dxbutton-primary-background-color: #419bb2,
+	$--theme-dxbutton-primary-text-color: #ffffff,
+	$--theme-dxbutton-primary-shadow-color: #aac9ff,
+	$--theme-dxbutton-primary-hover-background-color: #317b8d,
+	$--theme-dxbutton-primary-disabled-background-color: #9aafb540,
+	$--theme-dxbutton-secondary-background-color: #ffffff,
+	$--theme-dxbutton-secondary-border-color: #419bb2,
+	$--theme-dxbutton-secondary-shadow-color: #aac9ff,
+	$--theme-dxbutton-secondary-hover-border-color: #317b8d,
+	$--theme-dxbutton-secondary-disabled-text-color: #8a9a9e,
+	$--theme-dxbutton-secondary-disabled-background-color: #e0e6e8,
+	// DxCheckbox
+	$--theme-dxcheckbox-text-color: #75757a,
+	$--theme-dxcheckbox-border-color: #8a96a3,
+	$--theme-dxcheckbox-background-color: #ffffff,
+	$--theme-dxcheckbox-hover-color: #4d5061,
+	$--theme-dxcheckbox-outline-color: #aac9ff,
+	$--theme-dxcheckbox-disabled-border-color: #e8eaed,
+	// Feedback
+	$--theme-feedback-text-color: #272d2d,
+	$--theme-feedback-background-color: #ffffff,
+	$--theme-feedback-border-color: #d2d3d7,
+	// LoadingPlaceholder
+	$--theme-loadingplaceholder-text-color: #009fc7,
+	$--theme-loadingplaceholder-wave-color: #009fc7,
+	// PrivacyBanner
+	$--theme-privacybanner-background-color: #f5f8fb,
+	$--theme-privacybanner-border-color: #2f7bb1,
+	// Toolbox
+	$--theme-toolbox-background-color: #ffffff,
+	$--theme-toolbox-border-color: #c6cbd1
+);
+
+$theme-anemia-dark: (
+	// Core
+	// Original UX colors
+	// $--theme-core-text-color: #eff0f5,
+	// $--theme-core-background-color: #4d4f53,
+	// I went a shade darker to reduce the brightness of the text, retaining WCAG AAA contrast between the text and background
+	$--theme-core-text-color: #c8c8c8,
+	$--theme-core-background-color: #37383a,
+	$--theme-core-box-shadow-color: #2d2d2d,
+	$--theme-core-layout-border-color: #68686e,
+	$--theme-core-input-border-color: #ffffff,
+	$--theme-core-selection-color: #00ebd336,
+	$--theme-core-control-text-color: #c8c8c8,
+	$--theme-core-control-background-color: #0f1111,
+	$--theme-core-control-punch-color: #00ebd3,
+	$--theme-core-control-hover-background-color: #191d1d,
+	$--theme-core-control-alt-background-color: #272727,
+	$--theme-core-control-border-color: #75757a,
+	$--theme-core-control-focus-color: #1ab7ff,
+	$--theme-core-control-label-color: #def0fd,
+	$--theme-core-control-textbox-text-color: #eff0f5,
+	$--theme-core-control-textbox-background-color: #6e6e75,
+	$--theme-core-control-textbox-border-color: #c6cbd1,
+	$--theme-core-control-textbox-placeholder-text-color: #eaeaea,
+	$--theme-core-tag-background-color: #ffb3f7,
+	$--theme-core-tag-text-color: #2d2d2d,
+	$--theme-core-punch-color: #ff4f1f,
+	$--theme-core-punch-text-color: #2d2d2d,
+	$--theme-core-star-color: #fba10f,
+	$--theme-core-link-color: #00ebd3,
+	$--theme-core-link-hover-color: #00b7a4,
+	$--theme-core-code-color: #ffb3f7,
+	$--theme-core-code-background-color: #2d2d2d,
+	$--theme-core-heading-color: #c8c8c8,
+	$--theme-core-heading-seven-color: #a4eeff,
+	$--theme-core-expando-button-color: #5edbf7,
+	$--theme-core-nav-line-color: #d1dce4,
+	$--theme-core-nav-level-1-color: #eff0f5,
+	$--theme-core-nav-level-1-color-selected: #5edbf7,
+	$--theme-core-nav-level-2-color: #f5f8fb,
+	$--theme-core-nav-level-2-color-selected: #5edbf7,
+	$--theme-core-nav-level-3-color: #f5f8fb,
+	$--theme-core-nav-level-3-color-selected: #f5f8fb,
+	$--theme-core-nav-level-3-background-color-selected: #75757a,
+	$--theme-core-nav-level-4-color: #f5f8fb,
+	$--theme-core-nav-level-4-color-selected: #f5f8fb,
+	$--theme-core-nav-level-4-background-color-selected: #6b6b7c,
+	$--theme-core-scrollbar-color: #c8c8c8,
+	// AlertBlock
+	$--theme-alertblock-default-text-color: #c8c8c8,
+	$--theme-alertblock-default-background-color: #4d5061,
+	$--theme-alertblock-default-border-color: #75757a,
+	$--theme-alertblock-default-icon-color: #4d5061,
+	$--theme-alertblock-info-text-color: #c8c8c8,
+	$--theme-alertblock-info-background-color: #4d5061,
+	$--theme-alertblock-info-border-color: #5edbf7,
+	$--theme-alertblock-info-icon-color: #5edbf7,
+	$--theme-alertblock-warning-text-color: #c8c8c8,
+	$--theme-alertblock-warning-background-color: #4d5061,
+	$--theme-alertblock-warning-border-color: #fbbe3b,
+	$--theme-alertblock-warning-icon-color: #fbbe3b,
+	$--theme-alertblock-critical-text-color: #c8c8c8,
+	$--theme-alertblock-critical-background-color: #4d5061,
+	$--theme-alertblock-critical-border-color: #ff0000,
+	$--theme-alertblock-critical-icon-color: #ff0000,
+	$--theme-alertblock-success-text-color: #c8c8c8,
+	$--theme-alertblock-success-background-color: #4d5061,
+	$--theme-alertblock-success-border-color: #29bc64,
+	$--theme-alertblock-success-icon-color: #29bc64,
+	$--theme-alertblock-toast-text-color: #c8c8c8,
+	$--theme-alertblock-toast-background-color: #4d5061,
+	$--theme-alertblock-toast-border-color: #5edbf7,
+	$--theme-alertblock-toast-icon-color: #5edbf7,
+	$--theme-core-footer-background-color: #2d2d2d,
+	$--theme-core-footer-border-color: #77787b,
+	$--theme-core-footer-text-color: #c8c8c8,
+	// Card
+	// frontpage lighter palette
+	// $--theme-card-text-color: #c8c8c8,
+	// $--theme-card-background-color: #3e3e42,
+	// $--theme-card-border-color: #75757a,
+	// standard card colors
+	$--theme-card-text-color: #c8c8c8,
+	$--theme-card-background-color: #2d2d2d,
+	$--theme-card-border-color: #75757a,
+	$--theme-card-image-background-color: #75757a,
+	$--theme-card-icon-color: #ff4f1f,
+	// CodeFence
+	$--theme-codefence-header-background-color: #414249,
+	$--theme-codefence-header-text-color: #c8c8c8,
+	$--theme-codefence-background-color: #2d2d2d,
+	$--theme-codefence-border-color: #54565a,
+	// DataTable
+	$--theme-datatable-background-color: unset,
+	$--theme-datatable-text-color: #c8c8c8,
+	$--theme-datatable-border-color: #959699,
+	$--theme-datatable-filter-background-color: #2d2d2d,
+	// DxButton
+	$--theme-dxbutton-primary-background-color: #00ebd3,
+	$--theme-dxbutton-primary-text-color: #4d4f53,
+	$--theme-dxbutton-primary-shadow-color: #1ab7ff,
+	$--theme-dxbutton-primary-hover-background-color: #00b7a4,
+	$--theme-dxbutton-primary-disabled-background-color: #c1cad688,
+	$--theme-dxbutton-secondary-background-color: #4d4f53,
+	$--theme-dxbutton-secondary-border-color: #00ebd3,
+	$--theme-dxbutton-secondary-shadow-color: #aac9ff,
+	$--theme-dxbutton-secondary-hover-border-color: #00b7a4,
+	$--theme-dxbutton-secondary-disabled-text-color: #959699,
+	$--theme-dxbutton-secondary-disabled-background-color: #2d2d2d,
+	// DxCheckbox
+	$--theme-dxcheckbox-text-color: #eff0f5,
+	$--theme-dxcheckbox-border-color: #8a96a3,
+	$--theme-dxcheckbox-background-color: #ffffff,
+	$--theme-dxcheckbox-hover-color: #4d5061,
+	$--theme-dxcheckbox-outline-color: #1ab7ff,
+	$--theme-dxcheckbox-disabled-border-color: #e8eaed,
+	// Feedback
+	$--theme-feedback-text-color: #c8c8c8,
+	$--theme-feedback-background-color: #4d5061,
+	$--theme-feedback-border-color: #75757a,
+	// LoadingPlaceholder
+	$--theme-loadingplaceholder-text-color: #5edbf7,
+	$--theme-loadingplaceholder-wave-color: #5edbf7,
+	// PrivacyBanner
+	$--theme-privacybanner-background-color: #4d5061,
+	$--theme-privacybanner-border-color: #75757a,
+	// Toolbox
+	$--theme-toolbox-background-color: #2d2d2d,
+	$--theme-toolbox-border-color: #75757a
+);

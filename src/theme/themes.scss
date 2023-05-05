@@ -1,0 +1,24 @@
+/*
+ * Theme structure based on https://bcodes.io/blog/post/theming-css-variables-in-scss
+ */
+
+// Define theme variables in this file
+@import 'variables.scss';
+// Define special overrides here (e.g. for genesys-react-components)
+@import 'theme-component-overrides.scss';
+
+// writeCssVars rewrites a map of SCSS vars as CSS vars
+@mixin writeCssVars($map: ()) {
+	@each $key, $value in $map {
+		#{$key}: $value;
+	}
+}
+
+// Define each theme's class here and write its CSS vars
+.theme-anemia {
+	@include writeCssVars($theme-anemia);
+}
+
+.theme-anemia-dark {
+	@include writeCssVars($theme-anemia-dark);
+}

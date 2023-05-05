@@ -1,0 +1,8 @@
+.entry-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	.tier-entry-textbox {
+		margin: 0 5px;
+	}
+}
