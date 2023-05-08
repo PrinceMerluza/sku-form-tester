@@ -4,6 +4,7 @@ import { UsageProduct, MeteredProduct, FlatFeeProduct, OneTimeProduct, EmptyProd
 import SKUForm from './SKUForm';
 
 import './SKUFormRoot.scss';
+import { forEach } from 'jszip';
 
 const currencyList: DxItemGroupItem[] = [
 	{ label: 'AUD - Australian Dollar', value: 'AUD' },
@@ -37,7 +38,21 @@ export default function SKUFormRoot() {
 
 	const SKUList = products.map((product) => {
 		return (
-			<SKUForm key={product.id} skuId={product.id} onDelete={() => deleteSKU(product.id)} onSave={(product) => console.log(product)} />
+			<SKUForm
+				key={product.id}
+				skuId={product.id}
+				onDelete={() => deleteSKU(product.id)}
+				onSave={(newProduct) => {
+					if (!newProduct) return;
+					setProducts((oldProducts) => {
+						return oldProducts.map((prod) => {
+							if (prod.id == newProduct.id) return newProduct;
+							return prod;
+						});
+					});
+				}}
+				allProducts={products}
+			/>
 		);
 	});
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DxButton, DxTextbox } from 'genesys-react-components';
-import { BillingType, UsageProduct, MeteredProduct, FlatFeeProduct, OneTimeProduct, BillingData } from './types';
+import { BillingType, UsageProduct, MeteredProduct, FlatFeeProduct, OneTimeProduct, BillingData, EmptyProduct } from './types';
 import Validator from '../utils/validation/Validator';
 import ValidationFieldContainer from '../utils/validation/ValidationFieldContainer';
 import SKUWizard from './SKUWizard';
@@ -12,6 +12,7 @@ import './SKUForm.scss';
 interface IProps {
 	onSave: (product: UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | null | undefined) => void;
 	onDelete: () => void;
+	allProducts: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
 	skuId: string;
 	productName?: string;
 	description?: string;
@@ -107,6 +108,11 @@ export default function SKUForm(props: IProps) {
 
 					{/* Forms for different product types */}
 					{billingType == BillingType.USAGE_TYPE ? <UsageForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} /> : null}
+
+					{/* Dependency Section */}
+					<div>
+						<div>Required: </div>
+					</div>
 
 					{/* Buttons */}
 					<DxButton
