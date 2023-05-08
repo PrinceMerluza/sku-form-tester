@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DxButton, DxTextbox, DxToggle } from 'genesys-react-components';
-import ValidationFieldContainer from '../../utils/validation/ValidationFieldContainer';
-import { BillingTier, BillingData, SKU } from '../types';
+import ValidationFieldContainer from '../../../utils/validation/ValidationFieldContainer';
+import { BillingTier, BillingData, SKU } from '../../types';
 import SKUTierBillingEntry from './SKUTierBillingEntry';
 
 import './SKUTierBillingForm.scss';

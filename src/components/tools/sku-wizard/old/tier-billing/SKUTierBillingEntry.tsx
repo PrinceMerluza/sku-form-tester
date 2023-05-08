@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DxButton, DxTextbox, DxToggle } from 'genesys-react-components';
-import { BillingTier, SKU } from '../types';
+import { BillingTier, SKU } from '../../types';
 
 import './SKUTierBillingEntry.scss';
 
