@@ -1,0 +1,39 @@
+@import '../../../theme/variables.scss';
+
+.sku-editor-navigation {
+	.type-selection {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		.type-selection-options {
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+
+			.type-selection-option {
+				display: flex;
+				flex: 1 1 0px;
+				flex: 1 1 0px;
+				border: 1px solid var(--theme-core-layout-border-color);
+				border-radius: 10px;
+				margin: 0px 5px;
+				padding: 5px;
+				text-align: center;
+			}
+		}
+
+		.nav-header {
+			margin-top: 50px;
+			min-height: 72px;
+		}
+	}
+}
+
+.guide-text {
+	font-size: 24px;
+}
+
+DxTextBox.optional-item {
+	min-width: 200px;
+}

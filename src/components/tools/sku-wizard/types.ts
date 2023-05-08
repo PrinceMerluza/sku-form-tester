@@ -1,6 +1,6 @@
 export interface FormData {
 	details: GeneralDetails;
-	products: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
+	products: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
 }
 
 export interface GeneralDetails {
@@ -11,6 +11,11 @@ export interface GeneralDetails {
 	currency: string;
 }
 
+// Just for adding an empty product to the list with unknown type/config
+export interface EmptyProduct {
+	id: string; // used for providing ID to dynamic component
+}
+
 export interface UsageProduct {
 	id: string; // used for providing ID to dynamic component
 	name: string;
@@ -18,8 +23,8 @@ export interface UsageProduct {
 	type: BillingType.MIMIC | BillingType.USAGE_TYPE;
 	namedBilling: BillingData;
 	concurrentBilling: BillingData;
-	requires: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
-	optional: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
+	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
+	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
 }
 
 export interface MeteredProduct {
@@ -28,8 +33,8 @@ export interface MeteredProduct {
 	description: string;
 	type: BillingType.METERED_HIGHWATER | BillingType.METERED_SUM;
 	billing: BillingData;
-	requires: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
-	optional: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
+	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
+	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
 }
 
 export interface FlatFeeProduct {
@@ -37,8 +42,8 @@ export interface FlatFeeProduct {
 	name: string;
 	description: string;
 	billing: BillingData;
-	requires: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
-	optional: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
+	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
+	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
 }
 
 export interface OneTimeProduct {
@@ -75,4 +80,6 @@ export enum BillingType {
 	MIMIC = 'Mimic',
 	METERED_HIGHWATER = 'Metered Highwater',
 	METERED_SUM = 'Metered Sum',
+	ONE_TIME = 'One-Time Fee',
+	FLAT_FEE = 'Flat Fee',
 }
