@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DxButton, DxTextbox } from 'genesys-react-components';
+import { DxButton, DxItemGroupItem, DxTextbox, DxItemGroup, DxCheckbox } from 'genesys-react-components';
 import { BillingType, UsageProduct, MeteredProduct, FlatFeeProduct, OneTimeProduct, BillingData, EmptyProduct } from './types';
 import Validator from '../utils/validation/Validator';
 import ValidationFieldContainer from '../utils/validation/ValidationFieldContainer';
@@ -22,11 +22,15 @@ export default function SKUForm(props: IProps) {
 	const skuId = props.skuId;
 	const onDelete = props.onDelete;
 	const onSave = props.onSave;
+	const allProducts = props.allProducts;
+
 	// Product propertues
 	const [productName, setProductName] = useState<string>(props.productName || '');
 	const [productDescription, setProductDescription] = useState<string>(props.description || '');
 	const [billingType, setBillingType] = useState<BillingType>();
 	const [billingData, setBillingData] = useState<BillingData[]>([]);
+	const [requiredDeps, setRequiredDeps] = useState<(UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[]>([]);
+	const [optionalDeps, setOptionalDeps] = useState<(UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[]>([]);
 
 	// UI related
 	const [formCollapsed, setFormCollapsed] = useState<boolean>(false);
@@ -34,6 +38,12 @@ export default function SKUForm(props: IProps) {
 	const [wizardVisible, setWizardVisible] = useState<boolean>(true);
 	const [formHasErrors, setFormHasErrors] = useState<boolean>(false); // inner form for billing data
 	const [errors, setErrors] = useState<{ [key: string]: Array<string> }>({});
+
+	const productsItemGroup: DxItemGroupItem[] = allProducts
+		.filter((product) => 'name' in product)
+		.map((product) => {
+			return { label: product.name, value: product.id };
+		});
 
 	const saveSKU = () => {
 		setLockedIn(true);
@@ -46,10 +56,10 @@ export default function SKUForm(props: IProps) {
 
 	const buildProduct: () => UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | null | undefined = () => {
 		switch (billingType) {
-			case BillingType.USAGE_TYPE:
+			case BillingType.USAGE_TYPE: {
 				if (billingData.length != 2) return;
 
-				return {
+				const tmpBilling: UsageProduct = {
 					id: skuId,
 					name: productName,
 					description: productDescription,
@@ -57,6 +67,11 @@ export default function SKUForm(props: IProps) {
 					namedBilling: billingData[0],
 					concurrentBilling: billingData[1],
 				};
+				if (requiredDeps.length > 0) tmpBilling.requires = requiredDeps;
+				if (optionalDeps.length > 0) tmpBilling.optional = optionalDeps;
+
+				return tmpBilling;
+			}
 			default:
 				return null;
 		}
@@ -110,27 +125,82 @@ export default function SKUForm(props: IProps) {
 					{billingType == BillingType.USAGE_TYPE ? <UsageForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} /> : null}
 
 					{/* Dependency Section */}
-					<div>
-						<div>Required: </div>
+					<div
+						className={`dependencies-container ${
+							productsItemGroup.length > 0 && billingType !== BillingType.ONE_TIME && billingType !== undefined ? '' : 'hidden'
+						}`}
+					>
+						<h2>Dependencies</h2>
+						<div>Required Products: </div>
+						<div>
+							{productsItemGroup.map((prodItem, i) => (
+								<DxCheckbox
+									key={i}
+									label={prodItem.label}
+									itemValue={prodItem.value}
+									onCheckChanged={(checked) => {
+										const prod = allProducts.find((p) => p.id === prodItem.value);
+										if (!prod) return;
+										if (checked) {
+											setRequiredDeps((oldDeps) => {
+												return [...oldDeps, prod];
+											});
+										} else {
+											setRequiredDeps((oldDeps) => {
+												return oldDeps.filter((d) => d.id !== prod.id);
+											});
+										}
+									}}
+									disabled={prodItem.value === skuId || optionalDeps.find((dep) => dep.id === prodItem.value) !== undefined}
+								/>
+							))}
+						</div>
+						<div>Optional Products: </div>
+						<div>
+							{productsItemGroup.map((prodItem, i) => (
+								<DxCheckbox
+									key={i}
+									label={prodItem.label}
+									itemValue={prodItem.value}
+									onCheckChanged={(checked) => {
+										const prod = allProducts.find((p) => p.id === prodItem.value);
+										if (!prod) return;
+										if (checked) {
+											setOptionalDeps((oldDeps) => {
+												return [...oldDeps, prod];
+											});
+										} else {
+											setOptionalDeps((oldDeps) => {
+												return oldDeps.filter((d) => d.id !== prod.id);
+											});
+										}
+									}}
+									disabled={prodItem.value === skuId || requiredDeps.find((dep) => dep.id === prodItem.value) !== undefined}
+								/>
+							))}
+						</div>
 					</div>
 
 					{/* Buttons */}
-					<DxButton
-						disabled={Object.keys(errors).length > 0 || formHasErrors}
-						type="primary"
-						onClick={() => {
-							saveSKU();
-						}}
-					>
-						Save
-					</DxButton>
-					<DxButton type="secondary" onClick={() => onDelete()}>
-						Delete
-					</DxButton>
+					<div>
+						<DxButton
+							disabled={Object.keys(errors).length > 0 || formHasErrors}
+							type="primary"
+							onClick={() => {
+								saveSKU();
+							}}
+						>
+							Save
+						</DxButton>
+						<DxButton type="secondary" onClick={() => onDelete()}>
+							Delete
+						</DxButton>
+					</div>
 				</div>
 			</div>
 		);
 	};
+
 	return (
 		<div>
 			<div className={!lockedIn ? 'hidden' : ''}>

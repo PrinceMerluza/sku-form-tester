@@ -14,6 +14,7 @@ export interface GeneralDetails {
 // Just for adding an empty product to the list with unknown type/config
 export interface EmptyProduct {
 	id: string; // used for providing ID to dynamic component
+	[key: string]: any;
 }
 
 export interface UsageProduct {
@@ -23,8 +24,8 @@ export interface UsageProduct {
 	type: BillingType.MIMIC | BillingType.USAGE_TYPE;
 	namedBilling: BillingData;
 	concurrentBilling: BillingData;
-	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
-	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
+	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
+	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
 }
 
 export interface MeteredProduct {
@@ -33,8 +34,8 @@ export interface MeteredProduct {
 	description: string;
 	type: BillingType.METERED_HIGHWATER | BillingType.METERED_SUM;
 	billing: BillingData;
-	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
-	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
+	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
+	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
 }
 
 export interface FlatFeeProduct {
@@ -42,8 +43,8 @@ export interface FlatFeeProduct {
 	name: string;
 	description: string;
 	billing: BillingData;
-	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
-	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct)[];
+	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
+	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
 }
 
 export interface OneTimeProduct {
