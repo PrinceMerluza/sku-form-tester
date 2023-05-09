@@ -211,7 +211,7 @@ export default function SKUFormEditor(props: IProps) {
 							<ValidationFieldContainer errors={errors} name="annual-prepay">
 								<DxTextbox
 									inputType="decimal"
-									label="Annual Prepay"
+									label="Annual Prepay (per month)"
 									initialValue="0"
 									onChange={(val) => updateBillingData('annualPrepay', parseFloat(val))}
 								/>
@@ -219,7 +219,7 @@ export default function SKUFormEditor(props: IProps) {
 							<ValidationFieldContainer errors={errors} name="annual-m2m">
 								<DxTextbox
 									inputType="decimal"
-									label="Annual Month-to-month"
+									label="Annual Month-to-month (per month)"
 									initialValue="0"
 									onChange={(val) => updateBillingData('annualMonthToMonth', parseFloat(val))}
 								/>

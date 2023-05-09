@@ -53,7 +53,7 @@ export default function SKUWizard(props: IProps) {
 								onSelectedType(BillingType.FLAT_FEE);
 							}}
 						>
-							Flat Fee
+							Recurring Flat Fee
 						</DxButton>
 						<div>If you're billing on a flat fee regardless of users or usage. Commonly used for product licenses.</div>
 					</div>

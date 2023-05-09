@@ -5,9 +5,12 @@ import Validator from '../utils/validation/Validator';
 import ValidationFieldContainer from '../utils/validation/ValidationFieldContainer';
 import SKUWizard from './SKUWizard';
 import UsageForm from './billing-forms/UsageForm';
+import MeteredForm from './billing-forms/MeteredForm';
+import OneTimeForm from './billing-forms/OneTimeForm';
 import SKUFormPreview from './SKUFormPreview';
 
 import './SKUForm.scss';
+import FlatFeeForm from './billing-forms/FlatFeeForm';
 
 interface IProps {
 	onSave: (product: UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | null | undefined) => void;
@@ -24,11 +27,12 @@ export default function SKUForm(props: IProps) {
 	const onSave = props.onSave;
 	const allProducts = props.allProducts;
 
-	// Product propertues
+	// Product properties
 	const [productName, setProductName] = useState<string>(props.productName || '');
 	const [productDescription, setProductDescription] = useState<string>(props.description || '');
 	const [billingType, setBillingType] = useState<BillingType>();
 	const [billingData, setBillingData] = useState<BillingData[]>([]);
+	const [oneTimeFee, setOneTimeFee] = useState<number>(); // only used when type will be one-time fee
 	const [requiredDeps, setRequiredDeps] = useState<(UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[]>([]);
 	const [optionalDeps, setOptionalDeps] = useState<(UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[]>([]);
 
@@ -56,19 +60,61 @@ export default function SKUForm(props: IProps) {
 
 	const buildProduct: () => UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | null | undefined = () => {
 		switch (billingType) {
-			case BillingType.USAGE_TYPE: {
+			case BillingType.USAGE_TYPE:
+			case BillingType.MIMIC: {
 				if (billingData.length != 2) return;
 
 				const tmpBilling: UsageProduct = {
 					id: skuId,
 					name: productName,
 					description: productDescription,
-					type: BillingType.USAGE_TYPE,
+					type: billingType,
 					namedBilling: billingData[0],
 					concurrentBilling: billingData[1],
 				};
 				if (requiredDeps.length > 0) tmpBilling.requires = requiredDeps;
 				if (optionalDeps.length > 0) tmpBilling.optional = optionalDeps;
+
+				return tmpBilling;
+			}
+			case BillingType.METERED_HIGHWATER:
+			case BillingType.METERED_SUM: {
+				if (billingData.length != 2) return;
+
+				const tmpBilling: MeteredProduct = {
+					id: skuId,
+					name: productName,
+					description: productDescription,
+					type: billingType,
+					billing: billingData[0],
+				};
+				if (requiredDeps.length > 0) tmpBilling.requires = requiredDeps;
+				if (optionalDeps.length > 0) tmpBilling.optional = optionalDeps;
+
+				return tmpBilling;
+			}
+			case BillingType.FLAT_FEE: {
+				if (billingData.length != 2) return;
+
+				const tmpBilling: FlatFeeProduct = {
+					id: skuId,
+					name: productName,
+					description: productDescription,
+					billing: billingData[0],
+				};
+				if (requiredDeps.length > 0) tmpBilling.requires = requiredDeps;
+				if (optionalDeps.length > 0) tmpBilling.optional = optionalDeps;
+
+				return tmpBilling;
+			}
+			case BillingType.ONE_TIME: {
+				if (!oneTimeFee) return;
+				const tmpBilling: OneTimeProduct = {
+					id: skuId,
+					name: productName,
+					description: productDescription,
+					oneTimeFee: oneTimeFee,
+				};
 
 				return tmpBilling;
 			}
@@ -123,6 +169,15 @@ export default function SKUForm(props: IProps) {
 
 					{/* Forms for different product types */}
 					{billingType == BillingType.USAGE_TYPE ? <UsageForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} /> : null}
+					{billingType == BillingType.MIMIC ? <UsageForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} /> : null}
+					{billingType == BillingType.METERED_HIGHWATER ? (
+						<MeteredForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} />
+					) : null}
+					{billingType == BillingType.METERED_SUM ? (
+						<MeteredForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} />
+					) : null}
+					{billingType == BillingType.FLAT_FEE ? <FlatFeeForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} /> : null}
+					{billingType == BillingType.ONE_TIME ? <OneTimeForm setOneTimeFee={setOneTimeFee} setFormHasErrors={setFormHasErrors} /> : null}
 
 					{/* Dependency Section */}
 					<div

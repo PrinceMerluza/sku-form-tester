@@ -31,7 +31,7 @@ export default function SKUTierBillingForm(props: IProps) {
 			if (newBilling.tiers.length > 0) {
 				lastId = newBilling.tiers[newBilling.tiers.length - 1].id;
 			}
-			let newId: string = String(parseInt(lastId) + 1);
+			const newId: string = String(parseInt(lastId) + 1);
 
 			// Create a new billing tier. Automatically set the 'from' field
 			// based on the previous tier's 'to' field.
@@ -92,10 +92,9 @@ export default function SKUTierBillingForm(props: IProps) {
 	const tierList = tiers
 		? tiers.map((tier, idx) => {
 				return (
-					<ValidationFieldContainer errors={errors} name={`tier-${tier.id}`}>
+					<ValidationFieldContainer errors={errors} key={tier.id} name={`tier-${tier.id}`}>
 						<SKUTierBillingEntry
 							errors={errors}
-							key={tier.id}
 							tier={tier}
 							setTierValue={(tierVal) => updateTier(idx, tierVal)}
 							onDelete={() => deleteTier(idx)}

@@ -65,14 +65,14 @@ export default function SKUTierBillingEntry(props: IProps) {
 			<DxTextbox
 				className="tier-entry-textbox"
 				inputType="decimal"
-				label="Annual Prepay"
+				label="Annual Prepay (per month)"
 				changeDebounceMs={100}
 				onChange={(val) => updateAnnualPrepay(parseFloat(val))}
 			/>
 			<DxTextbox
 				className="tier-entry-textbox"
 				inputType="decimal"
-				label="Annual Month-to-month"
+				label="Annual Month-to-month (per month)"
 				changeDebounceMs={100}
 				onChange={(val) => updateAnnualM2M(parseFloat(val))}
 			/>

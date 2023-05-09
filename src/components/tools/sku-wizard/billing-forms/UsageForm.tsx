@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ValidationFieldContainer from '../../utils/validation/ValidationFieldContainer';
 import { DxTextbox, DxToggle } from 'genesys-react-components';
 import SKUTierBillingForm from './tier-billing/SKUTierBillingForm';
-import { BillingData, UsageProduct, MeteredProduct, FlatFeeProduct, OneTimeProduct } from '../types';
+import { BillingData } from '../types';
 import Validator from '../../utils/validation/Validator';
 
 interface IProps {
@@ -130,7 +130,7 @@ export default function UsageForm(props: IProps) {
 								<ValidationFieldContainer errors={errors} name="named-annual-prepay">
 									<DxTextbox
 										inputType="decimal"
-										label="Annual Prepay"
+										label="Annual Prepay (per month)"
 										initialValue="0"
 										onChange={(val) => updateNamedBillingData('annualPrepay', parseFloat(val))}
 									/>
@@ -138,7 +138,7 @@ export default function UsageForm(props: IProps) {
 								<ValidationFieldContainer errors={errors} name="named-annual-m2m">
 									<DxTextbox
 										inputType="decimal"
-										label="Annual Month-to-month"
+										label="Annual Month-to-month (per month)"
 										initialValue="0"
 										onChange={(val) => updateNamedBillingData('annualMonthToMonth', parseFloat(val))}
 									/>
@@ -183,7 +183,7 @@ export default function UsageForm(props: IProps) {
 								<ValidationFieldContainer errors={errors} name="conc-annual-prepay">
 									<DxTextbox
 										inputType="decimal"
-										label="Annual Prepay"
+										label="Annual Prepay (per month)"
 										initialValue="0"
 										onChange={(val) => updateConcBillingData('annualPrepay', parseFloat(val))}
 									/>
@@ -191,7 +191,7 @@ export default function UsageForm(props: IProps) {
 								<ValidationFieldContainer errors={errors} name="conc-annual-m2m">
 									<DxTextbox
 										inputType="decimal"
-										label="Annual Month-to-month"
+										label="Annual Month-to-month (per month)"
 										initialValue="0"
 										onChange={(val) => updateConcBillingData('annualMonthToMonth', parseFloat(val))}
 									/>
