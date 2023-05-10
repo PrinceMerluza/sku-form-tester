@@ -2,6 +2,8 @@
 }
 
 .add-product {
+	display: flex;
+	justify-content: center;
 	.hidden {
 		display: none;
 	}

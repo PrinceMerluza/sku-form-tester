@@ -32,16 +32,41 @@ const fxRate: { [key: string]: number } = {
 
 export default function SKUFormRoot() {
 	const [products, setProducts] = useState<(UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[]>([]);
+	const [formsSavedStatus, setFormsSavedStatus] = useState<{ [key: string]: boolean }>({}); // Tracks if SKU forms are saved
 	const [addProductEnabled, setAddProductEnabled] = useState<boolean>(true);
 	const [currency, setCurrency] = useState<string>('USD');
 	const [errors, setErrors] = useState<{ [key: string]: Array<string> }>({});
 
+	const setFormStatus = (id: string, val: boolean) => {
+		setFormsSavedStatus((oldStatus) => {
+			const tmpObj = Object.assign({}, oldStatus);
+			tmpObj[id] = val;
+
+			return tmpObj;
+		});
+	};
+
 	const SKUList = products.map((product) => {
+		// Make sure that all sku  forms have an entry in the formSavedStatus
+		if (formsSavedStatus[product.id] === undefined) {
+			setFormStatus(product.id, false);
+		}
+
 		return (
 			<SKUForm
 				key={product.id}
 				skuId={product.id}
-				onDelete={() => deleteSKU(product.id)}
+				onDelete={() => {
+					deleteSKU(product.id);
+
+					// delete the savestatus entry as well
+					setFormsSavedStatus((oldStatus) => {
+						const tmpObj = Object.assign({}, oldStatus);
+						delete tmpObj[product.id];
+
+						return tmpObj;
+					});
+				}}
 				onSave={(newProduct) => {
 					if (!newProduct) return;
 					setProducts((oldProducts) => {
@@ -50,6 +75,11 @@ export default function SKUFormRoot() {
 							return prod;
 						});
 					});
+
+					setFormStatus(product.id, true);
+				}}
+				onEdit={() => {
+					setFormStatus(product.id, false);
 				}}
 				allProducts={products}
 			/>
@@ -99,6 +129,26 @@ export default function SKUFormRoot() {
 					}}
 				>
 					Add Product
+				</DxButton>
+				<DxButton
+					type="primary"
+					onClick={() => {
+						console.log('xxxxx');
+					}}
+					disabled={
+						(() => {
+							let allSaved = true;
+							console.log('a');
+							products
+								.filter((prod) => formsSavedStatus[prod.id] !== undefined)
+								.forEach((prod) => {
+									if (!formsSavedStatus[prod.id]) allSaved = false;
+								});
+							return !allSaved;
+						})() || products.length === 0
+					}
+				>
+					Finalize SKUs
 				</DxButton>
 			</div>
 		</div>

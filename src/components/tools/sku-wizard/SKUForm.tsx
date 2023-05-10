@@ -15,6 +15,7 @@ import FlatFeeForm from './billing-forms/FlatFeeForm';
 interface IProps {
 	onSave: (product: UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | null | undefined) => void;
 	onDelete: () => void;
+	onEdit: () => void;
 	allProducts: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
 	skuId: string;
 	productName?: string;
@@ -58,6 +59,7 @@ export default function SKUForm(props: IProps) {
 		setFormCollapsed((formCollapsed) => !formCollapsed);
 	};
 
+	// When save is pressed, it will build the actual Product object from the individual states
 	const buildProduct: () => UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | null | undefined = () => {
 		switch (billingType) {
 			case BillingType.USAGE_TYPE:
@@ -79,7 +81,7 @@ export default function SKUForm(props: IProps) {
 			}
 			case BillingType.METERED_HIGHWATER:
 			case BillingType.METERED_SUM: {
-				if (billingData.length != 2) return;
+				if (billingData.length != 1) return;
 
 				const tmpBilling: MeteredProduct = {
 					id: skuId,
@@ -132,7 +134,7 @@ export default function SKUForm(props: IProps) {
 						toggleCollapse();
 					}}
 				>
-					{productName}
+					{productName || `Entry ${skuId}`}
 				</div>
 				<div className={`skuform-body ${formCollapsed ? 'collapsed' : ''}`}>
 					<ValidationFieldContainer errors={errors} name="product-name">
@@ -179,14 +181,14 @@ export default function SKUForm(props: IProps) {
 					{billingType == BillingType.FLAT_FEE ? <FlatFeeForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} /> : null}
 					{billingType == BillingType.ONE_TIME ? <OneTimeForm setOneTimeFee={setOneTimeFee} setFormHasErrors={setFormHasErrors} /> : null}
 
-					{/* Dependency Section */}
+					{/* Add-Ons Section */}
 					<div
 						className={`dependencies-container ${
 							productsItemGroup.length > 0 && billingType !== BillingType.ONE_TIME && billingType !== undefined ? '' : 'hidden'
 						}`}
 					>
-						<h2>Dependencies</h2>
-						<div>Required Products: </div>
+						<h2>Add-Ons</h2>
+						<div>Required Add-Ons: </div>
 						<div>
 							{productsItemGroup.map((prodItem, i) => (
 								<DxCheckbox
@@ -210,7 +212,7 @@ export default function SKUForm(props: IProps) {
 								/>
 							))}
 						</div>
-						<div>Optional Products: </div>
+						<div>Optional Add-ons: </div>
 						<div>
 							{productsItemGroup.map((prodItem, i) => (
 								<DxCheckbox
@@ -239,7 +241,7 @@ export default function SKUForm(props: IProps) {
 					{/* Buttons */}
 					<div>
 						<DxButton
-							disabled={Object.keys(errors).length > 0 || formHasErrors}
+							disabled={Object.keys(errors).length > 0 || formHasErrors || !(productName && productDescription && billingType)}
 							type="primary"
 							onClick={() => {
 								saveSKU();
@@ -259,7 +261,13 @@ export default function SKUForm(props: IProps) {
 	return (
 		<div>
 			<div className={!lockedIn ? 'hidden' : ''}>
-				<SKUFormPreview onEdit={() => setLockedIn(false)} product={buildProduct()} />
+				<SKUFormPreview
+					onEdit={() => {
+						setLockedIn(false);
+						props.onEdit();
+					}}
+					product={buildProduct()}
+				/>
 			</div>
 			<div className={lockedIn ? 'hidden' : ''}>{getForm()}</div>
 		</div>
