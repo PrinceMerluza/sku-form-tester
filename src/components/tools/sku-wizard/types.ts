@@ -57,11 +57,14 @@ export interface OneTimeProduct {
 export interface BillingData {
 	annualPrepay: number;
 	annualMonthToMonth: number;
-	unitOfMeasure?: string;
-	monthToMonth?: number;
+
+	unitOfMeasure?: string; // for metered apps
+	monthToMonth?: number; // used for metered apps instead of annuals
+
+	minMonthlyCommit?: number;
 	useTiers?: boolean;
 	tiers?: BillingTier[];
-	[key: string]: any;
+	[key: string]: any; // for updating state method
 }
 
 export interface BillingTier {

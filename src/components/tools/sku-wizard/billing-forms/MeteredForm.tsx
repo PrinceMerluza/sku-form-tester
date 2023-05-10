@@ -40,7 +40,7 @@ export default function MeteredForm(props: IProps) {
 		annualPrepay: 0,
 		annualMonthToMonth: 0,
 	});
-	const [m2mEnabled, setM2mEnabled] = useState<boolean | undefined>(false);
+	const [hasMonthlyCommit, setHasMonthlyCommit] = useState<boolean | undefined>(false);
 	const [useTieredBilling, setUseTieredBilling] = useState<boolean | undefined>(false);
 	const [unitOfMeasure, setUnitOfMeasure] = useState<string>(UnitOfMeasure.UNIT);
 
@@ -121,8 +121,8 @@ export default function MeteredForm(props: IProps) {
 								</ValidationFieldContainer>
 							</div>
 						)}
-						{/* <div className="optional-fee-container">
-							<DxToggle label="Enable Month to Month Billing" value={m2mEnabled} onChange={(val) => setM2mEnabled(val)} />
+						<div className="optional-fee-container">
+							{/* <DxToggle label="Enable Month to Month Billing" value={m2mEnabled} onChange={(val) => setM2mEnabled(val)} />
 							{m2mEnabled ? (
 								<ValidationFieldContainer errors={errors} name="named-m2m">
 									<DxTextbox
@@ -133,8 +133,22 @@ export default function MeteredForm(props: IProps) {
 										onChange={(val) => updateLocalBillingData('monthToMonth', parseFloat(val))}
 									/>
 								</ValidationFieldContainer>
-							) : null}
-						</div> */}
+							) : null} */}
+							<div>
+								<DxToggle label="Set Monthly Commit" value={hasMonthlyCommit} onChange={(val) => setHasMonthlyCommit(val)} />
+								{hasMonthlyCommit ? (
+									<ValidationFieldContainer errors={errors} name="monthly-commit">
+										<DxTextbox
+											inputType="decimal"
+											label="Monthly Commit"
+											initialValue="0"
+											className="optional-item"
+											onChange={(val) => updateLocalBillingData('minMonthlyCommit', parseFloat(val))}
+										/>
+									</ValidationFieldContainer>
+								) : null}
+							</div>
+						</div>
 					</div>
 					{/* =========== TIERED BILLING ===========	*/}
 					<div>

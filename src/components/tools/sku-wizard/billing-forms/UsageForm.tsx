@@ -13,6 +13,8 @@ interface IProps {
 export default function UsageForm(props: IProps) {
 	const setBillingData = props.setBillingData;
 	const setFormHasErrors = props.setFormHasErrors;
+	const [errors, setErrors] = useState<{ [key: string]: Array<string> }>({});
+
 	// Named Billing
 	const [namedBillingData, setNamedBillingData] = useState<BillingData>({
 		annualPrepay: 0,
@@ -20,6 +22,8 @@ export default function UsageForm(props: IProps) {
 	});
 	const [namedM2mEnabled, setNamedM2mEnabled] = useState<boolean | undefined>(false);
 	const [namedUseTieredBilling, setNamedUseTieredBilling] = useState<boolean | undefined>(false);
+	const [namedHasMonthlyCommit, setNamedHasMonthlyCommit] = useState<boolean | undefined>(false);
+
 	// Concurrent Billing
 	const [concBillingData, setConcBillingData] = useState<BillingData>({
 		annualPrepay: 0,
@@ -27,7 +31,7 @@ export default function UsageForm(props: IProps) {
 	});
 	const [concM2mEnabled, setConcM2mEnabled] = useState<boolean | undefined>(false);
 	const [concUseTieredBilling, setConcUseTieredBilling] = useState<boolean | undefined>(false);
-	const [errors, setErrors] = useState<{ [key: string]: Array<string> }>({});
+	const [concHasMonthlyCommit, setConcHasMonthlyCommit] = useState<boolean | undefined>(false);
 
 	// VALIDATION
 	useEffect(() => {
@@ -146,18 +150,34 @@ export default function UsageForm(props: IProps) {
 							</div>
 						)}
 						<div className="optional-fee-container">
-							<DxToggle label="Enable Month to Month Billing" value={namedM2mEnabled} onChange={(val) => setNamedM2mEnabled(val)} />
-							{namedM2mEnabled ? (
-								<ValidationFieldContainer errors={errors} name="named-m2m">
-									<DxTextbox
-										inputType="decimal"
-										label="Month-to-month"
-										initialValue="0"
-										className="optional-item"
-										onChange={(val) => updateNamedBillingData('monthToMonth', parseFloat(val))}
-									/>
-								</ValidationFieldContainer>
-							) : null}
+							<div>
+								<DxToggle label="Enable Month to Month Billing" value={namedM2mEnabled} onChange={(val) => setNamedM2mEnabled(val)} />
+								{namedM2mEnabled ? (
+									<ValidationFieldContainer errors={errors} name="named-m2m">
+										<DxTextbox
+											inputType="decimal"
+											label="Month-to-month"
+											initialValue="0"
+											className="optional-item"
+											onChange={(val) => updateNamedBillingData('monthToMonth', parseFloat(val))}
+										/>
+									</ValidationFieldContainer>
+								) : null}
+							</div>
+							<div>
+								<DxToggle label="Set Monthly Commit" value={namedHasMonthlyCommit} onChange={(val) => setNamedHasMonthlyCommit(val)} />
+								{namedHasMonthlyCommit ? (
+									<ValidationFieldContainer errors={errors} name="named-monthly-commit">
+										<DxTextbox
+											inputType="decimal"
+											label="Monthly Commit"
+											initialValue="0"
+											className="optional-item"
+											onChange={(val) => updateNamedBillingData('minMonthlyCommit', parseFloat(val))}
+										/>
+									</ValidationFieldContainer>
+								) : null}
+							</div>
 						</div>
 					</div>
 					{/* =========== TIERED BILLING ===========	*/}
@@ -199,18 +219,34 @@ export default function UsageForm(props: IProps) {
 							</div>
 						)}
 						<div className="optional-fee-container">
-							<DxToggle label="Enable Month to Month Billing" value={concM2mEnabled} onChange={(val) => setConcM2mEnabled(val)} />
-							{concM2mEnabled ? (
-								<ValidationFieldContainer errors={errors} name="conc-m2m">
-									<DxTextbox
-										inputType="decimal"
-										label="Month-to-month"
-										initialValue="0"
-										className="optional-item"
-										onChange={(val) => updateConcBillingData('monthToMonth', parseFloat(val))}
-									/>
-								</ValidationFieldContainer>
-							) : null}
+							<div>
+								<DxToggle label="Enable Month to Month Billing" value={concM2mEnabled} onChange={(val) => setConcM2mEnabled(val)} />
+								{concM2mEnabled ? (
+									<ValidationFieldContainer errors={errors} name="conc-m2m">
+										<DxTextbox
+											inputType="decimal"
+											label="Month-to-month"
+											initialValue="0"
+											className="optional-item"
+											onChange={(val) => updateConcBillingData('monthToMonth', parseFloat(val))}
+										/>
+									</ValidationFieldContainer>
+								) : null}
+							</div>
+							<div>
+								<DxToggle label="Set Monthly Commit" value={concHasMonthlyCommit} onChange={(val) => setConcHasMonthlyCommit(val)} />
+								{concHasMonthlyCommit ? (
+									<ValidationFieldContainer errors={errors} name="conc-monthly-commit">
+										<DxTextbox
+											inputType="decimal"
+											label="Monthly Commit"
+											initialValue="0"
+											className="optional-item"
+											onChange={(val) => updateConcBillingData('minMonthlyCommit', parseFloat(val))}
+										/>
+									</ValidationFieldContainer>
+								) : null}
+							</div>
 						</div>
 					</div>
 					{/* =========== TIERED BILLING ===========	*/}

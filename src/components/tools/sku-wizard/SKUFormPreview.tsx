@@ -5,7 +5,7 @@ import { UsageProduct, MeteredProduct, FlatFeeProduct, OneTimeProduct, BillingTy
 import './SKUFormPreview.scss';
 
 interface IProps {
-	billingType: BillingType;
+	billingType: BillingType | undefined;
 	product: UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | null | undefined;
 	onEdit: () => void;
 }
