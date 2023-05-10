@@ -36,6 +36,7 @@ export default function SKUForm(props: IProps) {
 	const [oneTimeFee, setOneTimeFee] = useState<number>(); // only used when type will be one-time fee
 	const [requiredDeps, setRequiredDeps] = useState<(UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[]>([]);
 	const [optionalDeps, setOptionalDeps] = useState<(UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[]>([]);
+	const [notes, setNotes] = useState<string>('');
 
 	// UI related
 	const [formCollapsed, setFormCollapsed] = useState<boolean>(false);
@@ -76,6 +77,7 @@ export default function SKUForm(props: IProps) {
 				};
 				if (requiredDeps.length > 0) tmpBilling.requires = requiredDeps;
 				if (optionalDeps.length > 0) tmpBilling.optional = optionalDeps;
+				if (notes.length > 0) tmpBilling.notes = notes;
 
 				return tmpBilling;
 			}
@@ -92,6 +94,7 @@ export default function SKUForm(props: IProps) {
 				};
 				if (requiredDeps.length > 0) tmpBilling.requires = requiredDeps;
 				if (optionalDeps.length > 0) tmpBilling.optional = optionalDeps;
+				if (notes.length > 0) tmpBilling.notes = notes;
 
 				return tmpBilling;
 			}
@@ -107,6 +110,7 @@ export default function SKUForm(props: IProps) {
 				};
 				if (requiredDeps.length > 0) tmpBilling.requires = requiredDeps;
 				if (optionalDeps.length > 0) tmpBilling.optional = optionalDeps;
+				if (notes.length > 0) tmpBilling.notes = notes;
 
 				return tmpBilling;
 			}
@@ -119,6 +123,7 @@ export default function SKUForm(props: IProps) {
 					type: BillingType.ONE_TIME,
 					oneTimeFee: oneTimeFee,
 				};
+				if (notes.length > 0) tmpBilling.notes = notes;
 
 				return tmpBilling;
 			}
@@ -193,51 +198,66 @@ export default function SKUForm(props: IProps) {
 						<div>Required Add-Ons: </div>
 						<div>
 							{productsItemGroup.map((prodItem, i) => (
-								<DxCheckbox
-									key={i}
-									label={prodItem.label}
-									itemValue={prodItem.value}
-									onCheckChanged={(checked) => {
-										const prod = allProducts.find((p) => p.id === prodItem.value);
-										if (!prod) return;
-										if (checked) {
-											setRequiredDeps((oldDeps) => {
-												return [...oldDeps, prod];
-											});
-										} else {
-											setRequiredDeps((oldDeps) => {
-												return oldDeps.filter((d) => d.id !== prod.id);
-											});
-										}
-									}}
-									disabled={prodItem.value === skuId || optionalDeps.find((dep) => dep.id === prodItem.value) !== undefined}
-								/>
+								<div className={`chk-addon-item ${prodItem.value === skuId ? 'hidden' : ''}`}>
+									<DxCheckbox
+										key={i}
+										label={prodItem.label}
+										itemValue={prodItem.value}
+										onCheckChanged={(checked) => {
+											const prod = allProducts.find((p) => p.id === prodItem.value);
+											if (!prod) return;
+											if (checked) {
+												setRequiredDeps((oldDeps) => {
+													return [...oldDeps, prod];
+												});
+											} else {
+												setRequiredDeps((oldDeps) => {
+													return oldDeps.filter((d) => d.id !== prod.id);
+												});
+											}
+										}}
+										disabled={prodItem.value === skuId || optionalDeps.find((dep) => dep.id === prodItem.value) !== undefined}
+									/>
+								</div>
 							))}
 						</div>
 						<div>Optional Add-ons: </div>
 						<div>
 							{productsItemGroup.map((prodItem, i) => (
-								<DxCheckbox
-									key={i}
-									label={prodItem.label}
-									itemValue={prodItem.value}
-									onCheckChanged={(checked) => {
-										const prod = allProducts.find((p) => p.id === prodItem.value);
-										if (!prod) return;
-										if (checked) {
-											setOptionalDeps((oldDeps) => {
-												return [...oldDeps, prod];
-											});
-										} else {
-											setOptionalDeps((oldDeps) => {
-												return oldDeps.filter((d) => d.id !== prod.id);
-											});
-										}
-									}}
-									disabled={prodItem.value === skuId || requiredDeps.find((dep) => dep.id === prodItem.value) !== undefined}
-								/>
+								<div className={`chk-addon-item ${prodItem.value === skuId ? 'hidden' : ''}`}>
+									<DxCheckbox
+										key={i}
+										label={prodItem.label}
+										itemValue={prodItem.value}
+										onCheckChanged={(checked) => {
+											const prod = allProducts.find((p) => p.id === prodItem.value);
+											if (!prod) return;
+											if (checked) {
+												setOptionalDeps((oldDeps) => {
+													return [...oldDeps, prod];
+												});
+											} else {
+												setOptionalDeps((oldDeps) => {
+													return oldDeps.filter((d) => d.id !== prod.id);
+												});
+											}
+										}}
+										disabled={prodItem.value === skuId || requiredDeps.find((dep) => dep.id === prodItem.value) !== undefined}
+									/>
+								</div>
 							))}
 						</div>
+					</div>
+
+					{/* Notes Section */}
+					<div className={`notes-container ${billingType !== undefined ? '' : 'hidden'}`}>
+						<DxTextbox
+							inputType="textarea"
+							label="Additional Notes"
+							clearButton={true}
+							onChange={(value: string) => setNotes(value)}
+							description="Other information you may want to add on this product"
+						/>
 					</div>
 
 					{/* Buttons */}

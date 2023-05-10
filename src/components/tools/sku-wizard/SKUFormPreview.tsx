@@ -91,7 +91,15 @@ export default function SKUFormPreview(props: IProps) {
 							<div>
 								<strong>Concurrent User Billing:</strong>
 							</div>
-							{!product.concurrentBilling.useTiers ? regularBillingUI(product.concurrentBilling) : null}
+							{!product.concurrentBilling.useTiers
+								? regularBillingUI(product.concurrentBilling)
+								: tieredBillingUI(product.concurrentBilling.tiers)}
+						</div>
+					) : null}
+
+					{product.notes ? (
+						<div>
+							<strong>Notes:</strong> {product.notes}
 						</div>
 					) : null}
 					<DxButton type="primary" onClick={() => props.onEdit()}>

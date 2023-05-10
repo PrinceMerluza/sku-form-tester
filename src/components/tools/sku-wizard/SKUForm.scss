@@ -6,7 +6,7 @@
 	margin: 20px;
 
 	.skuform-header {
-		padding: 10px;
+		padding: 15px;
 		background-color: var($--theme-alertblock-info-background-color);
 		color: var($--theme-alertblock-info-text-color);
 		cursor: pointer;
@@ -14,7 +14,7 @@
 	}
 
 	.skuform-body {
-		padding: 10px;
+		padding: 18px;
 
 		&.collapsed {
 			display: none;
@@ -35,10 +35,4 @@
 
 .hidden {
 	display: none;
-}
-
-.dependencies-container {
-	.hidden {
-		display: none;
-	}
 }

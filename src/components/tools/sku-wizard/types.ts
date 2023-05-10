@@ -26,6 +26,7 @@ export interface UsageProduct {
 	concurrentBilling: BillingData;
 	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
 	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
+	notes?: string;
 }
 
 export interface MeteredProduct {
@@ -36,6 +37,7 @@ export interface MeteredProduct {
 	billing: BillingData;
 	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
 	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
+	notes?: string;
 }
 
 export interface FlatFeeProduct {
@@ -46,6 +48,7 @@ export interface FlatFeeProduct {
 	billing: BillingData;
 	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
 	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
+	notes?: string;
 }
 
 export interface OneTimeProduct {
@@ -54,6 +57,7 @@ export interface OneTimeProduct {
 	description: string;
 	type: BillingType.ONE_TIME;
 	oneTimeFee: number;
+	notes?: string;
 }
 
 export interface BillingData {
