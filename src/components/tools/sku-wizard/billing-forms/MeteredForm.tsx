@@ -114,22 +114,14 @@ export default function MeteredForm(props: IProps) {
 								<ValidationFieldContainer errors={errors} name="named-annual-prepay">
 									<DxTextbox
 										inputType="decimal"
-										label={`Annual Prepay (per ${unitOfMeasure})`}
+										label={`Month-to-month (per ${unitOfMeasure})`}
 										initialValue="0"
-										onChange={(val) => updateLocalBillingData('annualPrepay', parseFloat(val))}
-									/>
-								</ValidationFieldContainer>
-								<ValidationFieldContainer errors={errors} name="named-annual-m2m">
-									<DxTextbox
-										inputType="decimal"
-										label={`Annual Month-to-month (per ${unitOfMeasure})`}
-										initialValue="0"
-										onChange={(val) => updateLocalBillingData('annualMonthToMonth', parseFloat(val))}
+										onChange={(val) => updateLocalBillingData('monthToMonth', parseFloat(val))}
 									/>
 								</ValidationFieldContainer>
 							</div>
 						)}
-						<div className="optional-fee-container">
+						{/* <div className="optional-fee-container">
 							<DxToggle label="Enable Month to Month Billing" value={m2mEnabled} onChange={(val) => setM2mEnabled(val)} />
 							{m2mEnabled ? (
 								<ValidationFieldContainer errors={errors} name="named-m2m">
@@ -142,7 +134,7 @@ export default function MeteredForm(props: IProps) {
 									/>
 								</ValidationFieldContainer>
 							) : null}
-						</div>
+						</div> */}
 					</div>
 					{/* =========== TIERED BILLING ===========	*/}
 					<div>
