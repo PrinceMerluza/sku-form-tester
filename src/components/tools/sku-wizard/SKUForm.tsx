@@ -96,7 +96,7 @@ export default function SKUForm(props: IProps) {
 				return tmpBilling;
 			}
 			case BillingType.FLAT_FEE: {
-				if (billingData.length != 2) return;
+				if (billingData.length != 1) return;
 
 				const tmpBilling: FlatFeeProduct = {
 					id: skuId,
