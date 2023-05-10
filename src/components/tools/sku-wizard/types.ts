@@ -42,6 +42,7 @@ export interface FlatFeeProduct {
 	id: string; // used for providing ID to dynamic component
 	name: string;
 	description: string;
+	type: BillingType.FLAT_FEE;
 	billing: BillingData;
 	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
 	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
@@ -51,6 +52,7 @@ export interface OneTimeProduct {
 	id: string; // used for providing ID to dynamic component
 	name: string;
 	description: string;
+	type: BillingType.ONE_TIME;
 	oneTimeFee: number;
 }
 

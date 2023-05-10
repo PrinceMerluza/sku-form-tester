@@ -151,7 +151,14 @@ export default function UsageForm(props: IProps) {
 						)}
 						<div className="optional-fee-container">
 							<div>
-								<DxToggle label="Enable Month to Month Billing" value={namedM2mEnabled} onChange={(val) => setNamedM2mEnabled(val)} />
+								<DxToggle
+									label="Enable Month to Month Billing"
+									value={namedM2mEnabled}
+									onChange={(val) => {
+										setNamedM2mEnabled(val);
+										if (!val) updateNamedBillingData('monthToMonth', null);
+									}}
+								/>
 								{namedM2mEnabled ? (
 									<ValidationFieldContainer errors={errors} name="named-m2m">
 										<DxTextbox
@@ -220,7 +227,14 @@ export default function UsageForm(props: IProps) {
 						)}
 						<div className="optional-fee-container">
 							<div>
-								<DxToggle label="Enable Month to Month Billing" value={concM2mEnabled} onChange={(val) => setConcM2mEnabled(val)} />
+								<DxToggle
+									label="Enable Month to Month Billing"
+									value={concM2mEnabled}
+									onChange={(val) => {
+										setConcM2mEnabled(val);
+										if (!val) updateConcBillingData('monthToMonth', null);
+									}}
+								/>
 								{concM2mEnabled ? (
 									<ValidationFieldContainer errors={errors} name="conc-m2m">
 										<DxTextbox

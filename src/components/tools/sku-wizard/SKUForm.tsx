@@ -102,6 +102,7 @@ export default function SKUForm(props: IProps) {
 					id: skuId,
 					name: productName,
 					description: productDescription,
+					type: BillingType.FLAT_FEE,
 					billing: billingData[0],
 				};
 				if (requiredDeps.length > 0) tmpBilling.requires = requiredDeps;
@@ -115,6 +116,7 @@ export default function SKUForm(props: IProps) {
 					id: skuId,
 					name: productName,
 					description: productDescription,
+					type: BillingType.ONE_TIME,
 					oneTimeFee: oneTimeFee,
 				};
 
@@ -127,7 +129,7 @@ export default function SKUForm(props: IProps) {
 
 	const getForm = () => {
 		return (
-			<div className={'skuform-container'}>
+			<div className={'skuform-editable-container'}>
 				<div
 					className={'skuform-header'}
 					onClick={() => {
@@ -259,7 +261,7 @@ export default function SKUForm(props: IProps) {
 	};
 
 	return (
-		<div>
+		<div className="skuform-container">
 			<div className={!lockedIn ? 'hidden' : ''}>
 				<SKUFormPreview
 					onEdit={() => {

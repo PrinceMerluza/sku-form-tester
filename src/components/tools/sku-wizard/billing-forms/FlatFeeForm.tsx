@@ -95,7 +95,14 @@ export default function FlatFeeForm(props: IProps) {
 							</div>
 						)}
 						<div className="optional-fee-container">
-							<DxToggle label="Enable Month to Month Billing" value={m2mEnabled} onChange={(val) => setM2mEnabled(val)} />
+							<DxToggle
+								label="Enable Month to Month Billing"
+								value={m2mEnabled}
+								onChange={(val) => {
+									setM2mEnabled(val);
+									if (!val) updateLocalBillingData('monthToMonth', null);
+								}}
+							/>
 							{m2mEnabled ? (
 								<ValidationFieldContainer errors={errors} name="named-m2m">
 									<DxTextbox
