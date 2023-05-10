@@ -84,3 +84,25 @@ export enum BillingType {
 	ONE_TIME = 'One-Time Fee',
 	FLAT_FEE = 'Flat Fee',
 }
+
+// based on billing-billable-apps/src/BillableAppUnitOfMeasureTypes.js
+export enum UnitOfMeasure {
+	CHARACTER = 'character',
+	DIGITAL_INTERACTION = 'digital-interaction',
+	EVENT = 'event',
+	GB = 'gb',
+	HOUR = 'hour',
+	INSTANCE = 'instance',
+	INVOCATION = 'invocation',
+	LICENSE = 'license',
+	MINUTE = 'minute',
+	REQUEST = 'request',
+	SECOND = 'second',
+	SEGMENT = 'segment',
+	STREAM = 'stream',
+	TRANSACTION = 'transaction',
+	UNIT = 'unit',
+	USAGE = 'usage',
+	USER = 'user',
+	WEB_VISIT = 'web-visit',
+}

@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { DxButton, DxTextbox, DxToggle } from 'genesys-react-components';
-import { UsageProduct, MeteredProduct, FlatFeeProduct, OneTimeProduct } from './types';
+import { UsageProduct, MeteredProduct, FlatFeeProduct, OneTimeProduct, BillingType } from './types';
 
 import './SKUFormPreview.scss';
 
 interface IProps {
+	billingType: BillingType;
 	product: UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | null | undefined;
 	onEdit: () => void;
 }
 
 export default function SKUFormPreview(props: IProps) {
 	const product = props.product;
+	const billingType = props.billingType;
 	return (
 		<div className="sku-preview-container">
 			{product ? (
@@ -20,6 +22,9 @@ export default function SKUFormPreview(props: IProps) {
 					</div>
 					<div>
 						<strong>Description:</strong> {product.description}
+					</div>
+					<div>
+						<strong>Type:</strong> {billingType}
 					</div>
 
 					<DxButton type="primary" onClick={() => props.onEdit()}>

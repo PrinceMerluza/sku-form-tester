@@ -267,6 +267,7 @@ export default function SKUForm(props: IProps) {
 						props.onEdit();
 					}}
 					product={buildProduct()}
+					billingType={billingType}
 				/>
 			</div>
 			<div className={lockedIn ? 'hidden' : ''}>{getForm()}</div>

@@ -4,11 +4,34 @@ import { DxTextbox, DxToggle } from 'genesys-react-components';
 import SKUTierBillingForm from './tier-billing/SKUTierBillingForm';
 import { BillingData } from '../types';
 import Validator from '../../utils/validation/Validator';
+import { UnitOfMeasure } from '../types';
+import { DxItemGroupItem, DxItemGroup } from 'genesys-react-components';
 
 interface IProps {
 	setBillingData: React.Dispatch<React.SetStateAction<BillingData[]>>;
 	setFormHasErrors: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+const unitsOfMeasure: DxItemGroupItem[] = [
+	{ label: 'Character', value: UnitOfMeasure.CHARACTER },
+	{ label: 'Digital Interaction', value: UnitOfMeasure.DIGITAL_INTERACTION },
+	{ label: 'Event', value: UnitOfMeasure.EVENT },
+	{ label: 'GB', value: UnitOfMeasure.GB },
+	{ label: 'Hour', value: UnitOfMeasure.HOUR },
+	{ label: 'Instance', value: UnitOfMeasure.INSTANCE },
+	{ label: 'Invocation', value: UnitOfMeasure.INVOCATION },
+	{ label: 'License', value: UnitOfMeasure.LICENSE },
+	{ label: 'Minute', value: UnitOfMeasure.MINUTE },
+	{ label: 'Request', value: UnitOfMeasure.REQUEST },
+	{ label: 'Second', value: UnitOfMeasure.SECOND },
+	{ label: 'Segment', value: UnitOfMeasure.SEGMENT },
+	{ label: 'Stream', value: UnitOfMeasure.STREAM },
+	{ label: 'Transaction', value: UnitOfMeasure.TRANSACTION },
+	{ label: 'Unit', value: UnitOfMeasure.UNIT, isSelected: true },
+	{ label: 'Usage', value: UnitOfMeasure.USAGE },
+	{ label: 'User', value: UnitOfMeasure.USER },
+	{ label: 'Web Visit', value: UnitOfMeasure.WEB_VISIT },
+];
 
 export default function MeteredForm(props: IProps) {
 	const setBillingData = props.setBillingData;
@@ -19,6 +42,7 @@ export default function MeteredForm(props: IProps) {
 	});
 	const [m2mEnabled, setM2mEnabled] = useState<boolean | undefined>(false);
 	const [useTieredBilling, setUseTieredBilling] = useState<boolean | undefined>(false);
+	const [unitOfMeasure, setUnitOfMeasure] = useState<string>(UnitOfMeasure.UNIT);
 
 	const [errors, setErrors] = useState<{ [key: string]: Array<string> }>({});
 
@@ -75,12 +99,22 @@ export default function MeteredForm(props: IProps) {
 				<div className="named-portion">
 					<h2>Metered Billing</h2>
 					<div>
+						<DxItemGroup
+							title="Unit of Measurement"
+							items={unitsOfMeasure}
+							format="dropdown"
+							onItemChanged={(item, isSelected) => {
+								if (isSelected) setUnitOfMeasure(item.value);
+							}}
+						/>
+					</div>
+					<div>
 						{useTieredBilling ? null : (
 							<div>
 								<ValidationFieldContainer errors={errors} name="named-annual-prepay">
 									<DxTextbox
 										inputType="decimal"
-										label="Annual Prepay (per month)"
+										label={`Annual Prepay (per ${unitOfMeasure})`}
 										initialValue="0"
 										onChange={(val) => updateLocalBillingData('annualPrepay', parseFloat(val))}
 									/>
@@ -88,7 +122,7 @@ export default function MeteredForm(props: IProps) {
 								<ValidationFieldContainer errors={errors} name="named-annual-m2m">
 									<DxTextbox
 										inputType="decimal"
-										label="Annual Month-to-month (per month)"
+										label={`Annual Month-to-month (per ${unitOfMeasure})`}
 										initialValue="0"
 										onChange={(val) => updateLocalBillingData('annualMonthToMonth', parseFloat(val))}
 									/>
