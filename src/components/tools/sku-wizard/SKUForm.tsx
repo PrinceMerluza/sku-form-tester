@@ -27,6 +27,7 @@ export default function SKUForm(props: IProps) {
 	const skuId = props.skuId;
 	const onDelete = props.onDelete;
 	const onSave = props.onSave;
+
 	const addons = props.allProducts.filter((p) => p.isAddOn);
 	const isAddon = props.isAddOn;
 
@@ -204,9 +205,8 @@ export default function SKUForm(props: IProps) {
 								<div>Required Add-Ons: </div>
 								<div>
 									{productsItemGroup.map((prodItem, i) => (
-										<div className={`chk-addon-item ${prodItem.value === skuId ? 'hidden' : ''}`}>
+										<div key={i} className={`chk-addon-item ${prodItem.value === skuId ? 'hidden' : ''}`}>
 											<DxCheckbox
-												key={i}
 												label={prodItem.label}
 												itemValue={prodItem.value}
 												onCheckChanged={(checked) => {
@@ -230,9 +230,8 @@ export default function SKUForm(props: IProps) {
 								<div>Optional Add-ons: </div>
 								<div>
 									{productsItemGroup.map((prodItem, i) => (
-										<div className={`chk-addon-item ${prodItem.value === skuId ? 'hidden' : ''}`}>
+										<div key={i} className={`chk-addon-item ${prodItem.value === skuId ? 'hidden' : ''}`}>
 											<DxCheckbox
-												key={i}
 												label={prodItem.label}
 												itemValue={prodItem.value}
 												onCheckChanged={(checked) => {

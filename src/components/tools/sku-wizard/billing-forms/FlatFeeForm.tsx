@@ -72,7 +72,7 @@ export default function FlatFeeForm(props: IProps) {
 		return (
 			<div>
 				<div className="named-portion">
-					<h2>Recurring Flat Fee</h2>
+					<h2>Recurring License Fee</h2>
 					<div>
 						{useTieredBilling ? null : (
 							<div>
