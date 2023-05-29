@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { DxButton, DxTextbox, DxToggle } from 'genesys-react-components';
-import { UsageProduct, MeteredProduct, FlatFeeProduct, OneTimeProduct, BillingType, BillingData, BillingTier } from './types';
+import { UsageProduct, MeteredProduct, FlatFeeProduct, BillingType, BillingData, BillingTier } from './types';
 
 import './SKUFormPreview.scss';
 
 interface IProps {
 	billingType: BillingType | undefined;
-	product: UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | null | undefined;
+	product: UsageProduct | MeteredProduct | FlatFeeProduct | null | undefined;
 	onEdit: () => void;
 }
 

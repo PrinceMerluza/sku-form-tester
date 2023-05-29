@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DxButton, DxTextbox, DxItemGroup, DxItemGroupItem } from 'genesys-react-components';
-import { UsageProduct, MeteredProduct, FlatFeeProduct, OneTimeProduct, EmptyProduct } from './types';
+import { UsageProduct, MeteredProduct, FlatFeeProduct, EmptyProduct } from './types';
 import SKUForm from './SKUForm';
 import ValidationFieldContainer from '../utils/validation/ValidationFieldContainer';
 import Validator from '../utils/validation/Validator';
@@ -32,7 +32,7 @@ const fxRate: { [key: string]: number } = {
 };
 
 export default function SKUFormRoot() {
-	const [products, setProducts] = useState<(UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[]>([]);
+	const [products, setProducts] = useState<(UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[]>([]);
 	const [formsSavedStatus, setFormsSavedStatus] = useState<{ [key: string]: boolean }>({}); // Tracks if SKU forms are saved
 	const [addProductEnabled, setAddProductEnabled] = useState<boolean>(true);
 	const [currency, setCurrency] = useState<string>('USD');

@@ -1,6 +1,6 @@
 export interface FormData {
 	details: GeneralDetails;
-	products: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
+	products: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
 }
 
 export interface GeneralDetails {
@@ -24,8 +24,9 @@ export interface UsageProduct {
 	type: BillingType.MIMIC | BillingType.USAGE_TYPE;
 	namedBilling: BillingData;
 	concurrentBilling: BillingData;
-	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
-	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
+	startupFee?: StartUpFee;
+	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
+	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
 	notes?: string;
 }
 
@@ -35,8 +36,9 @@ export interface MeteredProduct {
 	description: string;
 	type: BillingType.METERED_HIGHWATER | BillingType.METERED_SUM;
 	billing: BillingData;
-	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
-	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
+	startupFee?: StartUpFee;
+	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
+	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
 	notes?: string;
 }
 
@@ -46,18 +48,17 @@ export interface FlatFeeProduct {
 	description: string;
 	type: BillingType.FLAT_FEE;
 	billing: BillingData;
-	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
-	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
+	startupFee?: StartUpFee;
+	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
+	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
 	notes?: string;
 }
 
-export interface OneTimeProduct {
-	id: string; // used for providing ID to dynamic component
+export interface StartUpFee {
 	name: string;
 	description: string;
-	type: BillingType.ONE_TIME;
 	oneTimeFee: number;
-	notes?: string;
+	required: boolean;
 }
 
 export interface BillingData {

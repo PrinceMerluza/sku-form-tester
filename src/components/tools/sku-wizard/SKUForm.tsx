@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { DxButton, DxItemGroupItem, DxTextbox, DxItemGroup, DxCheckbox } from 'genesys-react-components';
-import { BillingType, UsageProduct, MeteredProduct, FlatFeeProduct, OneTimeProduct, BillingData, EmptyProduct } from './types';
+import { BillingType, UsageProduct, MeteredProduct, FlatFeeProduct, BillingData, EmptyProduct, StartUpFee } from './types';
 import Validator from '../utils/validation/Validator';
 import ValidationFieldContainer from '../utils/validation/ValidationFieldContainer';
 import SKUWizard from './SKUWizard';
 import UsageForm from './billing-forms/UsageForm';
 import MeteredForm from './billing-forms/MeteredForm';
-import OneTimeForm from './billing-forms/OneTimeForm';
+import OneTimeForm from './billing-forms/one-time-fee/OneTimeForm';
 import SKUFormPreview from './SKUFormPreview';
 
 import './SKUForm.scss';
 import FlatFeeForm from './billing-forms/FlatFeeForm';
 
 interface IProps {
-	onSave: (product: UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | null | undefined) => void;
+	onSave: (product: UsageProduct | MeteredProduct | FlatFeeProduct | null | undefined) => void;
 	onDelete: () => void;
 	onEdit: () => void;
-	allProducts: (UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[];
+	allProducts: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
 	skuId: string;
 	productName?: string;
 	description?: string;
@@ -33,9 +33,9 @@ export default function SKUForm(props: IProps) {
 	const [productDescription, setProductDescription] = useState<string>(props.description || '');
 	const [billingType, setBillingType] = useState<BillingType>();
 	const [billingData, setBillingData] = useState<BillingData[]>([]);
-	const [oneTimeFee, setOneTimeFee] = useState<number>(); // only used when type will be one-time fee
-	const [requiredDeps, setRequiredDeps] = useState<(UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[]>([]);
-	const [optionalDeps, setOptionalDeps] = useState<(UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | EmptyProduct)[]>([]);
+	const [oneTimeFee, setOneTimeFee] = useState<StartUpFee>(); // only used when type will be one-time fee
+	const [requiredDeps, setRequiredDeps] = useState<(UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[]>([]);
+	const [optionalDeps, setOptionalDeps] = useState<(UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[]>([]);
 	const [notes, setNotes] = useState<string>('');
 
 	// UI related
@@ -61,7 +61,7 @@ export default function SKUForm(props: IProps) {
 	};
 
 	// When save is pressed, it will build the actual Product object from the individual states
-	const buildProduct: () => UsageProduct | MeteredProduct | FlatFeeProduct | OneTimeProduct | null | undefined = () => {
+	const buildProduct: () => UsageProduct | MeteredProduct | FlatFeeProduct | null | undefined = () => {
 		switch (billingType) {
 			case BillingType.USAGE_TYPE:
 			case BillingType.MIMIC: {
@@ -114,19 +114,6 @@ export default function SKUForm(props: IProps) {
 
 				return tmpBilling;
 			}
-			case BillingType.ONE_TIME: {
-				if (!oneTimeFee) return;
-				const tmpBilling: OneTimeProduct = {
-					id: skuId,
-					name: productName,
-					description: productDescription,
-					type: BillingType.ONE_TIME,
-					oneTimeFee: oneTimeFee,
-				};
-				if (notes.length > 0) tmpBilling.notes = notes;
-
-				return tmpBilling;
-			}
 			default:
 				return null;
 		}
@@ -144,6 +131,18 @@ export default function SKUForm(props: IProps) {
 					{productName || `Base Product ${skuId}`}
 				</div>
 				<div className={`skuform-body ${formCollapsed ? 'collapsed' : ''}`}>
+					{/* Wizard Navigation */}
+					{wizardVisible ? (
+						<SKUWizard
+							onSelectedType={(billingType) => {
+								setWizardVisible(false);
+								setBillingType(billingType);
+							}}
+							setOneTimeFee={setOneTimeFee}
+						/>
+					) : null}
+
+					{/* Product name and Description */}
 					{billingType ? (
 						<div>
 							<ValidationFieldContainer errors={errors} name="product-name">
@@ -171,13 +170,12 @@ export default function SKUForm(props: IProps) {
 						</div>
 					) : null}
 
-					{wizardVisible ? (
-						<SKUWizard
-							onSelectedType={(billingType) => {
-								setWizardVisible(false);
-								setBillingType(billingType);
-							}}
-						/>
+					{/* Quick Start Fee */}
+					{billingType && oneTimeFee ? (
+						<div>
+							<hr />
+							<OneTimeForm oneTimeFee={oneTimeFee} setOneTimeFee={setOneTimeFee} />
+						</div>
 					) : null}
 
 					{/* Forms for different product types */}
@@ -190,7 +188,6 @@ export default function SKUForm(props: IProps) {
 						<MeteredForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} />
 					) : null}
 					{billingType == BillingType.FLAT_FEE ? <FlatFeeForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} /> : null}
-					{billingType == BillingType.ONE_TIME ? <OneTimeForm setOneTimeFee={setOneTimeFee} setFormHasErrors={setFormHasErrors} /> : null}
 
 					{/* Add-Ons Section */}
 					<div

@@ -4,6 +4,7 @@ import { DxTextbox, DxToggle } from 'genesys-react-components';
 import SKUTierBillingForm from './tier-billing/SKUTierBillingForm';
 import { BillingData } from '../types';
 import Validator from '../../utils/validation/Validator';
+import './UsageForm.scss';
 
 interface IProps {
 	setBillingData: React.Dispatch<React.SetStateAction<BillingData[]>>;
@@ -125,7 +126,7 @@ export default function UsageForm(props: IProps) {
 
 	const getAmountsForm = () => {
 		return (
-			<div>
+			<div className="portions-container">
 				<hr />
 				<div className="named-portion">
 					<h2>Named Users Billing</h2>
@@ -284,5 +285,5 @@ export default function UsageForm(props: IProps) {
 		);
 	};
 
-	return <div>{getAmountsForm()}</div>;
+	return <div className="usage-form-container">{getAmountsForm()}</div>;
 }

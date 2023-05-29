@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { DxButton, DxItemGroupItem } from 'genesys-react-components';
-import { BillingType } from './types';
+import { BillingType, StartUpFee } from './types';
 
 import './SKUWizard.scss';
 
 interface IProps {
 	onSelectedType: (bilingType: BillingType) => void;
+	setOneTimeFee: React.Dispatch<React.SetStateAction<StartUpFee | undefined>>;
 }
 
 enum Page {
@@ -13,6 +14,7 @@ enum Page {
 	USAGE_TYPE,
 	METERED_TYPE,
 	MIMIC_TYPE,
+	SETUP_FEE,
 	AMOUNTS,
 }
 
@@ -24,6 +26,8 @@ enum Page {
  */
 export default function SKUWizard(props: IProps) {
 	const onSelectedType = props.onSelectedType;
+	const setOneTimeFee = props.setOneTimeFee;
+	const [tempType, setTempType] = useState<BillingType | null>();
 	const [activePage, setActivePage] = useState<Page>(Page.APP_TYPE);
 
 	// First page of billing type selection
@@ -50,7 +54,8 @@ export default function SKUWizard(props: IProps) {
 						<DxButton
 							type="primary"
 							onClick={() => {
-								onSelectedType(BillingType.FLAT_FEE);
+								setTempType(BillingType.FLAT_FEE);
+								navigateTo(Page.SETUP_FEE);
 							}}
 						>
 							Recurring License
@@ -76,7 +81,8 @@ export default function SKUWizard(props: IProps) {
 						<DxButton
 							type="primary"
 							onClick={() => {
-								onSelectedType(BillingType.USAGE_TYPE);
+								setTempType(BillingType.USAGE_TYPE);
+								navigateTo(Page.SETUP_FEE);
 							}}
 						>
 							Permission Based
@@ -90,7 +96,8 @@ export default function SKUWizard(props: IProps) {
 						<DxButton
 							type="primary"
 							onClick={() => {
-								onSelectedType(BillingType.MIMIC);
+								setTempType(BillingType.MIMIC);
+								navigateTo(Page.SETUP_FEE);
 							}}
 						>
 							Per Agent Seat (Mimic)
@@ -116,7 +123,8 @@ export default function SKUWizard(props: IProps) {
 						<DxButton
 							type="primary"
 							onClick={() => {
-								onSelectedType(BillingType.METERED_SUM);
+								setTempType(BillingType.METERED_SUM);
+								navigateTo(Page.SETUP_FEE);
 							}}
 						>
 							Metered Sum Usage
@@ -127,12 +135,89 @@ export default function SKUWizard(props: IProps) {
 						<DxButton
 							type="primary"
 							onClick={() => {
-								onSelectedType(BillingType.METERED_HIGHWATER);
+								setTempType(BillingType.METERED_HIGHWATER);
+								navigateTo(Page.SETUP_FEE);
 							}}
 						>
 							Metered High Water Mark
 						</DxButton>
 						<div>Ideal for unit types without much fluctation such as Wallboards</div>
+					</div>
+				</div>
+			</div>
+		);
+	};
+
+	const getSetupFeeSelection = () => {
+		return (
+			<div className="type-selection">
+				<div className="nav-header">
+					<DxButton type="primary" onClick={() => navigateTo(Page.APP_TYPE)}>
+						Back
+					</DxButton>
+					<span className="guide-text">Would you like to add a one-time setup fee?</span>
+				</div>
+				<div className="type-selection-options">
+					<div className="type-selection-option">
+						<DxButton
+							type="primary"
+							onClick={() => {
+								if (!tempType) {
+									console.error('billing type not set');
+									return;
+								}
+								onSelectedType(tempType);
+							}}
+						>
+							No Setup Fee
+						</DxButton>
+						<div>No setup fee. Bill the product itself regularly.</div>
+					</div>
+					<div className="type-selection-option">
+						<DxButton
+							type="primary"
+							onClick={() => {
+								if (!tempType) {
+									console.error('billing type not set');
+									return;
+								}
+
+								setOneTimeFee({
+									name: '',
+									description: '',
+									oneTimeFee: 0,
+									required: true,
+								});
+
+								onSelectedType(tempType);
+							}}
+						>
+							Required Setup Fee
+						</DxButton>
+						<div>The setup-fee will be required for purchasing the product.</div>
+					</div>
+					<div className="type-selection-option">
+						<DxButton
+							type="primary"
+							onClick={() => {
+								if (!tempType) {
+									console.error('billing type not set');
+									return;
+								}
+
+								setOneTimeFee({
+									name: '',
+									description: '',
+									oneTimeFee: 0,
+									required: false,
+								});
+
+								onSelectedType(tempType);
+							}}
+						>
+							Optional Setup Fee
+						</DxButton>
+						<div>The setup-fee will show as an optional add-on for the produt listing.</div>
 					</div>
 				</div>
 			</div>
@@ -148,6 +233,7 @@ export default function SKUWizard(props: IProps) {
 			{activePage === Page.APP_TYPE ? getAppTypeSelection() : null}
 			{activePage === Page.USAGE_TYPE ? getUsageTypeSelection() : null}
 			{activePage === Page.METERED_TYPE ? getMeteredTypeSelection() : null}
+			{activePage === Page.SETUP_FEE ? getSetupFeeSelection() : null}
 		</div>
 	);
 }
