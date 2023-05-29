@@ -6,6 +6,7 @@ import { BillingData } from '../types';
 import Validator from '../../utils/validation/Validator';
 import { UnitOfMeasure } from '../types';
 import { DxItemGroupItem, DxItemGroup } from 'genesys-react-components';
+import './BillingForm.scss';
 
 interface IProps {
 	setBillingData: React.Dispatch<React.SetStateAction<BillingData[]>>;
@@ -153,7 +154,7 @@ export default function MeteredForm(props: IProps) {
 					{/* =========== TIERED BILLING ===========	*/}
 					<div>
 						<DxToggle
-							label="Use Tiered Billing"
+							label="Enable Volume Discounts"
 							value={useTieredBilling}
 							onChange={(val) => {
 								setUseTieredBilling(val);

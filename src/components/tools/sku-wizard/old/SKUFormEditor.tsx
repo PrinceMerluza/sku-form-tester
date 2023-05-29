@@ -57,7 +57,7 @@ export default function SKUFormEditor(props: IProps) {
 		return (
 			<div className="type-selection">
 				<div className="nav-header">
-					<span className="guide-text">How would you like to bill this product?</span>
+					<span className="guide-text">Select a billing method</span>
 				</div>
 				<div className="type-selection-options">
 					<div className="type-selection-option">
@@ -88,7 +88,7 @@ export default function SKUFormEditor(props: IProps) {
 					<DxButton type="primary" onClick={() => navigateTo(Page.APP_TYPE)}>
 						Back
 					</DxButton>
-					<span className="guide-text">How would you like to bill this product?</span>
+					<span className="guide-text">Select a billing method</span>
 				</div>
 				<div className="type-selection-options">
 					<div className="type-selection-option">
@@ -124,7 +124,7 @@ export default function SKUFormEditor(props: IProps) {
 					<DxButton type="primary" onClick={() => navigateTo(Page.APP_TYPE)}>
 						Back
 					</DxButton>
-					<span className="guide-text">How would you like to bill this product?</span>
+					<span className="guide-text">Select a billing method</span>
 				</div>
 				<div className="type-selection-options">
 					<div className="type-selection-option">
@@ -163,7 +163,7 @@ export default function SKUFormEditor(props: IProps) {
 					<DxButton type="primary" onClick={() => navigateTo(Page.APP_TYPE)}>
 						Back
 					</DxButton>
-					<span className="guide-text">How would you like to bill this product?</span>
+					<span className="guide-text">Select a billing method</span>
 				</div>
 				<div className="type-selection-options">
 					<div className="type-selection-option">
@@ -258,7 +258,7 @@ export default function SKUFormEditor(props: IProps) {
 				{/* =========== TIERED BILLING ===========	*/}
 				<div>
 					<DxToggle
-						label="Use Tiered Billing"
+						label="Enable Volume Discounts"
 						value={useTieredBilling}
 						onChange={(val) => {
 							setUseTieredBilling(val);

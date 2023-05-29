@@ -31,7 +31,7 @@ export default function SKUWizard(props: IProps) {
 		return (
 			<div className="type-selection">
 				<div className="nav-header">
-					<span className="guide-text">How would you like to bill this product?</span>
+					<span className="guide-text">Select a billing method</span>
 				</div>
 				<div className="type-selection-options">
 					<div className="type-selection-option">
@@ -53,22 +53,9 @@ export default function SKUWizard(props: IProps) {
 								onSelectedType(BillingType.FLAT_FEE);
 							}}
 						>
-							Recurring Flat Fee
+							Recurring License
 						</DxButton>
-						<div>If you're billing on a flat fee regardless of users or usage. Commonly used for product licenses.</div>
-					</div>
-					<div className="type-selection-option">
-						<DxButton
-							type="primary"
-							onClick={() => {
-								onSelectedType(BillingType.ONE_TIME);
-							}}
-						>
-							One Time Fee
-						</DxButton>
-						<div>
-							One-time fee is used for Quick-start or setup fees. The product needs to be linked via required or optional dependecy.
-						</div>
+						<div>You will be charging a flat fee regardless of users or usage.</div>
 					</div>
 				</div>
 			</div>
@@ -82,7 +69,7 @@ export default function SKUWizard(props: IProps) {
 					<DxButton type="primary" onClick={() => navigateTo(Page.APP_TYPE)}>
 						Back
 					</DxButton>
-					<span className="guide-text">How would you like to bill this product?</span>
+					<span className="guide-text">Select a billing method</span>
 				</div>
 				<div className="type-selection-options">
 					<div className="type-selection-option">
@@ -122,7 +109,7 @@ export default function SKUWizard(props: IProps) {
 					<DxButton type="primary" onClick={() => navigateTo(Page.APP_TYPE)}>
 						Back
 					</DxButton>
-					<span className="guide-text">How would you like to bill this product?</span>
+					<span className="guide-text">Select a billing method</span>
 				</div>
 				<div className="type-selection-options">
 					<div className="type-selection-option">

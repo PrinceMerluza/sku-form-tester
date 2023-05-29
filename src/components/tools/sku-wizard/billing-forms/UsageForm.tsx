@@ -4,6 +4,7 @@ import { DxTextbox, DxToggle } from 'genesys-react-components';
 import SKUTierBillingForm from './tier-billing/SKUTierBillingForm';
 import { BillingData } from '../types';
 import Validator from '../../utils/validation/Validator';
+import './BillingForm.scss';
 
 interface IProps {
 	setBillingData: React.Dispatch<React.SetStateAction<BillingData[]>>;
@@ -126,6 +127,7 @@ export default function UsageForm(props: IProps) {
 	const getAmountsForm = () => {
 		return (
 			<div>
+				<hr />
 				<div className="named-portion">
 					<h2>Named Users Billing</h2>
 					<div>
@@ -190,7 +192,7 @@ export default function UsageForm(props: IProps) {
 					{/* =========== TIERED BILLING ===========	*/}
 					<div>
 						<DxToggle
-							label="Use Tiered Billing"
+							label="Enable Volume Discounts"
 							value={namedUseTieredBilling}
 							onChange={(val) => {
 								setNamedUseTieredBilling(val);
@@ -202,6 +204,7 @@ export default function UsageForm(props: IProps) {
 						) : null}
 					</div>
 				</div>
+				<hr />
 				<div className="concurrent-portion">
 					<h2>Concurrent Users Billing</h2>
 					<div>
@@ -266,7 +269,7 @@ export default function UsageForm(props: IProps) {
 					{/* =========== TIERED BILLING ===========	*/}
 					<div>
 						<DxToggle
-							label="Use Tiered Billing"
+							label="Enable Volume Discounts"
 							value={concUseTieredBilling}
 							onChange={(val) => {
 								setConcUseTieredBilling(val);

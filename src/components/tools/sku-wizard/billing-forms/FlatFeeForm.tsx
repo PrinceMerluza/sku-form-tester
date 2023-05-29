@@ -4,6 +4,7 @@ import { DxTextbox, DxToggle } from 'genesys-react-components';
 import SKUTierBillingForm from './tier-billing/SKUTierBillingForm';
 import { BillingData } from '../types';
 import Validator from '../../utils/validation/Validator';
+import './BillingForm.scss';
 
 interface IProps {
 	setBillingData: React.Dispatch<React.SetStateAction<BillingData[]>>;
@@ -119,7 +120,7 @@ export default function FlatFeeForm(props: IProps) {
 					{/* =========== TIERED BILLING ===========	*/}
 					{/* <div>
 						<DxToggle
-							label="Use Tiered Billing"
+							label="Enable Volume Discounts"
 							value={useTieredBilling}
 							onChange={(val) => {
 								setUseTieredBilling(val);

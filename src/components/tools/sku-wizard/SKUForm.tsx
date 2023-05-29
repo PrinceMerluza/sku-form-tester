@@ -141,31 +141,35 @@ export default function SKUForm(props: IProps) {
 						toggleCollapse();
 					}}
 				>
-					{productName || `Entry ${skuId}`}
+					{productName || `Base Product ${skuId}`}
 				</div>
 				<div className={`skuform-body ${formCollapsed ? 'collapsed' : ''}`}>
-					<ValidationFieldContainer errors={errors} name="product-name">
-						<DxTextbox
-							inputType="text"
-							label="Product Name"
-							clearButton={true}
-							value={productName}
-							onChange={(newValue) => {
-								setProductName(newValue);
-							}}
-						/>
-					</ValidationFieldContainer>
-					<ValidationFieldContainer errors={errors} name="product-description">
-						<DxTextbox
-							inputType="text"
-							label="Product Description"
-							clearButton={true}
-							value={productDescription}
-							onChange={(newValue) => {
-								setProductDescription(newValue);
-							}}
-						/>
-					</ValidationFieldContainer>
+					{billingType ? (
+						<div>
+							<ValidationFieldContainer errors={errors} name="product-name">
+								<DxTextbox
+									inputType="text"
+									label="Product Name"
+									clearButton={true}
+									value={productName}
+									onChange={(newValue) => {
+										setProductName(newValue);
+									}}
+								/>
+							</ValidationFieldContainer>
+							<ValidationFieldContainer errors={errors} name="product-description">
+								<DxTextbox
+									inputType="text"
+									label="Product Description"
+									clearButton={true}
+									value={productDescription}
+									onChange={(newValue) => {
+										setProductDescription(newValue);
+									}}
+								/>
+							</ValidationFieldContainer>
+						</div>
+					) : null}
 
 					{wizardVisible ? (
 						<SKUWizard

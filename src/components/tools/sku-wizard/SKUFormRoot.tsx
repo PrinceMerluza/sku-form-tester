@@ -6,7 +6,6 @@ import ValidationFieldContainer from '../utils/validation/ValidationFieldContain
 import Validator from '../utils/validation/Validator';
 
 import './SKUFormRoot.scss';
-import { forEach } from 'jszip';
 
 const currencyList: DxItemGroupItem[] = [
 	{ label: 'AUD - Australian Dollar', value: 'AUD' },
@@ -58,6 +57,18 @@ export default function SKUFormRoot() {
 		setErrors(newErrors);
 	}, [subNotificationEmail, salesLeadEmail, productTOS, quoteNotes, currency]);
 
+	useEffect(() => {
+		if (products.length === 0) {
+			setProducts(() => {
+				return [
+					{
+						id: '1',
+					},
+				];
+			});
+		}
+	}, [products]);
+
 	const setFormStatus = (id: string, val: boolean) => {
 		setFormsSavedStatus((oldStatus) => {
 			const tmpObj = Object.assign({}, oldStatus);
@@ -67,6 +78,7 @@ export default function SKUFormRoot() {
 		});
 	};
 
+	// Contains the SKUform for each base product
 	const SKUList = products.map((product) => {
 		// Make sure that all sku  forms have an entry in the formSavedStatus
 		if (formsSavedStatus[product.id] === undefined) {
@@ -183,7 +195,7 @@ export default function SKUFormRoot() {
 	return (
 		<div className="sku-form-root">
 			<div className={`editing-page ${onContactsPage ? 'hidden' : ''}`}>
-				<div>
+				{/* <div>
 					<DxItemGroup
 						title="Currency"
 						items={currencyList}
@@ -193,7 +205,7 @@ export default function SKUFormRoot() {
 						}}
 					/>
 					<div>{`FxRate: ${currency}/USD = ${fxRate[currency]}`}</div>
-				</div>
+				</div> */}
 				<div>{SKUList}</div>
 				<div className={`add-product ${addProductEnabled ? '' : 'hidden'}`}>
 					<DxButton
@@ -202,7 +214,7 @@ export default function SKUFormRoot() {
 							addSKU();
 						}}
 					>
-						Add Product
+						Add a Base Product
 					</DxButton>
 					<DxButton
 						type="primary"
