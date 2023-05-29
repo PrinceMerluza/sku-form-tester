@@ -16,3 +16,23 @@ hr {
 	background-color: #ccc;
 	border: none;
 }
+
+.temp-info-box {
+	margin: 40px 0;
+	padding: 20px;
+	border: 1px solid #03646e;
+	border-radius: 5px;
+	background-color: #e2ecee;
+}
+
+.tab-container {
+	display: flex;
+	.tab {
+		padding: 8px;
+		cursor: pointer;
+	}
+	.active {
+		border-bottom: 2px solid #419bb2;
+		font-weight: bold;
+	}
+}

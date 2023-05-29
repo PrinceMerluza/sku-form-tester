@@ -28,6 +28,7 @@ export interface UsageProduct {
 	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
 	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
 	notes?: string;
+	isAddOn?: boolean;
 }
 
 export interface MeteredProduct {
@@ -40,6 +41,7 @@ export interface MeteredProduct {
 	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
 	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
 	notes?: string;
+	isAddOn?: boolean;
 }
 
 export interface FlatFeeProduct {
@@ -52,6 +54,7 @@ export interface FlatFeeProduct {
 	requires?: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
 	optional?: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
 	notes?: string;
+	isAddOn?: boolean;
 }
 
 export interface StartUpFee {

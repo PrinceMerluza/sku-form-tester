@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DxButton, DxTextbox, DxItemGroup, DxItemGroupItem } from 'genesys-react-components';
+import { DxButton, DxTextbox, DxItemGroup, DxItemGroupItem, DxTabbedContent, DxTabPanel } from 'genesys-react-components';
 import { UsageProduct, MeteredProduct, FlatFeeProduct, EmptyProduct } from './types';
 import SKUForm from './SKUForm';
 import ValidationFieldContainer from '../utils/validation/ValidationFieldContainer';
@@ -44,6 +44,10 @@ export default function SKUFormRoot() {
 	const [quoteNotes, setQuoteNotes] = useState<string>();
 	const [onContactsPage, setOnContactsPage] = useState<boolean>(false);
 	const [errors, setErrors] = useState<{ [key: string]: Array<string> }>({});
+
+	// Tabbing beahvior
+	const [baseProductsVisible, setBaseProductsVisible] = useState<boolean>(true);
+	const [addonsVisible, setAddonsVisible] = useState<boolean>(false);
 
 	// Vadidation
 	useEffect(() => {
@@ -194,8 +198,32 @@ export default function SKUFormRoot() {
 
 	return (
 		<div className="sku-form-root">
-			<div className={`editing-page ${onContactsPage ? 'hidden' : ''}`}>
-				{/* <div>
+			{/* Tabs. */}
+			<div className="tab-container">
+				<div
+					className={`tab ${baseProductsVisible ? 'active' : ''}`}
+					onClick={() => {
+						setBaseProductsVisible(true);
+						setAddonsVisible(false);
+					}}
+				>
+					Base Products
+				</div>
+				<div
+					className={`tab ${addonsVisible ? 'active' : ''}`}
+					onClick={() => {
+						setBaseProductsVisible(false);
+						setAddonsVisible(true);
+					}}
+				>
+					Add-ons
+				</div>
+			</div>
+
+			{/* Base products Page */}
+			<div className={`base-products-container ${baseProductsVisible ? '' : 'hidden'}`}>
+				<div className={`editing-page ${onContactsPage ? 'hidden' : ''}`}>
+					{/* <div>
 					<DxItemGroup
 						title="Currency"
 						items={currencyList}
@@ -206,38 +234,62 @@ export default function SKUFormRoot() {
 					/>
 					<div>{`FxRate: ${currency}/USD = ${fxRate[currency]}`}</div>
 				</div> */}
-				<div>{SKUList}</div>
-				<div className={`add-product ${addProductEnabled ? '' : 'hidden'}`}>
-					<DxButton
-						type="primary"
-						onClick={() => {
-							addSKU();
-						}}
-					>
-						Add a Base Product
-					</DxButton>
-					<DxButton
-						type="primary"
-						onClick={() => {
-							setOnContactsPage(true);
-						}}
-						disabled={
-							(() => {
-								let allSaved = true;
-								console.log('a');
-								products
-									.filter((prod) => formsSavedStatus[prod.id] !== undefined)
-									.forEach((prod) => {
-										if (!formsSavedStatus[prod.id]) allSaved = false;
-									});
-								return !allSaved;
-							})() || products.length === 0
-						}
-					>
-						Finalize SKUs
-					</DxButton>
+					<div>{SKUList}</div>
+					<div className={`add-product ${addProductEnabled ? '' : 'hidden'}`}>
+						<DxButton
+							type="primary"
+							onClick={() => {
+								addSKU();
+							}}
+						>
+							Add a Base Product
+						</DxButton>
+						<DxButton
+							type="primary"
+							onClick={() => {
+								setOnContactsPage(true);
+							}}
+							disabled={
+								(() => {
+									let allSaved = true;
+									console.log('a');
+									products
+										.filter((prod) => formsSavedStatus[prod.id] !== undefined)
+										.forEach((prod) => {
+											if (!formsSavedStatus[prod.id]) allSaved = false;
+										});
+									return !allSaved;
+								})() || products.length === 0
+							}
+						>
+							Finalize SKUs
+						</DxButton>
+					</div>
 				</div>
 			</div>
+
+			{/* Add-ons Page */}
+			<div className={`addons-container ${addonsVisible ? '' : 'hidden'}`}>
+				<div className="temp-info-box">
+					<p>
+						<strong>Please Read</strong>
+					</p>
+					<p>Simple products may not need any add-ons.</p>
+					<p>
+						Add-ons provide a way to add billable items that can be attached to your base products. They can be either{' '}
+						<strong>required</strong> or <strong>optional</strong>. A base product can have none or multiple add-ons and add-ons can be
+						added to multiple base products.
+					</p>
+					<p>Some use cases include:</p>
+					<ul>
+						<li>Billing a required license along with the product.</li>
+						<li>Adding optional features to the base product for additional billing.</li>
+						<li>Adding a feature that's billed differently than the base product. (Meter-billed feature for a usage-based product)</li>
+					</ul>
+				</div>
+			</div>
+
+			{/* Contacts Page */}
 			<div className={`contacts-page ${onContactsPage ? '' : 'hidden'}`}>{getContactsForm()}</div>
 		</div>
 	);
