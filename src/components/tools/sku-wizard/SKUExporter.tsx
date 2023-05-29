@@ -289,5 +289,5 @@ export async function exportData(formData: SKUFormData) {
 
 	// Download zip
 	const content = await zip.generateAsync({ type: 'blob' });
-	FileSaver.saveAs(content, `premium-app-{{app_id}}.zip`);
+	FileSaver.saveAs(content, `premium-app-billing-data.zip`);
 }
