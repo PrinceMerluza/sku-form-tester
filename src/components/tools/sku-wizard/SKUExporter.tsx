@@ -79,6 +79,29 @@ interface QuickStartDefinition {
 	unitOfMeasure: 'unit';
 }
 
+// Remove 'EmptyProduct' from products array type. For better hinting and
+// to avoid 'any' errors on expected properties of actually completed products.
+const restrictProductType = (
+	products: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[]
+): (UsageProduct | MeteredProduct | FlatFeeProduct)[] => {
+	const ret: (UsageProduct | MeteredProduct | FlatFeeProduct)[] = products.map((p) => {
+		switch (p.type) {
+			case BillingType.USAGE_TYPE:
+			case BillingType.MIMIC:
+				return p as UsageProduct;
+			case BillingType.METERED_HIGHWATER:
+			case BillingType.METERED_SUM:
+				return p as MeteredProduct;
+			case BillingType.FLAT_FEE:
+				return p as FlatFeeProduct;
+		}
+		console.error('unexpected error on product types');
+		return p as UsageProduct;
+	});
+
+	return ret;
+};
+
 // Method to add an appId to the requiredAppIds. Creates the array if property undefined
 const addRequiredAppId = (billableApp: BillableAppJSON, appId: string) => {
 	if (billableApp.requiredAppIds === undefined) {
@@ -95,28 +118,24 @@ const addOptionalAppId = (billableApp: BillableAppJSON, appId: string) => {
 	billableApp.optionalAppIds.push(appId);
 };
 
-const serializeProducts = (
-	products: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[],
-	vendorEmail: string
-): JSONFileData[] => {
-	const baseProducts = products.filter((p) => !p.isAddOn);
-	const addons = products.filter((p) => p.isAddOn);
+const serializeProducts = (products: (UsageProduct | MeteredProduct | FlatFeeProduct)[], vendorEmail: string): JSONFileData[] => {
 	let ret: JSONFileData[] = [];
 
-	baseProducts.forEach((p) => {
+	products.forEach((p) => {
 		ret = ret.concat(serializeProduct(p, vendorEmail));
 	});
 
 	return ret;
-	// TODO: AddOns
 };
 
 // Serialize the product and returns an array with json data.
 // The array can include the optional quickstart json file.
-const serializeProduct = (product: UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct, vendorEmail: string): JSONFileData[] => {
+// NOTE: If addon, ignore the productNames for now.
+const serializeProduct = (product: UsageProduct | MeteredProduct | FlatFeeProduct, vendorEmail: string): JSONFileData[] => {
 	const ret: JSONFileData[] = [];
+	const isAddOn = product.isAddOn;
 	const productName = camelCase(product.name);
-	const fileName = `${productName}Integration`;
+	const fileName = `${productName}${isAddOn ? '' : 'Integration'}`;
 	const billableAppContent: BillableAppJSON = {
 		vendorEmail: vendorEmail,
 		definitions: [],
@@ -130,14 +149,14 @@ const serializeProduct = (product: UsageProduct | MeteredProduct | FlatFeeProduc
 				partNumber: '',
 				type: 'usage',
 				licenseName: productName,
-				productNames: [productName],
+				productNames: isAddOn ? [] : [productName],
 				unitOfMeasure: 'user',
 			});
 			billableAppContent.definitions.push({
 				partNumber: '',
 				type: 'concurrent',
 				licenseName: productName,
-				productNames: [productName],
+				productNames: isAddOn ? [] : [productName],
 				unitOfMeasure: 'user',
 			});
 			break;
@@ -146,14 +165,14 @@ const serializeProduct = (product: UsageProduct | MeteredProduct | FlatFeeProduc
 				partNumber: '',
 				type: 'mimic',
 				mimicPartNumbers: ['', '', '', '', '', '', '', '', '', ''],
-				productNames: [productName],
+				productNames: isAddOn ? [] : [productName],
 				unitOfMeasure: 'user',
 			});
 			billableAppContent.definitions.push({
 				partNumber: '',
 				type: 'mimic',
 				mimicPartNumbers: ['', '', '', '', ''],
-				productNames: [productName],
+				productNames: isAddOn ? [] : [productName],
 				unitOfMeasure: 'user',
 			});
 			break;
@@ -162,7 +181,7 @@ const serializeProduct = (product: UsageProduct | MeteredProduct | FlatFeeProduc
 			billableAppContent.definitions.push({
 				partNumber: '',
 				type: 'meteredHighwaterMark',
-				productNames: [productName],
+				productNames: isAddOn ? [] : [productName],
 				unitOfMeasure: tmpObj.billing?.unitOfMeasure || UnitOfMeasure.UNIT,
 			});
 			break;
@@ -171,7 +190,7 @@ const serializeProduct = (product: UsageProduct | MeteredProduct | FlatFeeProduc
 			billableAppContent.definitions.push({
 				partNumber: '',
 				type: 'meteredSum',
-				productNames: [productName],
+				productNames: isAddOn ? [] : [productName],
 				unitOfMeasure: tmpObj.billing?.unitOfMeasure || UnitOfMeasure.UNIT,
 			});
 			break;
@@ -180,7 +199,7 @@ const serializeProduct = (product: UsageProduct | MeteredProduct | FlatFeeProduc
 			billableAppContent.definitions.push({
 				partNumber: '',
 				type: 'recurring',
-				productNames: [productName],
+				productNames: isAddOn ? [] : [productName],
 				unitOfMeasure: 'license',
 			});
 			break;
@@ -215,6 +234,18 @@ const serializeProduct = (product: UsageProduct | MeteredProduct | FlatFeeProduc
 		});
 	}
 
+	// Include the required or optional add-ons
+	if (product.requires) {
+		product.requires.forEach((addOn) => {
+			addRequiredAppId(billableAppContent, camelCase(addOn.name));
+		});
+	}
+	if (product.optional) {
+		product.optional.forEach((addOn) => {
+			addOptionalAppId(billableAppContent, camelCase(addOn.name));
+		});
+	}
+
 	// Add the product data
 	ret.push({
 		fileName: `${fileName}.json`,
@@ -224,12 +255,10 @@ const serializeProduct = (product: UsageProduct | MeteredProduct | FlatFeeProduc
 	return ret;
 };
 
-// Zip the json files and download the zip file
-export async function exportData(formData: SKUFormData) {
-	const zip = new JSZip();
-
+// Generate and zip the billable files into billable-apps folder
+const zipBillableFiles = (zip: JSZip, formData: SKUFormData) => {
 	// Generate the json data for billable-apps
-	const jsons = serializeProducts(formData.products, formData.details.subNotificationEmail);
+	const jsons = serializeProducts(restrictProductType(formData.products), formData.details.subNotificationEmail);
 	const billableApps = zip.folder('billable-apps');
 	if (!billableApps) {
 		console.error("can't create zip folder billable apps");
@@ -238,12 +267,25 @@ export async function exportData(formData: SKUFormData) {
 	jsons.forEach((j) => {
 		billableApps.file(j.fileName, j.json);
 	});
+};
 
-	// TODO: Generates json for donut 'products'
+const zipDonutProducts = (zip: JSZip, formData: SKUFormData) => {
+	//  Generates json for donut 'products'
 	const products = zip.folder('products');
+};
 
-	// TODO: Generates json for donut 'licenses'
+const zipDonutLicenses = (zip: JSZip, formData: SKUFormData) => {
+	// Generates json for donut 'licenses'
 	const licenses = zip.folder('licenses');
+};
+
+// Zip the json files and download the zip file
+export async function exportData(formData: SKUFormData) {
+	const zip = new JSZip();
+
+	zipBillableFiles(zip, formData);
+	zipDonutProducts(zip, formData);
+	zipDonutLicenses(zip, formData);
 
 	// Download zip
 	const content = await zip.generateAsync({ type: 'blob' });
