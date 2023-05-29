@@ -32,6 +32,7 @@ const fxRate: { [key: string]: number } = {
 };
 
 export default function SKUFormRoot() {
+	// products contain both base and add-ons
 	const [products, setProducts] = useState<(UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[]>([]);
 	const [formsSavedStatus, setFormsSavedStatus] = useState<{ [key: string]: boolean }>({}); // Tracks if SKU forms are saved
 	const [addProductEnabled, setAddProductEnabled] = useState<boolean>(true);
@@ -61,6 +62,7 @@ export default function SKUFormRoot() {
 		setErrors(newErrors);
 	}, [subNotificationEmail, salesLeadEmail, productTOS, quoteNotes, currency]);
 
+	// Make sure there's at least 1 wizard open in the root
 	useEffect(() => {
 		if (products.length === 0) {
 			setProducts(() => {
@@ -82,8 +84,8 @@ export default function SKUFormRoot() {
 		});
 	};
 
-	// Contains the SKUform for each base product
-	const SKUList = products.map((product) => {
+	// get the SKUform element for the Product
+	const getProductForm = (product: UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct) => {
 		// Make sure that all sku  forms have an entry in the formSavedStatus
 		if (formsSavedStatus[product.id] === undefined) {
 			setFormStatus(product.id, false);
@@ -93,6 +95,7 @@ export default function SKUFormRoot() {
 			<SKUForm
 				key={product.id}
 				skuId={product.id}
+				isAddOn={product.isAddOn}
 				onDelete={() => {
 					deleteSKU(product.id);
 
@@ -104,6 +107,8 @@ export default function SKUFormRoot() {
 						return tmpObj;
 					});
 				}}
+				// On saving, replace the old product object (id basis) with the new one
+				// from the component.
 				onSave={(newProduct) => {
 					if (!newProduct) return;
 					setProducts((oldProducts) => {
@@ -121,7 +126,21 @@ export default function SKUFormRoot() {
 				allProducts={products}
 			/>
 		);
-	});
+	};
+
+	// Contains the SKUform for each base product
+	const baseProductsList = products
+		.filter((product) => !product.isAddOn)
+		.map((product) => {
+			return getProductForm(product);
+		});
+
+	// Contains the SKUform for each add-on
+	const addonsList = products
+		.filter((product) => product.isAddOn)
+		.map((product) => {
+			return getProductForm(product);
+		});
 
 	const deleteSKU = (id: string) => {
 		setProducts((oldProducts) => {
@@ -129,7 +148,7 @@ export default function SKUFormRoot() {
 		});
 	};
 
-	const addSKU = () => {
+	const addSKU = (isAddOn: boolean = false) => {
 		setProducts((oldProducts) => {
 			let lastId: string = '0';
 			if (oldProducts.length > 0) {
@@ -139,6 +158,7 @@ export default function SKUFormRoot() {
 			const newId: string = String(parseInt(lastId) + 1);
 			const newProduct = {
 				id: newId,
+				isAddOn: isAddOn,
 			};
 			return [...oldProducts, newProduct];
 		});
@@ -234,7 +254,7 @@ export default function SKUFormRoot() {
 					/>
 					<div>{`FxRate: ${currency}/USD = ${fxRate[currency]}`}</div>
 				</div> */}
-					<div>{SKUList}</div>
+					<div>{baseProductsList}</div>
 					<div className={`add-product ${addProductEnabled ? '' : 'hidden'}`}>
 						<DxButton
 							type="primary"
@@ -252,7 +272,6 @@ export default function SKUFormRoot() {
 							disabled={
 								(() => {
 									let allSaved = true;
-									console.log('a');
 									products
 										.filter((prod) => formsSavedStatus[prod.id] !== undefined)
 										.forEach((prod) => {
@@ -286,6 +305,17 @@ export default function SKUFormRoot() {
 						<li>Adding optional features to the base product for additional billing.</li>
 						<li>Adding a feature that's billed differently than the base product. (Meter-billed feature for a usage-based product)</li>
 					</ul>
+				</div>
+				<div>{addonsList}</div>
+				<div>
+					<DxButton
+						type="primary"
+						onClick={() => {
+							addSKU(true);
+						}}
+					>
+						Declare New Add-On
+					</DxButton>
 				</div>
 			</div>
 

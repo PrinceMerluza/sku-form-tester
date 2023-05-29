@@ -7,6 +7,7 @@ import './SKUWizard.scss';
 interface IProps {
 	onSelectedType: (bilingType: BillingType) => void;
 	setOneTimeFee: React.Dispatch<React.SetStateAction<StartUpFee | undefined>>;
+	isAddOn: boolean;
 }
 
 enum Page {
@@ -27,6 +28,7 @@ enum Page {
 export default function SKUWizard(props: IProps) {
 	const onSelectedType = props.onSelectedType;
 	const setOneTimeFee = props.setOneTimeFee;
+	const isAddOn = props.isAddOn;
 	const [tempType, setTempType] = useState<BillingType | null>();
 	const [activePage, setActivePage] = useState<Page>(Page.APP_TYPE);
 
@@ -54,6 +56,11 @@ export default function SKUWizard(props: IProps) {
 						<DxButton
 							type="primary"
 							onClick={() => {
+								if (isAddOn) {
+									onSelectedType(BillingType.FLAT_FEE);
+									return;
+								}
+
 								setTempType(BillingType.FLAT_FEE);
 								navigateTo(Page.SETUP_FEE);
 							}}
@@ -81,6 +88,11 @@ export default function SKUWizard(props: IProps) {
 						<DxButton
 							type="primary"
 							onClick={() => {
+								if (isAddOn) {
+									onSelectedType(BillingType.USAGE_TYPE);
+									return;
+								}
+
 								setTempType(BillingType.USAGE_TYPE);
 								navigateTo(Page.SETUP_FEE);
 							}}
@@ -96,6 +108,11 @@ export default function SKUWizard(props: IProps) {
 						<DxButton
 							type="primary"
 							onClick={() => {
+								if (isAddOn) {
+									onSelectedType(BillingType.MIMIC);
+									return;
+								}
+
 								setTempType(BillingType.MIMIC);
 								navigateTo(Page.SETUP_FEE);
 							}}
@@ -123,6 +140,11 @@ export default function SKUWizard(props: IProps) {
 						<DxButton
 							type="primary"
 							onClick={() => {
+								if (isAddOn) {
+									onSelectedType(BillingType.METERED_SUM);
+									return;
+								}
+
 								setTempType(BillingType.METERED_SUM);
 								navigateTo(Page.SETUP_FEE);
 							}}
@@ -135,6 +157,11 @@ export default function SKUWizard(props: IProps) {
 						<DxButton
 							type="primary"
 							onClick={() => {
+								if (isAddOn) {
+									onSelectedType(BillingType.METERED_HIGHWATER);
+									return;
+								}
+
 								setTempType(BillingType.METERED_HIGHWATER);
 								navigateTo(Page.SETUP_FEE);
 							}}

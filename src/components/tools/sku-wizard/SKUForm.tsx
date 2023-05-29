@@ -18,6 +18,7 @@ interface IProps {
 	onEdit: () => void;
 	allProducts: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
 	skuId: string;
+	isAddOn: boolean;
 	productName?: string;
 	description?: string;
 }
@@ -26,7 +27,8 @@ export default function SKUForm(props: IProps) {
 	const skuId = props.skuId;
 	const onDelete = props.onDelete;
 	const onSave = props.onSave;
-	const allProducts = props.allProducts;
+	const addons = props.allProducts.filter((p) => p.isAddOn);
+	const isAddon = props.isAddOn;
 
 	// Product properties
 	const [productName, setProductName] = useState<string>(props.productName || '');
@@ -45,7 +47,7 @@ export default function SKUForm(props: IProps) {
 	const [formHasErrors, setFormHasErrors] = useState<boolean>(false); // inner form for billing data
 	const [errors, setErrors] = useState<{ [key: string]: Array<string> }>({});
 
-	const productsItemGroup: DxItemGroupItem[] = allProducts
+	const productsItemGroup: DxItemGroupItem[] = addons
 		.filter((product) => 'name' in product)
 		.map((product) => {
 			return { label: product.name, value: product.id };
@@ -74,6 +76,7 @@ export default function SKUForm(props: IProps) {
 					type: billingType,
 					namedBilling: billingData[0],
 					concurrentBilling: billingData[1],
+					isAddOn: isAddon,
 				};
 				if (requiredDeps.length > 0) tmpBilling.requires = requiredDeps;
 				if (optionalDeps.length > 0) tmpBilling.optional = optionalDeps;
@@ -91,6 +94,7 @@ export default function SKUForm(props: IProps) {
 					description: productDescription,
 					type: billingType,
 					billing: billingData[0],
+					isAddOn: isAddon,
 				};
 				if (requiredDeps.length > 0) tmpBilling.requires = requiredDeps;
 				if (optionalDeps.length > 0) tmpBilling.optional = optionalDeps;
@@ -107,6 +111,7 @@ export default function SKUForm(props: IProps) {
 					description: productDescription,
 					type: BillingType.FLAT_FEE,
 					billing: billingData[0],
+					isAddOn: isAddon,
 				};
 				if (requiredDeps.length > 0) tmpBilling.requires = requiredDeps;
 				if (optionalDeps.length > 0) tmpBilling.optional = optionalDeps;
@@ -128,7 +133,7 @@ export default function SKUForm(props: IProps) {
 						toggleCollapse();
 					}}
 				>
-					{productName || `Base Product ${skuId}`}
+					{`${isAddon ? 'Addon' : 'Base Product'}${productName ? ' - ' + productName : ''}`}
 				</div>
 				<div className={`skuform-body ${formCollapsed ? 'collapsed' : ''}`}>
 					{/* Wizard Navigation */}
@@ -139,6 +144,7 @@ export default function SKUForm(props: IProps) {
 								setBillingType(billingType);
 							}}
 							setOneTimeFee={setOneTimeFee}
+							isAddOn={isAddon}
 						/>
 					) : null}
 
@@ -190,65 +196,67 @@ export default function SKUForm(props: IProps) {
 					{billingType == BillingType.FLAT_FEE ? <FlatFeeForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} /> : null}
 
 					{/* Add-Ons Section */}
-					<div
-						className={`dependencies-container ${
-							productsItemGroup.length > 0 && billingType !== BillingType.ONE_TIME && billingType !== undefined ? '' : 'hidden'
-						}`}
-					>
-						<h2>Add-Ons</h2>
-						<div>Required Add-Ons: </div>
-						<div>
-							{productsItemGroup.map((prodItem, i) => (
-								<div className={`chk-addon-item ${prodItem.value === skuId ? 'hidden' : ''}`}>
-									<DxCheckbox
-										key={i}
-										label={prodItem.label}
-										itemValue={prodItem.value}
-										onCheckChanged={(checked) => {
-											const prod = allProducts.find((p) => p.id === prodItem.value);
-											if (!prod) return;
-											if (checked) {
-												setRequiredDeps((oldDeps) => {
-													return [...oldDeps, prod];
-												});
-											} else {
-												setRequiredDeps((oldDeps) => {
-													return oldDeps.filter((d) => d.id !== prod.id);
-												});
-											}
-										}}
-										disabled={prodItem.value === skuId || optionalDeps.find((dep) => dep.id === prodItem.value) !== undefined}
-									/>
+					{!isAddon ? (
+						<div className={`dependencies-container ${billingType !== undefined ? '' : 'hidden'}`}>
+							<hr />
+							<h2>Add-Ons</h2>
+							<div className={`${productsItemGroup.length > 0 ? '' : 'hidden'}`}>
+								<div>Required Add-Ons: </div>
+								<div>
+									{productsItemGroup.map((prodItem, i) => (
+										<div className={`chk-addon-item ${prodItem.value === skuId ? 'hidden' : ''}`}>
+											<DxCheckbox
+												key={i}
+												label={prodItem.label}
+												itemValue={prodItem.value}
+												onCheckChanged={(checked) => {
+													const prod = addons.find((p) => p.id === prodItem.value);
+													if (!prod) return;
+													if (checked) {
+														setRequiredDeps((oldDeps) => {
+															return [...oldDeps, prod];
+														});
+													} else {
+														setRequiredDeps((oldDeps) => {
+															return oldDeps.filter((d) => d.id !== prod.id);
+														});
+													}
+												}}
+												disabled={prodItem.value === skuId || optionalDeps.find((dep) => dep.id === prodItem.value) !== undefined}
+											/>
+										</div>
+									))}
 								</div>
-							))}
-						</div>
-						<div>Optional Add-ons: </div>
-						<div>
-							{productsItemGroup.map((prodItem, i) => (
-								<div className={`chk-addon-item ${prodItem.value === skuId ? 'hidden' : ''}`}>
-									<DxCheckbox
-										key={i}
-										label={prodItem.label}
-										itemValue={prodItem.value}
-										onCheckChanged={(checked) => {
-											const prod = allProducts.find((p) => p.id === prodItem.value);
-											if (!prod) return;
-											if (checked) {
-												setOptionalDeps((oldDeps) => {
-													return [...oldDeps, prod];
-												});
-											} else {
-												setOptionalDeps((oldDeps) => {
-													return oldDeps.filter((d) => d.id !== prod.id);
-												});
-											}
-										}}
-										disabled={prodItem.value === skuId || requiredDeps.find((dep) => dep.id === prodItem.value) !== undefined}
-									/>
+								<div>Optional Add-ons: </div>
+								<div>
+									{productsItemGroup.map((prodItem, i) => (
+										<div className={`chk-addon-item ${prodItem.value === skuId ? 'hidden' : ''}`}>
+											<DxCheckbox
+												key={i}
+												label={prodItem.label}
+												itemValue={prodItem.value}
+												onCheckChanged={(checked) => {
+													const prod = addons.find((p) => p.id === prodItem.value);
+													if (!prod) return;
+													if (checked) {
+														setOptionalDeps((oldDeps) => {
+															return [...oldDeps, prod];
+														});
+													} else {
+														setOptionalDeps((oldDeps) => {
+															return oldDeps.filter((d) => d.id !== prod.id);
+														});
+													}
+												}}
+												disabled={prodItem.value === skuId || requiredDeps.find((dep) => dep.id === prodItem.value) !== undefined}
+											/>
+										</div>
+									))}
 								</div>
-							))}
+							</div>
+							<div className={`${productsItemGroup.length <= 0 ? '' : 'hidden'}`}>No Add-ons declared</div>
 						</div>
-					</div>
+					) : null}
 					<hr />
 					{/* Notes Section */}
 					<div className={`notes-container ${billingType !== undefined ? '' : 'hidden'}`}>
@@ -283,6 +291,7 @@ export default function SKUForm(props: IProps) {
 
 	return (
 		<div className="skuform-container">
+			{/* Preview */}
 			<div className={!lockedIn ? 'hidden' : ''}>
 				<SKUFormPreview
 					onEdit={() => {
@@ -293,6 +302,7 @@ export default function SKUForm(props: IProps) {
 					billingType={billingType}
 				/>
 			</div>
+			{/* Editable Form */}
 			<div className={lockedIn ? 'hidden' : ''}>{getForm()}</div>
 		</div>
 	);
