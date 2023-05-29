@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { DxButton, DxTextbox, DxItemGroup, DxItemGroupItem, DxTabbedContent, DxTabPanel } from 'genesys-react-components';
-import { UsageProduct, MeteredProduct, FlatFeeProduct, EmptyProduct } from './types';
+import { UsageProduct, MeteredProduct, FlatFeeProduct, EmptyProduct, SKUFormData } from './types';
 import SKUForm from './SKUForm';
 import ValidationFieldContainer from '../utils/validation/ValidationFieldContainer';
 import Validator from '../utils/validation/Validator';
+import { exportData } from './SKUExporter';
 
 import './SKUFormRoot.scss';
 
@@ -39,10 +40,10 @@ export default function SKUFormRoot() {
 	const [currency, setCurrency] = useState<string>('USD');
 
 	// Contact Information page state
-	const [subNotificationEmail, setSubNotificationEmail] = useState<string>();
-	const [salesLeadEmail, setSalesLeadEmail] = useState<string>();
-	const [productTOS, setProductTOS] = useState<string>();
-	const [quoteNotes, setQuoteNotes] = useState<string>();
+	const [subNotificationEmail, setSubNotificationEmail] = useState<string>('');
+	const [salesLeadEmail, setSalesLeadEmail] = useState<string>('');
+	const [productTOS, setProductTOS] = useState<string>('');
+	const [quoteNotes, setQuoteNotes] = useState<string>('');
 	const [onContactsPage, setOnContactsPage] = useState<boolean>(false);
 	const [errors, setErrors] = useState<{ [key: string]: Array<string> }>({});
 
@@ -167,51 +168,82 @@ export default function SKUFormRoot() {
 	const getContactsForm = () => {
 		return (
 			<div className="required-container">
-				<h2>Contact Information</h2>
-				<ValidationFieldContainer errors={errors} name="subNotificationEmail">
-					<DxTextbox
-						inputType="text"
-						label="Subscription Notification Email"
-						placeholder="email@domain.com"
-						clearButton={true}
-						value={subNotificationEmail}
-						onChange={(newValue) => setSubNotificationEmail(newValue)}
-						changeDebounceMs={100}
-					/>
-				</ValidationFieldContainer>
-				<ValidationFieldContainer errors={errors} name="salesLeadEmail">
-					<DxTextbox
-						inputType="text"
-						label="Sales Lead Email"
-						placeholder="sales@domain.com"
-						clearButton={true}
-						value={salesLeadEmail}
-						onChange={(newValue) => setSalesLeadEmail(newValue)}
-						changeDebounceMs={100}
-					/>
-				</ValidationFieldContainer>
-				<ValidationFieldContainer errors={errors} name="productTOS">
-					<DxTextbox
-						inputType="text"
-						label="Link to Product Terms and Conditions"
-						placeholder="https://www.company.com/tos"
-						clearButton={true}
-						value={productTOS}
-						onChange={(newValue) => setProductTOS(newValue)}
-						changeDebounceMs={100}
-					/>
-				</ValidationFieldContainer>
-				<ValidationFieldContainer errors={errors} name="quoteNotes">
-					<DxTextbox
-						inputType="textarea"
-						label="How to Quote the Product"
-						placeholder="Details..."
-						clearButton={true}
-						value={quoteNotes}
-						onChange={(newValue) => setQuoteNotes(newValue)}
-						changeDebounceMs={100}
-					/>
-				</ValidationFieldContainer>
+				<div>
+					<h2>Contact Information</h2>
+					<ValidationFieldContainer errors={errors} name="subNotificationEmail">
+						<DxTextbox
+							inputType="text"
+							label="Subscription Notification Email"
+							placeholder="email@domain.com"
+							clearButton={true}
+							value={subNotificationEmail}
+							onChange={(newValue) => setSubNotificationEmail(newValue)}
+							changeDebounceMs={100}
+						/>
+					</ValidationFieldContainer>
+					<ValidationFieldContainer errors={errors} name="salesLeadEmail">
+						<DxTextbox
+							inputType="text"
+							label="Sales Lead Email"
+							placeholder="sales@domain.com"
+							clearButton={true}
+							value={salesLeadEmail}
+							onChange={(newValue) => setSalesLeadEmail(newValue)}
+							changeDebounceMs={100}
+						/>
+					</ValidationFieldContainer>
+					<ValidationFieldContainer errors={errors} name="productTOS">
+						<DxTextbox
+							inputType="text"
+							label="Link to Product Terms and Conditions"
+							placeholder="https://www.company.com/tos"
+							clearButton={true}
+							value={productTOS}
+							onChange={(newValue) => setProductTOS(newValue)}
+							changeDebounceMs={100}
+						/>
+					</ValidationFieldContainer>
+					<ValidationFieldContainer errors={errors} name="quoteNotes">
+						<DxTextbox
+							inputType="textarea"
+							label="How to Quote the Product"
+							placeholder="Details..."
+							clearButton={true}
+							value={quoteNotes}
+							onChange={(newValue) => setQuoteNotes(newValue)}
+							changeDebounceMs={100}
+						/>
+					</ValidationFieldContainer>
+				</div>
+				<div>
+					<DxButton
+						type="primary"
+						onClick={() => {
+							setOnContactsPage(false);
+						}}
+					>
+						Back
+					</DxButton>
+					<DxButton
+						type="primary"
+						onClick={() => {
+							const formData: SKUFormData = {
+								details: {
+									subNotificationEmail: subNotificationEmail,
+									salesLeadEmail: salesLeadEmail,
+									productTOS: productTOS,
+									quoteNotes: quoteNotes,
+									currency: currency,
+								},
+								products: products,
+							};
+
+							exportData(formData);
+						}}
+					>
+						Export Data
+					</DxButton>
+				</div>
 			</div>
 		);
 	};
@@ -219,7 +251,7 @@ export default function SKUFormRoot() {
 	return (
 		<div className="sku-form-root">
 			{/* Tabs. */}
-			<div className="tab-container">
+			<div className={`tab-container ${onContactsPage ? 'hidden' : ''}`}>
 				<div
 					className={`tab ${baseProductsVisible ? 'active' : ''}`}
 					onClick={() => {

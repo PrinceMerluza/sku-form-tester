@@ -1,4 +1,4 @@
-export interface FormData {
+export interface SKUFormData {
 	details: GeneralDetails;
 	products: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[];
 }
@@ -68,7 +68,7 @@ export interface BillingData {
 	annualPrepay: number;
 	annualMonthToMonth: number;
 
-	unitOfMeasure?: string; // for metered apps
+	unitOfMeasure?: UnitOfMeasure; // for metered apps
 	monthToMonth?: number; // used for metered apps instead of annuals
 
 	minMonthlyCommit?: number;

@@ -35,4 +35,7 @@ hr {
 		border-bottom: 2px solid #419bb2;
 		font-weight: bold;
 	}
+	&.hidden {
+		display: none;
+	}
 }

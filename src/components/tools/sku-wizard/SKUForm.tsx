@@ -79,6 +79,7 @@ export default function SKUForm(props: IProps) {
 					concurrentBilling: billingData[1],
 					isAddOn: isAddon,
 				};
+				if (oneTimeFee) tmpBilling.startupFee = oneTimeFee;
 				if (requiredDeps.length > 0) tmpBilling.requires = requiredDeps;
 				if (optionalDeps.length > 0) tmpBilling.optional = optionalDeps;
 				if (notes.length > 0) tmpBilling.notes = notes;
@@ -97,6 +98,7 @@ export default function SKUForm(props: IProps) {
 					billing: billingData[0],
 					isAddOn: isAddon,
 				};
+				if (oneTimeFee) tmpBilling.startupFee = oneTimeFee;
 				if (requiredDeps.length > 0) tmpBilling.requires = requiredDeps;
 				if (optionalDeps.length > 0) tmpBilling.optional = optionalDeps;
 				if (notes.length > 0) tmpBilling.notes = notes;
@@ -114,6 +116,7 @@ export default function SKUForm(props: IProps) {
 					billing: billingData[0],
 					isAddOn: isAddon,
 				};
+				if (oneTimeFee) tmpBilling.startupFee = oneTimeFee;
 				if (requiredDeps.length > 0) tmpBilling.requires = requiredDeps;
 				if (optionalDeps.length > 0) tmpBilling.optional = optionalDeps;
 				if (notes.length > 0) tmpBilling.notes = notes;
