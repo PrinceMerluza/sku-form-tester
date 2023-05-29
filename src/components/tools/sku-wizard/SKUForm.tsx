@@ -252,7 +252,7 @@ export default function SKUForm(props: IProps) {
 							))}
 						</div>
 					</div>
-
+					<hr />
 					{/* Notes Section */}
 					<div className={`notes-container ${billingType !== undefined ? '' : 'hidden'}`}>
 						<DxTextbox

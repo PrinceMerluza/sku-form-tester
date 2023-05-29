@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import ValidationFieldContainer from '../../utils/validation/ValidationFieldContainer';
 import { DxTextbox } from 'genesys-react-components';
 import Validator from '../../utils/validation/Validator';
-import './BillingForm.scss';
 
 interface IProps {
 	setOneTimeFee: React.Dispatch<React.SetStateAction<number | undefined>>;

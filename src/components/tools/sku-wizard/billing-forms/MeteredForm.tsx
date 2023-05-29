@@ -6,7 +6,6 @@ import { BillingData } from '../types';
 import Validator from '../../utils/validation/Validator';
 import { UnitOfMeasure } from '../types';
 import { DxItemGroupItem, DxItemGroup } from 'genesys-react-components';
-import './BillingForm.scss';
 
 interface IProps {
 	setBillingData: React.Dispatch<React.SetStateAction<BillingData[]>>;

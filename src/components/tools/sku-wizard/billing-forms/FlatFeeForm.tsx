@@ -4,7 +4,6 @@ import { DxTextbox, DxToggle } from 'genesys-react-components';
 import SKUTierBillingForm from './tier-billing/SKUTierBillingForm';
 import { BillingData } from '../types';
 import Validator from '../../utils/validation/Validator';
-import './BillingForm.scss';
 
 interface IProps {
 	setBillingData: React.Dispatch<React.SetStateAction<BillingData[]>>;
