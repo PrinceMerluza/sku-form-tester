@@ -79,6 +79,22 @@ interface QuickStartDefinition {
 	unitOfMeasure: 'unit';
 }
 
+interface LicenseEntry {
+	id: string;
+	description: string;
+	products: string[];
+	permissions: string[];
+}
+
+interface DonutProduct {
+	id: string;
+	description: string;
+}
+
+const getLicenseName = (productName: string): string => {
+	return `${camelCase(productName)}License`;
+};
+
 // Remove 'EmptyProduct' from products array type. For better hinting and
 // to avoid 'any' errors on expected properties of actually completed products.
 const restrictProductType = (
@@ -131,10 +147,15 @@ const serializeProducts = (products: (UsageProduct | MeteredProduct | FlatFeePro
 // Serialize the product and returns an array with json data.
 // The array can include the optional quickstart json file.
 // NOTE: If addon, ignore the productNames for now.
-const serializeProduct = (product: UsageProduct | MeteredProduct | FlatFeeProduct, vendorEmail: string): JSONFileData[] => {
+const serializeProduct = (
+	product: UsageProduct | MeteredProduct | FlatFeeProduct,
+	vendorEmail: string,
+	includeQuickStart: boolean = true
+): JSONFileData[] => {
 	const ret: JSONFileData[] = [];
 	const isAddOn = product.isAddOn;
 	const productName = camelCase(product.name);
+	const licenseName = getLicenseName(product.name);
 	const fileName = `${productName}${isAddOn ? '' : 'Integration'}`;
 	const billableAppContent: BillableAppJSON = {
 		vendorEmail: vendorEmail,
@@ -148,14 +169,14 @@ const serializeProduct = (product: UsageProduct | MeteredProduct | FlatFeeProduc
 			billableAppContent.definitions.push({
 				partNumber: '',
 				type: 'usage',
-				licenseName: productName,
+				licenseName: licenseName,
 				productNames: isAddOn ? [] : [productName],
 				unitOfMeasure: 'user',
 			});
 			billableAppContent.definitions.push({
 				partNumber: '',
 				type: 'concurrent',
-				licenseName: productName,
+				licenseName: licenseName,
 				productNames: isAddOn ? [] : [productName],
 				unitOfMeasure: 'user',
 			});
@@ -206,7 +227,7 @@ const serializeProduct = (product: UsageProduct | MeteredProduct | FlatFeeProduc
 	}
 
 	// Create a quickstart file if needed
-	if (product.startupFee) {
+	if (product.startupFee && includeQuickStart) {
 		const startupFileName = `${productName}QuickStart`;
 		const quickStartJSON: QuickStartJSON = {
 			vendorEmail: vendorEmail,
@@ -227,7 +248,7 @@ const serializeProduct = (product: UsageProduct | MeteredProduct | FlatFeeProduc
 			addOptionalAppId(billableAppContent, startupFileName);
 		}
 
-		// Add to return JSON data
+		// Add the quickstart to return JSON data
 		ret.push({
 			fileName: `${startupFileName}.json`,
 			json: JSON.stringify(quickStartJSON),
@@ -269,14 +290,80 @@ const zipBillableFiles = (zip: JSZip, formData: SKUFormData) => {
 	});
 };
 
+// Generate product files for donut
+// NOTE: for now just makes product from 'base' rpoducts
 const zipDonutProducts = (zip: JSZip, formData: SKUFormData) => {
 	//  Generates json for donut 'products'
 	const products = zip.folder('products');
+	if (!products) {
+		console.error('error on creating products folder');
+		return;
+	}
+
+	const productFiles: JSONFileData[] = [];
+
+	// Create index-mapped array of serialized products. This is so we can get the billabel appd efinition
+	// but still associate it with the product description from form products
+	const baseProducts = formData.products.filter((p) => !p.isAddOn);
+	const billableAppArr = restrictProductType(baseProducts).map((p) => {
+		const serializedProd = serializeProduct(p, formData.details.subNotificationEmail, false);
+		return serializedProd[0];
+	});
+
+	billableAppArr.forEach((app, i) => {
+		const appData: BillableAppJSON = JSON.parse(app.json);
+		appData.definitions.forEach((d) => {
+			if (!d.productNames || d.productNames.length <= 0) return;
+
+			// NOTE: Get only the first productName since most common pattern is having only one.
+			const productName = d.productNames[0];
+
+			const donutEntry: DonutProduct = {
+				id: productName,
+				description: baseProducts[i].description,
+			};
+			const fileData: JSONFileData = {
+				fileName: `${productName}.json`,
+				json: JSON.stringify(donutEntry),
+			};
+
+			// Add only if there's not already existing with same productName
+			if (productFiles.find((p) => p.fileName === `${productName}.json`)) return;
+			productFiles.push(fileData);
+		});
+	});
+
+	// Add product files to zip
+	productFiles.forEach((p) => {
+		products.file(p.fileName, p.json);
+	});
 };
 
+// Generate JSON licenses for usage types.
+// Based on billable-apps licensename. For now all usage (including add-ons) will have unique licenseName
+// based on their product name.
 const zipDonutLicenses = (zip: JSZip, formData: SKUFormData) => {
 	// Generates json for donut 'licenses'
 	const licenses = zip.folder('licenses');
+	if (!licenses) {
+		console.error('error on creating licenses folder');
+		return;
+	}
+	const licenseEntries: LicenseEntry[] = [];
+
+	formData.products
+		.filter((p) => p.type === BillingType.USAGE_TYPE)
+		.forEach((p) => {
+			licenseEntries.push({
+				id: getLicenseName(p.name),
+				description: `${p.name} - User License`,
+				// NOTE: For now If usage is an addon instead of base, keep empty products.
+				products: [p.isAddOn ? '' : camelCase(p.name)],
+				permissions: ['integration:'],
+			});
+		});
+
+	licenses.file('pureCloudLicenses.json', JSON.stringify(licenseEntries));
 };
 
 // Zip the json files and download the zip file
