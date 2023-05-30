@@ -2,6 +2,7 @@ import { SKUFormData, UsageProduct, MeteredProduct, FlatFeeProduct, EmptyProduct
 import camelCase from 'camelcase';
 import JSZip from 'jszip';
 import FileSaver from 'file-saver';
+import { StartUpFee } from './types';
 
 interface JSONFileData {
 	fileName: string;
@@ -366,6 +367,119 @@ const zipDonutLicenses = (zip: JSZip, formData: SKUFormData) => {
 	licenses.file('pureCloudLicenses.json', JSON.stringify(licenseEntries));
 };
 
+// Create the CSV file for the finance team
+// TODO: Tiered pricing
+const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
+	// Add a CSV row to an existing csv string.
+	const addCSVRow = (targetCsv: string, srcArr: string[]): string => {
+		// TODO: add some handling and csv validation. if becomes more complicated jsut use some library
+		return targetCsv + `${srcArr.join()}\n`;
+	};
+
+	// Create an array of strings representing the required or optional add-ons
+	// This also checks the possible special entry of a quickstart 'product'
+	const createDependencyArr = (product: UsageProduct | MeteredProduct | FlatFeeProduct, requiredDeps: boolean): string => {
+		const ret = requiredDeps ? product.requires?.map((p) => p.name) || [] : product.optional?.map((p) => p.name) || [];
+		if (product.startupFee) ret.push(product.startupFee.name);
+
+		return ret.join(', ');
+	};
+
+	// ------- Contact Details -------------
+	const details = formData.details;
+	let detailsCSV = addCSVRow('', ['Subscription Notification Email', 'Sales Lead Email', 'TOS', 'How to Quote the Product']);
+	detailsCSV = addCSVRow(detailsCSV, [details.subNotificationEmail, details.salesLeadEmail, details.productTOS, details.quoteNotes]);
+	zip.file('contactDetails.csv', detailsCSV);
+
+	// ------- Billing Entries -----------
+	// Header Part
+	const products = formData.products;
+	let billingCSV = addCSVRow('', [
+		'Product Name',
+		'Product Description',
+		'Premium App Type',
+		'Unit of Measure',
+		'Annual Prepay',
+		'Annual Month-to-Month',
+		'Month-to-month',
+		'Required Add-ons',
+		'Optional Add-ons',
+		'Notes',
+	]);
+
+	products.forEach((p) => {
+		// Products and reference to the addons
+		switch (p.type) {
+			case BillingType.USAGE_TYPE:
+			case BillingType.MIMIC: {
+				const usageP = p as UsageProduct;
+				// Usage named billing
+				billingCSV = addCSVRow(billingCSV, [
+					usageP.name,
+					usageP.description,
+					usageP.type,
+					'User',
+					usageP.namedBilling.annualPrepay.toString(),
+					usageP.namedBilling.annualMonthToMonth.toString(),
+					usageP.namedBilling.monthToMonth?.toString() || 'n/a',
+					createDependencyArr(usageP, true),
+					createDependencyArr(usageP, false),
+					usageP.notes || 'none',
+				]);
+				// Usage concurrent billing
+				billingCSV = addCSVRow(billingCSV, [
+					usageP.name,
+					usageP.description,
+					usageP.type,
+					'User',
+					usageP.concurrentBilling.annualPrepay.toString(),
+					usageP.concurrentBilling.annualMonthToMonth.toString(),
+					usageP.concurrentBilling.monthToMonth?.toString() || 'n/a',
+					createDependencyArr(usageP, true),
+					createDependencyArr(usageP, false),
+					usageP.notes || 'none',
+				]);
+				break;
+			}
+			case BillingType.METERED_SUM:
+			case BillingType.METERED_HIGHWATER: {
+				const meteredP = p as MeteredProduct;
+				billingCSV = addCSVRow(billingCSV, [
+					meteredP.name,
+					meteredP.description,
+					meteredP.type,
+					meteredP.billing.unitOfMeasure || 'ERROR',
+					meteredP.billing.annualPrepay.toString(),
+					meteredP.billing.annualMonthToMonth.toString(),
+					meteredP.billing.monthToMonth?.toString() || 'n/a',
+					createDependencyArr(meteredP, true),
+					createDependencyArr(meteredP, false),
+					meteredP.notes || 'none',
+				]);
+				break;
+			}
+		}
+
+		// Quickstart Fee
+		if (!p.startupFee) return;
+		const quickStart = p.startupFee as StartUpFee;
+		billingCSV = addCSVRow(billingCSV, [
+			quickStart.name,
+			quickStart.description,
+			'QuickStart',
+			'',
+			quickStart.oneTimeFee.toString(),
+			quickStart.oneTimeFee.toString(),
+			'',
+			'',
+			'',
+			'',
+		]);
+	});
+
+	zip.file('SKUTemplate.csv', billingCSV);
+};
+
 // Zip the json files and download the zip file
 export async function exportData(formData: SKUFormData) {
 	const zip = new JSZip();
@@ -373,6 +487,7 @@ export async function exportData(formData: SKUFormData) {
 	zipBillableFiles(zip, formData);
 	zipDonutProducts(zip, formData);
 	zipDonutLicenses(zip, formData);
+	zipCSVFile(zip, formData);
 
 	// Download zip
 	const content = await zip.generateAsync({ type: 'blob' });
