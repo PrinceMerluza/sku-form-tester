@@ -106,6 +106,16 @@ export default function UsageForm(props: IProps) {
 		setBillingData([namedBillingData, concBillingData]);
 	}, [setBillingData, setFormHasErrors, namedBillingData, concBillingData]);
 
+	// Reset tier values if toggle is disabled
+	useEffect(() => {
+		if (namedUseTieredBilling) return;
+		updateNamedBillingData('tiers', []);
+	}, [namedUseTieredBilling]);
+	useEffect(() => {
+		if (concUseTieredBilling) return;
+		updateConcBillingData('tiers', []);
+	}, [concUseTieredBilling]);
+
 	const updateNamedBillingData = (name: string, value: any) => {
 		setNamedBillingData((prevData) => {
 			const tmpObj = Object.assign({}, prevData);

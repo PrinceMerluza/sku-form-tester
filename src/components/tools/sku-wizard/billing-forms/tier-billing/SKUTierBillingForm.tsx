@@ -88,6 +88,10 @@ export default function SKUTierBillingForm(props: IProps) {
 	};
 
 	const allowAddingTier = (): boolean => {
+		// make sure first tier has To
+		if (!startingTo) return false;
+
+		// Make sure forms have values
 		if (!tiers || tiers.length === 0) return true;
 		const lastTier = tiers[tiers.length - 1];
 		if (!lastTier.range.to || !lastTier.annualMonthToMonth || !lastTier.annualPrepay) return false;

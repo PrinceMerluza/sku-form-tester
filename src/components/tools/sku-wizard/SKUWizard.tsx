@@ -182,7 +182,7 @@ export default function SKUWizard(props: IProps) {
 					<DxButton type="primary" onClick={() => navigateTo(Page.APP_TYPE)}>
 						Back
 					</DxButton>
-					<span className="guide-text">Would you like to add a one-time setup fee?</span>
+					<span className="guide-text">Do you want to add a one-time setup fee?</span>
 				</div>
 				<div className="type-selection-options">
 					<div className="type-selection-option">
