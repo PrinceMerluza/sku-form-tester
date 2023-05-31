@@ -1,10 +1,9 @@
 Implement form validation on all levels
 Add a wizard option if named/concurrent will have same billing
+Implement friendly HTML export for viewing SKUs
 
-Implement Preview
 Implement CSV export for tiered billing
 
 
 BUG
-Tieredbilling on form in metered is set to show annual prepay/m2m but currently
-not implemented for metered.
+- STieredbilling on form in metered is set to show annual prepay/m2m but currently not implemented for metered.

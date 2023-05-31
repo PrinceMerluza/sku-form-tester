@@ -119,24 +119,52 @@ export default function SKUFormPreview(props: IProps) {
 					{product.type === BillingType.METERED_HIGHWATER || product.type === BillingType.METERED_SUM ? (
 						<div className="billing-details-container">
 							<div>
-								<strong>METERED BILLING</strong>
+								<div>
+									<strong>METERED BILLING</strong>
+								</div>
+								<table className="billing-table">
+									<thead>
+										<tr>
+											<th>Unit of Measurement</th>
+											<th>Month-to-month (per {product.billing.unitOfMeasure})</th>
+											<th>Minimum Monthly Commit</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>{product.billing.unitOfMeasure}</td>
+											<td>{product.billing.monthToMonth}</td>
+											<td>{product.billing.minMonthlyCommit}</td>
+										</tr>
+									</tbody>
+								</table>
 							</div>
-							<table className="billing-table">
-								<thead>
-									<tr>
-										<th>Unit of Measurement</th>
-										<th>Month-to-month (per {product.billing.unitOfMeasure})</th>
-										<th>Minimum Monthly Commit</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td>{product.billing.unitOfMeasure}</td>
-										<td>{product.billing.monthToMonth}</td>
-										<td>{product.billing.minMonthlyCommit}</td>
-									</tr>
-								</tbody>
-							</table>
+						</div>
+					) : null}
+
+					{product.type === BillingType.FLAT_FEE ? (
+						<div className="billing-details-container">
+							<div>
+								<div>
+									<strong>RECURRING LICENSE</strong>
+								</div>
+								<table className="billing-table">
+									<thead>
+										<tr>
+											<th>Annual Prepay</th>
+											<th>Annual Month-to-Month</th>
+											<th>Month-to-Month</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>{product.billing.annualPrepay}</td>
+											<td>{product.billing.annualMonthToMonth}</td>
+											<td>{product.billing.monthToMonth}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
 						</div>
 					) : null}
 
