@@ -14,9 +14,9 @@ export default function SKUFormPreview(props: IProps) {
 	const product = props.product;
 	const billingType = props.billingType;
 
-	const regularBillingUI = (billingData: BillingData) => {
+	const getRegularBillingUI = (billingData: BillingData) => {
 		return (
-			<table>
+			<table className="billing-table">
 				<thead>
 					<tr>
 						<th>Annual Prepay</th>
@@ -35,10 +35,11 @@ export default function SKUFormPreview(props: IProps) {
 		);
 	};
 
-	const tieredBillingUI = (tiers: BillingTier[] | undefined) => {
+	const getTieredBillingUI = (billingData: BillingData) => {
+		const tiers = billingData.tiers;
 		if (!tiers) return <div>Error on displaying tiers. No tiers value</div>;
 		return (
-			<table>
+			<table className="billing-table">
 				<thead>
 					<tr>
 						<th></th>
@@ -49,12 +50,19 @@ export default function SKUFormPreview(props: IProps) {
 					</tr>
 				</thead>
 				<tbody>
+					<tr>
+						<th>Tier 1</th>
+						<td>0</td>
+						<td>{`${(tiers[0]?.range?.from || 1) - 1}`}</td>
+						<td>{`${billingData.annualPrepay}`}</td>
+						<td>{`${billingData.annualMonthToMonth}`}</td>
+					</tr>
 					{(() => {
 						if (!tiers) return;
 						return tiers.map((t: BillingTier) => {
 							return (
 								<tr key={t.id}>
-									<th>{`Tier ${t.id}`}</th>
+									<th>{`Tier ${(parseInt(t.id) + 1).toString()}`}</th>
 									<td>{`${t.range.from}`}</td>
 									<td>{`${t.range.to}`}</td>
 									<td>{`${t.annualPrepay}`}</td>
@@ -73,35 +81,73 @@ export default function SKUFormPreview(props: IProps) {
 			{product ? (
 				<div>
 					<div>
-						<strong>Name:</strong> {product.name}
+						<h1>{product.name}</h1>
 					</div>
 					<div>
-						<strong>Description:</strong> {product.description}
+						<h3>{product.description}</h3>
 					</div>
 					<div>
-						<strong>Type:</strong> {billingType}
+						<strong>TYPE:</strong> {billingType}
 					</div>
+					<hr />
 
-					{product.type === BillingType.USAGE_TYPE || product.type === BillingType.MIMIC ? (
+					{/* QUICKSTART FEE */}
+					{product.startupFee ? (
 						<div>
-							<div>
-								<strong>Named User Billing:</strong>
-							</div>
-							{!product.namedBilling.useTiers ? regularBillingUI(product.namedBilling) : tieredBillingUI(product.namedBilling.tiers)}
-							<div>
-								<strong>Concurrent User Billing:</strong>
-							</div>
-							{!product.concurrentBilling.useTiers
-								? regularBillingUI(product.concurrentBilling)
-								: tieredBillingUI(product.concurrentBilling.tiers)}
+							<strong>{`QUICKSTART (${product.startupFee.required ? 'required' : 'optional'})`}</strong>
+							<div>{product.startupFee.oneTimeFee}</div>
 						</div>
 					) : null}
 
+					{/* BILLING DETAILS */}
+					{product.type === BillingType.USAGE_TYPE || product.type === BillingType.MIMIC ? (
+						<div className="billing-details-container">
+							<div>
+								<strong>NAMED USER BILLING</strong>
+								{!product.namedBilling.useTiers ? getRegularBillingUI(product.namedBilling) : getTieredBillingUI(product.namedBilling)}
+							</div>
+
+							<div>
+								<strong>CONCURRENT USER BILLING</strong>
+								{!product.concurrentBilling.useTiers
+									? getRegularBillingUI(product.concurrentBilling)
+									: getTieredBillingUI(product.concurrentBilling)}
+							</div>
+						</div>
+					) : null}
+
+					{product.type === BillingType.METERED_HIGHWATER || product.type === BillingType.METERED_SUM ? (
+						<div className="billing-details-container">
+							<div>
+								<strong>METERED BILLING</strong>
+							</div>
+							<table className="billing-table">
+								<thead>
+									<tr>
+										<th>Unit of Measurement</th>
+										<th>Month-to-month (per {product.billing.unitOfMeasure})</th>
+										<th>Minimum Monthly Commit</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>{product.billing.unitOfMeasure}</td>
+										<td>{product.billing.monthToMonth}</td>
+										<td>{product.billing.minMonthlyCommit}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					) : null}
+
+					{/* NOTES */}
 					{product.notes ? (
 						<div>
-							<strong>Notes:</strong> {product.notes}
+							<strong>NOTES:</strong>
+							<div>{product.notes}</div>
 						</div>
 					) : null}
+					<hr />
 					<DxButton type="primary" onClick={() => props.onEdit()}>
 						Edit
 					</DxButton>

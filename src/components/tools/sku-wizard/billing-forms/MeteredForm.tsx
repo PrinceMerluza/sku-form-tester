@@ -39,6 +39,7 @@ export default function MeteredForm(props: IProps) {
 	const [localBillingData, setLocalBillingData] = useState<BillingData>({
 		annualPrepay: 0,
 		annualMonthToMonth: 0,
+		unitOfMeasure: UnitOfMeasure.UNIT,
 	});
 	const [hasMonthlyCommit, setHasMonthlyCommit] = useState<boolean | undefined>(false);
 	const [useTieredBilling, setUseTieredBilling] = useState<boolean | undefined>(false);
@@ -104,7 +105,10 @@ export default function MeteredForm(props: IProps) {
 							items={unitsOfMeasure}
 							format="dropdown"
 							onItemChanged={(item, isSelected) => {
-								if (isSelected) setUnitOfMeasure(item.value);
+								if (isSelected) {
+									setUnitOfMeasure(item.value);
+									updateLocalBillingData('unitOfMeasure', item.value);
+								}
 							}}
 						/>
 					</div>

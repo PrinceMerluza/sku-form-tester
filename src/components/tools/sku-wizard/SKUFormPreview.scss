@@ -2,7 +2,40 @@
 
 .sku-preview-container {
 	border: 1px solid var(--theme-core-layout-border-color);
-	padding: 10px;
+	padding: 10px 25px;
+}
+
+.billing-details-container {
+	margin: 20px 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+
+	div {
+		display: flex;
+		flex-direction: column;
+	}
+}
+
+.billing-table {
+	td,
+	th {
+		border: 1px solid #ddd;
+		padding: 5px 20px;
+	}
+	tr:nth-child(even) {
+		background-color: #f2f2f2;
+	}
+	tr:hover {
+		background-color: #ddd;
+	}
+	th {
+		padding-top: 8px;
+		padding-bottom: 8px;
+		text-align: center;
+		background-color: #a6a8ad;
+		color: white;
+	}
 }
 
 // .optional-fee-container {
