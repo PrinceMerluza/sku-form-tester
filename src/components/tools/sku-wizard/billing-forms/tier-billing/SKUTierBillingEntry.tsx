@@ -10,11 +10,13 @@ interface IProps {
 	onDelete: () => void;
 	errors?: { [key: string]: Array<string> };
 	disableDelete?: boolean;
+	disableToInput?: boolean;
 }
 
 export default function SKUTierBillingEntry(props: IProps) {
 	const errors = props.errors;
 	const disableDelete = props.disableDelete;
+	const disableToInput = props.disableToInput;
 	const initalValue = props.tier.range.from;
 	const tier = props.tier;
 	const setTierValue = props.setTierValue;
@@ -59,6 +61,7 @@ export default function SKUTierBillingEntry(props: IProps) {
 				className="tier-entry-textbox"
 				inputType="decimal"
 				label="To"
+				disabled={disableToInput}
 				changeDebounceMs={100}
 				onChange={(val) => updateTo(parseFloat(val))}
 			/>

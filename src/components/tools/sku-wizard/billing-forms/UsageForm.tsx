@@ -131,26 +131,24 @@ export default function UsageForm(props: IProps) {
 				<div className="named-portion">
 					<h2>Named Users Billing</h2>
 					<div>
-						{namedUseTieredBilling ? null : (
-							<div>
-								<ValidationFieldContainer errors={errors} name="named-annual-prepay">
-									<DxTextbox
-										inputType="decimal"
-										label="Annual Prepay (per month)"
-										initialValue="0"
-										onChange={(val) => updateNamedBillingData('annualPrepay', parseFloat(val))}
-									/>
-								</ValidationFieldContainer>
-								<ValidationFieldContainer errors={errors} name="named-annual-m2m">
-									<DxTextbox
-										inputType="decimal"
-										label="Annual Month-to-month (per month)"
-										initialValue="0"
-										onChange={(val) => updateNamedBillingData('annualMonthToMonth', parseFloat(val))}
-									/>
-								</ValidationFieldContainer>
-							</div>
-						)}
+						<div>
+							<ValidationFieldContainer errors={errors} name="named-annual-prepay">
+								<DxTextbox
+									inputType="decimal"
+									label="Annual Prepay (per month)"
+									initialValue="0"
+									onChange={(val) => updateNamedBillingData('annualPrepay', parseFloat(val))}
+								/>
+							</ValidationFieldContainer>
+							<ValidationFieldContainer errors={errors} name="named-annual-m2m">
+								<DxTextbox
+									inputType="decimal"
+									label="Annual Month-to-month (per month)"
+									initialValue="0"
+									onChange={(val) => updateNamedBillingData('annualMonthToMonth', parseFloat(val))}
+								/>
+							</ValidationFieldContainer>
+						</div>
 						<div className="optional-fee-container">
 							<div>
 								<DxToggle
@@ -208,26 +206,24 @@ export default function UsageForm(props: IProps) {
 				<div className="concurrent-portion">
 					<h2>Concurrent Users Billing</h2>
 					<div>
-						{concUseTieredBilling ? null : (
-							<div>
-								<ValidationFieldContainer errors={errors} name="conc-annual-prepay">
-									<DxTextbox
-										inputType="decimal"
-										label="Annual Prepay (per month)"
-										initialValue="0"
-										onChange={(val) => updateConcBillingData('annualPrepay', parseFloat(val))}
-									/>
-								</ValidationFieldContainer>
-								<ValidationFieldContainer errors={errors} name="conc-annual-m2m">
-									<DxTextbox
-										inputType="decimal"
-										label="Annual Month-to-month (per month)"
-										initialValue="0"
-										onChange={(val) => updateConcBillingData('annualMonthToMonth', parseFloat(val))}
-									/>
-								</ValidationFieldContainer>
-							</div>
-						)}
+						<div>
+							<ValidationFieldContainer errors={errors} name="conc-annual-prepay">
+								<DxTextbox
+									inputType="decimal"
+									label="Annual Prepay (per month)"
+									initialValue="0"
+									onChange={(val) => updateConcBillingData('annualPrepay', parseFloat(val))}
+								/>
+							</ValidationFieldContainer>
+							<ValidationFieldContainer errors={errors} name="conc-annual-m2m">
+								<DxTextbox
+									inputType="decimal"
+									label="Annual Month-to-month (per month)"
+									initialValue="0"
+									onChange={(val) => updateConcBillingData('annualMonthToMonth', parseFloat(val))}
+								/>
+							</ValidationFieldContainer>
+						</div>
 						<div className="optional-fee-container">
 							<div>
 								<DxToggle

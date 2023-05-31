@@ -17,6 +17,12 @@ export default function SKUTierBillingForm(props: IProps) {
 	const billingData = props.billingData;
 	const tiers = billingData.tiers;
 	const setBillingData = props.setBillingData;
+	const [startingTo, setStartingTo] = useState<number>(); // The 'To' of the first billing tier
+	const [startingToDisabled, setStartingToDisabled] = useState<boolean>(false);
+
+	useEffect(() => {
+		setStartingToDisabled((tiers?.length || 0) > 0);
+	}, [billingData, tiers, setStartingToDisabled]);
 
 	// Add a new tiered billing
 	const addTier = () => {
@@ -35,7 +41,7 @@ export default function SKUTierBillingForm(props: IProps) {
 
 			// Create a new billing tier. Automatically set the 'from' field
 			// based on the previous tier's 'to' field.
-			const startingFrom = newBilling.tiers.length > 0 ? newBilling.tiers[newBilling.tiers.length - 1].range.to + 1 : 0;
+			const startingFrom = newBilling.tiers.length > 0 ? newBilling.tiers[newBilling.tiers.length - 1].range.to + 1 : (startingTo || 0) + 1;
 			const newTier: BillingTier = {
 				// Some values are set to NaN to represent empty string form values parsed to int (NaN),
 				// to avoid error message showing on just newly added tiers. Either this or make the fields optional in type.
@@ -99,6 +105,7 @@ export default function SKUTierBillingForm(props: IProps) {
 							setTierValue={(tierVal) => updateTier(idx, tierVal)}
 							onDelete={() => deleteTier(idx)}
 							disableDelete={idx !== tiers.length - 1}
+							disableToInput={idx !== tiers.length - 1}
 						/>
 					</ValidationFieldContainer>
 				);
@@ -107,6 +114,37 @@ export default function SKUTierBillingForm(props: IProps) {
 
 	return (
 		<div className={'billing-form'}>
+			{/* The default row for the first tier */}
+			<ValidationFieldContainer errors={errors} name={`tier-original`}>
+				<div className={'original-tier-entry'}>
+					<DxTextbox className="tier-entry-textbox" inputType="decimal" label="From" disabled={true} value={'0'} changeDebounceMs={100} />
+					<DxTextbox
+						className="tier-entry-textbox"
+						inputType="decimal"
+						label="To"
+						value={startingTo?.toString()}
+						disabled={startingToDisabled}
+						changeDebounceMs={100}
+						onChange={(val) => setStartingTo(parseFloat(val))}
+					/>
+					<DxTextbox
+						className="tier-entry-textbox"
+						value={billingData.annualPrepay.toString() || '0'}
+						inputType="decimal"
+						label="Annual Prepay (per month)"
+						disabled={true}
+					/>
+					<DxTextbox
+						className="tier-entry-textbox"
+						inputType="decimal"
+						value={billingData.annualMonthToMonth.toString() || '0'}
+						label="Annual Month-to-month (per month)"
+						disabled={true}
+					/>
+					<div className="empty-filler"></div>
+				</div>
+			</ValidationFieldContainer>
+
 			<div>{tierList}</div>
 			<div>
 				<DxButton disabled={!allowAddingTier()} type="primary" onClick={() => addTier()}>

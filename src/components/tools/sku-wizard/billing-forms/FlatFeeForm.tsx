@@ -18,7 +18,6 @@ export default function FlatFeeForm(props: IProps) {
 		annualMonthToMonth: 0,
 	});
 	const [m2mEnabled, setM2mEnabled] = useState<boolean | undefined>(false);
-	const [useTieredBilling, setUseTieredBilling] = useState<boolean | undefined>(false);
 
 	const [errors, setErrors] = useState<{ [key: string]: Array<string> }>({});
 
@@ -74,26 +73,24 @@ export default function FlatFeeForm(props: IProps) {
 				<div className="named-portion">
 					<h2>Recurring License Fee</h2>
 					<div>
-						{useTieredBilling ? null : (
-							<div>
-								<ValidationFieldContainer errors={errors} name="named-annual-prepay">
-									<DxTextbox
-										inputType="decimal"
-										label="Annual Prepay (per month)"
-										initialValue="0"
-										onChange={(val) => updateLocalBillingData('annualPrepay', parseFloat(val))}
-									/>
-								</ValidationFieldContainer>
-								<ValidationFieldContainer errors={errors} name="named-annual-m2m">
-									<DxTextbox
-										inputType="decimal"
-										label="Annual Month-to-month (per month)"
-										initialValue="0"
-										onChange={(val) => updateLocalBillingData('annualMonthToMonth', parseFloat(val))}
-									/>
-								</ValidationFieldContainer>
-							</div>
-						)}
+						<div>
+							<ValidationFieldContainer errors={errors} name="named-annual-prepay">
+								<DxTextbox
+									inputType="decimal"
+									label="Annual Prepay (per month)"
+									initialValue="0"
+									onChange={(val) => updateLocalBillingData('annualPrepay', parseFloat(val))}
+								/>
+							</ValidationFieldContainer>
+							<ValidationFieldContainer errors={errors} name="named-annual-m2m">
+								<DxTextbox
+									inputType="decimal"
+									label="Annual Month-to-month (per month)"
+									initialValue="0"
+									onChange={(val) => updateLocalBillingData('annualMonthToMonth', parseFloat(val))}
+								/>
+							</ValidationFieldContainer>
+						</div>
 						<div className="optional-fee-container">
 							<DxToggle
 								label="Enable Month to Month Billing"
@@ -116,20 +113,6 @@ export default function FlatFeeForm(props: IProps) {
 							) : null}
 						</div>
 					</div>
-					{/* =========== TIERED BILLING ===========	*/}
-					{/* <div>
-						<DxToggle
-							label="Enable Volume Discounts"
-							value={useTieredBilling}
-							onChange={(val) => {
-								setUseTieredBilling(val);
-								updateLocalBillingData('useTiers', val);
-							}}
-						/>
-						{useTieredBilling ? (
-							<SKUTierBillingForm errors={errors} billingData={localBillingData} setBillingData={setLocalBillingData} />
-						) : null}
-					</div> */}
 				</div>
 			</div>
 		);
