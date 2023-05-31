@@ -1,4 +1,4 @@
-import { SKUFormData, UsageProduct, MeteredProduct, FlatFeeProduct, EmptyProduct, BillingType, UnitOfMeasure } from './types';
+import { SKUFormData, UsageProduct, MeteredProduct, FlatFeeProduct, EmptyProduct, BillingType, UnitOfMeasure, BillingData } from './types';
 import camelCase from 'camelcase';
 import JSZip from 'jszip';
 import FileSaver from 'file-saver';
@@ -368,7 +368,7 @@ const zipDonutLicenses = (zip: JSZip, formData: SKUFormData) => {
 };
 
 // Create the CSV file for the finance team
-// TODO: Tiered pricing
+// TODO: Probably move this as its own class
 const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 	// Add a CSV row to an existing csv string.
 	const addCSVRow = (targetCsv: string, srcArr: string[]): string => {
@@ -383,6 +383,34 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 		if (product.startupFee) ret.push(product.startupFee.name);
 
 		return ret.join(', ');
+	};
+
+	// Create a new CSV file in the zip.
+	// Return the filename of the csv file
+	const addTieredBillingCsv = (zip: JSZip, product: UsageProduct | MeteredProduct | FlatFeeProduct, billingData: BillingData): string => {
+		// make sure there is tiers data
+		if (!billingData.useTiers || billingData.tiers?.length === undefined || billingData.tiers.length === 0) return 'n/a';
+		const fileName = `${product.id}-${camelCase(product.name)}.csv`;
+
+		// build csv
+		let tieredCsv = addCSVRow('', ['From', 'To', 'Annual Prepay', 'Annual Month-to-Month']);
+		tieredCsv = addCSVRow(tieredCsv, [
+			'0',
+			(billingData.tiers[0].range.from - 1).toString(),
+			billingData.annualPrepay.toString(),
+			billingData.annualMonthToMonth.toString(),
+		]);
+		billingData.tiers.forEach((t) => {
+			tieredCsv = addCSVRow(tieredCsv, [
+				t.range.from.toString(),
+				t.range.to.toString(),
+				t.annualPrepay.toString(),
+				t.annualMonthToMonth.toString(),
+			]);
+		});
+
+		zip.file(fileName, tieredCsv);
+		return fileName;
 	};
 
 	// ------- Contact Details -------------
@@ -402,11 +430,12 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 		'Annual Prepay',
 		'Annual Month-to-Month',
 		'Month-to-month',
+		'Discount Billing (Tiered)',
 		'Required Add-ons',
 		'Optional Add-ons',
 		'Notes',
 	]);
-
+	// Billing content
 	products.forEach((p) => {
 		// Products and reference to the addons
 		switch (p.type) {
@@ -422,6 +451,7 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 					usageP.namedBilling.annualPrepay.toString(),
 					usageP.namedBilling.annualMonthToMonth.toString(),
 					usageP.namedBilling.monthToMonth?.toString() || 'n/a',
+					addTieredBillingCsv(zip, usageP, usageP.namedBilling),
 					createDependencyArr(usageP, true),
 					createDependencyArr(usageP, false),
 					usageP.notes || 'none',
@@ -435,6 +465,7 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 					usageP.concurrentBilling.annualPrepay.toString(),
 					usageP.concurrentBilling.annualMonthToMonth.toString(),
 					usageP.concurrentBilling.monthToMonth?.toString() || 'n/a',
+					addTieredBillingCsv(zip, usageP, usageP.concurrentBilling),
 					createDependencyArr(usageP, true),
 					createDependencyArr(usageP, false),
 					usageP.notes || 'none',
@@ -452,6 +483,8 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 					meteredP.billing.annualPrepay.toString(),
 					meteredP.billing.annualMonthToMonth.toString(),
 					meteredP.billing.monthToMonth?.toString() || 'n/a',
+					// TODO: Metered billing only uses M2M. So need to refactor somewhere to correctly serialize it.
+					addTieredBillingCsv(zip, meteredP, meteredP.billing),
 					createDependencyArr(meteredP, true),
 					createDependencyArr(meteredP, false),
 					meteredP.notes || 'none',
@@ -476,7 +509,6 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 			'',
 		]);
 	});
-
 	zip.file('SKUTemplate.csv', billingCSV);
 };
 
