@@ -367,8 +367,8 @@ const zipDonutLicenses = (zip: JSZip, formData: SKUFormData) => {
 	licenses.file('pureCloudLicenses.json', JSON.stringify(licenseEntries));
 };
 
-// Create the CSV file for the finance team
-// TODO: Probably move this as its own class
+// Create the CSV file representation for the form values
+// TODO: Getting chunky. Probably move this as its own class
 const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 	// Add a CSV row to an existing csv string.
 	const addCSVRow = (targetCsv: string, srcArr: string[]): string => {
@@ -390,7 +390,7 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 	const addTieredBillingCsv = (zip: JSZip, product: UsageProduct | MeteredProduct | FlatFeeProduct, billingData: BillingData): string => {
 		// make sure there is tiers data
 		if (!billingData.useTiers || billingData.tiers?.length === undefined || billingData.tiers.length === 0) return 'n/a';
-		const fileName = `${product.id}-${camelCase(product.name)}.csv`;
+		const fileName = `tiered-${product.id}-${camelCase(product.name)}.csv`;
 
 		// build csv
 		let tieredCsv = addCSVRow('', ['From', 'To', 'Annual Prepay', 'Annual Month-to-Month']);
