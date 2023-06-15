@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DxButton, DxTextbox, DxItemGroup, DxItemGroupItem, DxTabbedContent, DxTabPanel } from 'genesys-react-components';
 import { UsageProduct, MeteredProduct, FlatFeeProduct, EmptyProduct, SKUFormData } from './types';
 import SKUForm from './SKUForm';
@@ -51,7 +51,9 @@ export default function SKUFormRoot() {
 	const [baseProductsVisible, setBaseProductsVisible] = useState<boolean>(true);
 	const [addonsVisible, setAddonsVisible] = useState<boolean>(false);
 
-	// Vadidation
+	const fileUploadRef = useRef<HTMLInputElement>(null);
+
+	// Validation
 	useEffect(() => {
 		const newErrors: { [key: string]: Array<string> } = {};
 		const validator: Validator = new Validator(newErrors);
@@ -248,6 +250,14 @@ export default function SKUFormRoot() {
 		);
 	};
 
+	const handleImportSku = (event: React.ChangeEvent) => {
+		const target = event.target as HTMLInputElement;
+		if (!target.files) return;
+
+		const fileObj = target.files[0];
+		if (!fileObj) return;
+	};
+
 	return (
 		<div className="sku-form-root">
 			{/* Tabs. */}
@@ -286,6 +296,20 @@ export default function SKUFormRoot() {
 					/>
 					<div>{`FxRate: ${currency}/USD = ${fxRate[currency]}`}</div>
 				</div> */}
+					<div className="import-sku-container">
+						<input className="input-uploader" ref={fileUploadRef} type="file" accept=".zip" onChange={handleImportSku} />
+
+						<DxButton
+							type="primary"
+							onClick={() => {
+								if (!fileUploadRef || !fileUploadRef.current) return;
+
+								fileUploadRef.current.click();
+							}}
+						>
+							Import SKUs
+						</DxButton>
+					</div>
 					<div>{baseProductsList}</div>
 					<div className={`add-product ${addProductEnabled ? '' : 'hidden'}`}>
 						<DxButton
