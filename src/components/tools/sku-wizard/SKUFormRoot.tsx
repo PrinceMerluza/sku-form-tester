@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { DxButton, DxTextbox, DxItemGroup, DxItemGroupItem, DxTabbedContent, DxTabPanel } from 'genesys-react-components';
-import { UsageProduct, MeteredProduct, FlatFeeProduct, EmptyProduct, SKUFormData, BillingType } from './types';
+import { UsageProduct, MeteredProduct, FlatFeeProduct, EmptyProduct, SKUFormData, BillingType, UnitOfMeasure } from './types';
 import SKUForm from './SKUForm';
 import ValidationFieldContainer from '../utils/validation/ValidationFieldContainer';
 import Validator from '../utils/validation/Validator';
@@ -321,6 +321,34 @@ export default function SKUFormRoot() {
 							Import SKUs
 						</DxButton>
 					</div>
+					<SKUForm
+						onSave={() => {
+							console.log('a');
+						}}
+						onDelete={() => {
+							console.log('a');
+						}}
+						onEdit={() => {
+							console.log('a');
+						}}
+						allProducts={[]}
+						skuId="1"
+						isAddOn={false}
+						prefill={{
+							id: '1',
+							name: 'test metered name',
+							description: 'test metered description',
+							type: BillingType.METERED_SUM,
+							billing: {
+								annualPrepay: 0,
+								annualMonthToMonth: 0,
+								monthToMonth: 0.5,
+								unitOfMeasure: UnitOfMeasure.REQUEST,
+								minMonthlyCommit: 1000,
+							},
+							notes: 'metered notes',
+						}}
+					/>
 					<SKUForm
 						onSave={() => {
 							console.log('a');

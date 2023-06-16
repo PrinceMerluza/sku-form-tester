@@ -57,17 +57,27 @@ export default function MeteredForm(props: IProps) {
 			return;
 		}
 
+		// billing values
 		setLocalBillingData(() => {
 			const billing = prefill.billing;
 			const ret: BillingData = {
 				annualPrepay: billing.annualPrepay,
 				annualMonthToMonth: billing.annualMonthToMonth,
+				monthToMonth: billing.monthToMonth,
+				unitOfMeasure: billing.unitOfMeasure,
 			};
-			if (billing.monthToMonth) {
-				ret.monthToMonth = billing.monthToMonth;
+			if (billing.minMonthlyCommit) {
+				ret.minMonthlyCommit = billing.minMonthlyCommit;
+				setHasMonthlyCommit(true);
 			}
 			return ret;
 		});
+
+		// Preselct the prefill unit of measurement in dropdown
+		const unitSelected = unitsOfMeasure.find((u) => {
+			return u.value === prefill.billing.unitOfMeasure;
+		});
+		if (unitSelected) unitSelected.isSelected = true;
 
 		setPrefillsLoaded(true);
 	}, [prefill]);
@@ -143,7 +153,7 @@ export default function MeteredForm(props: IProps) {
 								<DxTextbox
 									inputType="decimal"
 									label={`Month-to-month (per ${unitOfMeasure})`}
-									initialValue="0"
+									initialValue={localBillingData.monthToMonth?.toString()}
 									onChange={(val) => updateLocalBillingData('monthToMonth', parseFloat(val))}
 								/>
 							</ValidationFieldContainer>
@@ -168,7 +178,7 @@ export default function MeteredForm(props: IProps) {
 										<DxTextbox
 											inputType="decimal"
 											label="Monthly Commit"
-											initialValue="0"
+											initialValue={localBillingData.minMonthlyCommit?.toString()}
 											className="optional-item"
 											onChange={(val) => updateLocalBillingData('minMonthlyCommit', parseFloat(val))}
 										/>
