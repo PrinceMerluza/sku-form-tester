@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "camelcase": "^7.0.1",
+    "csvtojson": "^2.0.10",
     "file-saver": "^2.0.5",
     "genesys-dev-icons": "^0.1.15",
     "genesys-react-components": "0.1.3",

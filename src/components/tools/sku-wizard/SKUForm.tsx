@@ -21,9 +21,11 @@ interface IProps {
 	isAddOn: boolean;
 	productName?: string;
 	description?: string;
+	prefill?: UsageProduct | MeteredProduct | FlatFeeProduct;
 }
 
 export default function SKUForm(props: IProps) {
+	const prefill = props.prefill;
 	const skuId = props.skuId;
 	const onDelete = props.onDelete;
 	const onSave = props.onSave;
@@ -47,6 +49,32 @@ export default function SKUForm(props: IProps) {
 	const [wizardVisible, setWizardVisible] = useState<boolean>(true);
 	const [formHasErrors, setFormHasErrors] = useState<boolean>(false); // inner form for billing data
 	const [errors, setErrors] = useState<{ [key: string]: Array<string> }>({});
+	const [prefillsLoaded, setPrefillsLoaded] = useState<boolean>(false);
+
+	// Initialize placeholder if loading from existing data
+	useEffect(() => {
+		if (!prefill) {
+			setPrefillsLoaded(true);
+			return;
+		}
+		setProductName(prefill.name);
+		setProductDescription(prefill.description);
+		setBillingType(prefill.type);
+		setNotes(prefill.notes || '');
+		setWizardVisible(false);
+
+		setOneTimeFee(prefill.startupFee);
+
+		switch (prefill.type) {
+			case BillingType.USAGE_TYPE: {
+				const usagePrefill = prefill as UsageProduct;
+				setBillingData([usagePrefill.namedBilling, usagePrefill.concurrentBilling]);
+			}
+			// TODO:
+		}
+
+		setPrefillsLoaded(true);
+	}, [prefill]);
 
 	const productsItemGroup: DxItemGroupItem[] = addons
 		.filter((product) => 'name' in product)
@@ -189,15 +217,16 @@ export default function SKUForm(props: IProps) {
 					) : null}
 
 					{/* Forms for different product types */}
-					{billingType == BillingType.USAGE_TYPE ? <UsageForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} /> : null}
-					{billingType == BillingType.MIMIC ? <UsageForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} /> : null}
-					{billingType == BillingType.METERED_HIGHWATER ? (
-						<MeteredForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} />
+					{billingType == BillingType.USAGE_TYPE || billingType == BillingType.MIMIC ? (
+						<UsageForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} prefill={prefill as UsageProduct} />
 					) : null}
-					{billingType == BillingType.METERED_SUM ? (
-						<MeteredForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} />
+
+					{billingType == BillingType.METERED_HIGHWATER || billingType == BillingType.METERED_SUM ? (
+						<MeteredForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} prefill={prefill as MeteredProduct} />
 					) : null}
-					{billingType == BillingType.FLAT_FEE ? <FlatFeeForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} /> : null}
+					{billingType == BillingType.FLAT_FEE ? (
+						<FlatFeeForm setBillingData={setBillingData} setFormHasErrors={setFormHasErrors} prefill={prefill as FlatFeeProduct} />
+					) : null}
 
 					{/* Add-Ons Section */}
 					{!isAddon ? (
@@ -267,6 +296,7 @@ export default function SKUForm(props: IProps) {
 							label="Additional Notes"
 							clearButton={true}
 							onChange={(value: string) => setNotes(value)}
+							initialValue={notes}
 							description="Other information you may want to add on this product"
 						/>
 					</div>
@@ -305,7 +335,7 @@ export default function SKUForm(props: IProps) {
 				/>
 			</div>
 			{/* Editable Form */}
-			<div className={lockedIn ? 'hidden' : ''}>{getForm()}</div>
+			{prefillsLoaded ? <div className={lockedIn ? 'hidden' : ''}>{getForm()}</div> : null}
 		</div>
 	);
 }

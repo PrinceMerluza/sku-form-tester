@@ -119,3 +119,106 @@ export enum UnitOfMeasure {
 	USER = 'user',
 	WEB_VISIT = 'web-visit',
 }
+
+// EXPORTER / IMPORTER
+export interface JSONFileData {
+	fileName: string;
+	json: string;
+}
+
+export interface BillableAppJSON {
+	vendorEmail: string;
+	definitions: (
+		| UsageNamedDefinition
+		| UsageConcurrentDefinition
+		| MimicDefinition
+		| MeteredHWMDefinition
+		| MeteredSumDefinition
+		| LicenseDefinition
+	)[];
+	optionalAppIds?: string[];
+	requiredAppIds?: string[][];
+}
+
+export interface QuickStartJSON {
+	vendorEmail: string;
+	definitions: QuickStartDefinition[];
+}
+
+export interface UsageNamedDefinition {
+	partNumber: string;
+	type: 'usage';
+	licenseName: string;
+	productNames: string[];
+	unitOfMeasure: 'user';
+}
+
+export interface UsageConcurrentDefinition {
+	partNumber: string;
+	type: 'concurrent';
+	licenseName: string;
+	productNames: string[];
+	unitOfMeasure: 'user';
+}
+
+export interface MimicDefinition {
+	partNumber: string;
+	type: 'mimic';
+	mimicPartNumbers: string[];
+	unitOfMeasure: 'user';
+	productNames?: string[];
+}
+
+export interface MeteredHWMDefinition {
+	partNumber: string;
+	type: 'meteredHighwaterMark';
+	unitOfMeasure: UnitOfMeasure;
+	productNames?: string[];
+}
+
+export interface MeteredSumDefinition {
+	partNumber: string;
+	type: 'meteredSum';
+	unitOfMeasure: UnitOfMeasure;
+	productNames?: string[];
+}
+
+export interface LicenseDefinition {
+	partNumber: string;
+	type: 'recurring';
+	unitOfMeasure: 'license';
+	productNames?: string[];
+}
+
+export interface QuickStartDefinition {
+	partNumber: string;
+	type: 'quickStart';
+	productNames: [];
+	unitOfMeasure: 'unit';
+}
+
+export interface LicenseEntry {
+	id: string;
+	description: string;
+	products: string[];
+	permissions: string[];
+}
+
+export interface DonutProduct {
+	id: string;
+	description: string;
+}
+
+export interface SKUTemplateCSV {
+	'Product Name': string;
+	'Product Description': string;
+	'Premium App Type': string;
+	'Unit of Measure': string;
+	'Annual Prepay': string;
+	'Annual Month-to-Month': string;
+	'Month-to-month': string;
+	'Discount Billing (Tiered)': string;
+	'Required Add-ons': string;
+	'Optional Add-ons': string;
+	Notes: string;
+}

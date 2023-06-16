@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { DxButton, DxTextbox, DxItemGroup, DxItemGroupItem, DxTabbedContent, DxTabPanel } from 'genesys-react-components';
-import { UsageProduct, MeteredProduct, FlatFeeProduct, EmptyProduct, SKUFormData } from './types';
+import { UsageProduct, MeteredProduct, FlatFeeProduct, EmptyProduct, SKUFormData, BillingType } from './types';
 import SKUForm from './SKUForm';
 import ValidationFieldContainer from '../utils/validation/ValidationFieldContainer';
 import Validator from '../utils/validation/Validator';
 import { exportData } from './SKUExporter';
+import JSZip from 'jszip';
+import SKUImporter from './SKUImporter';
 
 import './SKUFormRoot.scss';
 
@@ -256,6 +258,15 @@ export default function SKUFormRoot() {
 
 		const fileObj = target.files[0];
 		if (!fileObj) return;
+
+		JSZip.loadAsync(fileObj)
+			.then((zip) => {
+				const importer = new SKUImporter(zip);
+				return importer.getProducts();
+			})
+			.then((data) => {
+				setProducts(data);
+			});
 	};
 
 	return (
@@ -310,6 +321,35 @@ export default function SKUFormRoot() {
 							Import SKUs
 						</DxButton>
 					</div>
+					<SKUForm
+						onSave={() => {
+							console.log('a');
+						}}
+						onDelete={() => {
+							console.log('a');
+						}}
+						onEdit={() => {
+							console.log('a');
+						}}
+						allProducts={[]}
+						skuId="1"
+						isAddOn={false}
+						prefill={{
+							id: '1',
+							name: 'test name',
+							description: 'test description',
+							type: BillingType.USAGE_TYPE,
+							namedBilling: { annualPrepay: 100, annualMonthToMonth: 101, monthToMonth: 103 },
+							concurrentBilling: { annualPrepay: 200, annualMonthToMonth: 201, minMonthlyCommit: 204 },
+							startupFee: {
+								name: 'startup fee',
+								description: 'startup fee desc',
+								oneTimeFee: 99,
+								required: false,
+							},
+							notes: 'notes',
+						}}
+					/>
 					<div>{baseProductsList}</div>
 					<div className={`add-product ${addProductEnabled ? '' : 'hidden'}`}>
 						<DxButton

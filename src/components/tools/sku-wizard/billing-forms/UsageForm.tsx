@@ -2,18 +2,21 @@ import React, { useState, useEffect } from 'react';
 import ValidationFieldContainer from '../../utils/validation/ValidationFieldContainer';
 import { DxTextbox, DxToggle } from 'genesys-react-components';
 import SKUTierBillingForm from './tier-billing/SKUTierBillingForm';
-import { BillingData } from '../types';
+import { BillingData, UsageProduct } from '../types';
 import Validator from '../../utils/validation/Validator';
 
 interface IProps {
 	setBillingData: React.Dispatch<React.SetStateAction<BillingData[]>>;
 	setFormHasErrors: React.Dispatch<React.SetStateAction<boolean>>;
+	prefill?: UsageProduct;
 }
 
 export default function UsageForm(props: IProps) {
+	const prefill = props.prefill;
 	const setBillingData = props.setBillingData;
 	const setFormHasErrors = props.setFormHasErrors;
 	const [errors, setErrors] = useState<{ [key: string]: Array<string> }>({});
+	const [prefillsLoaded, setPrefillsLoaded] = useState<boolean>(false);
 
 	// Named Billing
 	const [namedBillingData, setNamedBillingData] = useState<BillingData>({
@@ -33,7 +36,51 @@ export default function UsageForm(props: IProps) {
 	const [concUseTieredBilling, setConcUseTieredBilling] = useState<boolean | undefined>(false);
 	const [concHasMonthlyCommit, setConcHasMonthlyCommit] = useState<boolean | undefined>(false);
 
-	// VALIDATION
+	// Prefill
+	useEffect(() => {
+		if (!prefill) {
+			setPrefillsLoaded(true);
+			return;
+		}
+
+		// Billing Data
+		setNamedBillingData(() => {
+			const billing = prefill.namedBilling;
+			const ret: BillingData = {
+				annualPrepay: billing.annualPrepay,
+				annualMonthToMonth: billing.annualMonthToMonth,
+			};
+			if (billing.monthToMonth) {
+				ret.monthToMonth = billing.monthToMonth;
+				setNamedM2mEnabled(true);
+			}
+			if (billing.minMonthlyCommit) {
+				ret.minMonthlyCommit = billing.minMonthlyCommit;
+				setNamedHasMonthlyCommit(true);
+			}
+			return ret;
+		});
+		setConcBillingData(() => {
+			const billing = prefill.concurrentBilling;
+			const ret: BillingData = {
+				annualPrepay: billing.annualPrepay,
+				annualMonthToMonth: billing.annualMonthToMonth,
+			};
+			if (billing.monthToMonth) {
+				ret.monthToMonth = billing.monthToMonth;
+				setConcM2mEnabled(true);
+			}
+			if (billing.minMonthlyCommit) {
+				ret.minMonthlyCommit = billing.minMonthlyCommit;
+				setConcHasMonthlyCommit(true);
+			}
+			return ret;
+		});
+
+		setPrefillsLoaded(true);
+	}, [prefill]);
+
+	// VALIDATION and bubble up billing data
 	useEffect(() => {
 		const newErrors: { [key: string]: Array<string> } = {};
 		const validator: Validator = new Validator(newErrors);
@@ -145,7 +192,7 @@ export default function UsageForm(props: IProps) {
 								<DxTextbox
 									inputType="decimal"
 									label="Annual Prepay (per month)"
-									initialValue="0"
+									initialValue={namedBillingData.annualPrepay.toString()}
 									onChange={(val) => updateNamedBillingData('annualPrepay', parseFloat(val))}
 								/>
 							</ValidationFieldContainer>
@@ -153,7 +200,7 @@ export default function UsageForm(props: IProps) {
 								<DxTextbox
 									inputType="decimal"
 									label="Annual Month-to-month (per month)"
-									initialValue="0"
+									initialValue={namedBillingData.annualMonthToMonth.toString()}
 									onChange={(val) => updateNamedBillingData('annualMonthToMonth', parseFloat(val))}
 								/>
 							</ValidationFieldContainer>
@@ -173,7 +220,7 @@ export default function UsageForm(props: IProps) {
 										<DxTextbox
 											inputType="decimal"
 											label="Month-to-month"
-											initialValue="0"
+											initialValue={namedBillingData.monthToMonth?.toString()}
 											className="optional-item"
 											onChange={(val) => updateNamedBillingData('monthToMonth', parseFloat(val))}
 										/>
@@ -187,7 +234,7 @@ export default function UsageForm(props: IProps) {
 										<DxTextbox
 											inputType="decimal"
 											label="Monthly Commit"
-											initialValue="0"
+											initialValue={namedBillingData.minMonthlyCommit?.toString()}
 											className="optional-item"
 											onChange={(val) => updateNamedBillingData('minMonthlyCommit', parseFloat(val))}
 										/>
@@ -220,7 +267,7 @@ export default function UsageForm(props: IProps) {
 								<DxTextbox
 									inputType="decimal"
 									label="Annual Prepay (per month)"
-									initialValue="0"
+									initialValue={concBillingData.annualPrepay.toString()}
 									onChange={(val) => updateConcBillingData('annualPrepay', parseFloat(val))}
 								/>
 							</ValidationFieldContainer>
@@ -228,7 +275,7 @@ export default function UsageForm(props: IProps) {
 								<DxTextbox
 									inputType="decimal"
 									label="Annual Month-to-month (per month)"
-									initialValue="0"
+									initialValue={concBillingData.annualMonthToMonth.toString()}
 									onChange={(val) => updateConcBillingData('annualMonthToMonth', parseFloat(val))}
 								/>
 							</ValidationFieldContainer>
@@ -248,7 +295,7 @@ export default function UsageForm(props: IProps) {
 										<DxTextbox
 											inputType="decimal"
 											label="Month-to-month"
-											initialValue="0"
+											initialValue={concBillingData.monthToMonth?.toString()}
 											className="optional-item"
 											onChange={(val) => updateConcBillingData('monthToMonth', parseFloat(val))}
 										/>
@@ -262,7 +309,7 @@ export default function UsageForm(props: IProps) {
 										<DxTextbox
 											inputType="decimal"
 											label="Monthly Commit"
-											initialValue="0"
+											initialValue={concBillingData.minMonthlyCommit?.toString()}
 											className="optional-item"
 											onChange={(val) => updateConcBillingData('minMonthlyCommit', parseFloat(val))}
 										/>
@@ -290,5 +337,5 @@ export default function UsageForm(props: IProps) {
 		);
 	};
 
-	return <div className="usage-form-container">{getAmountsForm()}</div>;
+	return <div className="usage-form-container">{prefillsLoaded ? getAmountsForm() : null}</div>;
 }

@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import ValidationFieldContainer from '../../utils/validation/ValidationFieldContainer';
 import { DxTextbox, DxToggle } from 'genesys-react-components';
 import SKUTierBillingForm from './tier-billing/SKUTierBillingForm';
-import { BillingData } from '../types';
+import { BillingData, FlatFeeProduct } from '../types';
 import Validator from '../../utils/validation/Validator';
 
 interface IProps {
 	setBillingData: React.Dispatch<React.SetStateAction<BillingData[]>>;
 	setFormHasErrors: React.Dispatch<React.SetStateAction<boolean>>;
+	prefill?: FlatFeeProduct;
 }
 
 export default function FlatFeeForm(props: IProps) {

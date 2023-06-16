@@ -1,96 +1,22 @@
-import { SKUFormData, UsageProduct, MeteredProduct, FlatFeeProduct, EmptyProduct, BillingType, UnitOfMeasure, BillingData } from './types';
+import {
+	SKUFormData,
+	UsageProduct,
+	MeteredProduct,
+	FlatFeeProduct,
+	EmptyProduct,
+	BillingType,
+	UnitOfMeasure,
+	BillingData,
+	BillableAppJSON,
+	JSONFileData,
+	QuickStartJSON,
+	DonutProduct,
+	LicenseEntry,
+} from './types';
 import camelCase from 'camelcase';
 import JSZip from 'jszip';
 import FileSaver from 'file-saver';
 import { StartUpFee } from './types';
-
-interface JSONFileData {
-	fileName: string;
-	json: string;
-}
-
-interface BillableAppJSON {
-	vendorEmail: string;
-	definitions: (
-		| UsageNamedDefinition
-		| UsageConcurrentDefinition
-		| MimicDefinition
-		| MeteredHWMDefinition
-		| MeteredSumDefinition
-		| LicenseDefinition
-	)[];
-	optionalAppIds?: string[];
-	requiredAppIds?: string[][];
-}
-
-interface QuickStartJSON {
-	vendorEmail: string;
-	definitions: QuickStartDefinition[];
-}
-
-interface UsageNamedDefinition {
-	partNumber: string;
-	type: 'usage';
-	licenseName: string;
-	productNames: string[];
-	unitOfMeasure: 'user';
-}
-
-interface UsageConcurrentDefinition {
-	partNumber: string;
-	type: 'concurrent';
-	licenseName: string;
-	productNames: string[];
-	unitOfMeasure: 'user';
-}
-
-interface MimicDefinition {
-	partNumber: string;
-	type: 'mimic';
-	mimicPartNumbers: string[];
-	unitOfMeasure: 'user';
-	productNames?: string[];
-}
-
-interface MeteredHWMDefinition {
-	partNumber: string;
-	type: 'meteredHighwaterMark';
-	unitOfMeasure: UnitOfMeasure;
-	productNames?: string[];
-}
-
-interface MeteredSumDefinition {
-	partNumber: string;
-	type: 'meteredSum';
-	unitOfMeasure: UnitOfMeasure;
-	productNames?: string[];
-}
-
-interface LicenseDefinition {
-	partNumber: string;
-	type: 'recurring';
-	unitOfMeasure: 'license';
-	productNames?: string[];
-}
-
-interface QuickStartDefinition {
-	partNumber: string;
-	type: 'quickStart';
-	productNames: [];
-	unitOfMeasure: 'unit';
-}
-
-interface LicenseEntry {
-	id: string;
-	description: string;
-	products: string[];
-	permissions: string[];
-}
-
-interface DonutProduct {
-	id: string;
-	description: string;
-}
 
 const getLicenseName = (productName: string): string => {
 	return `${camelCase(productName)}License`;
@@ -252,7 +178,7 @@ const serializeProduct = (
 		// Add the quickstart to return JSON data
 		ret.push({
 			fileName: `${startupFileName}.json`,
-			json: JSON.stringify(quickStartJSON),
+			json: JSON.stringify(quickStartJSON, null, 4),
 		});
 	}
 
@@ -271,7 +197,7 @@ const serializeProduct = (
 	// Add the product data
 	ret.push({
 		fileName: `${fileName}.json`,
-		json: JSON.stringify(billableAppContent),
+		json: JSON.stringify(billableAppContent, null, 4),
 	});
 
 	return ret;
@@ -325,7 +251,7 @@ const zipDonutProducts = (zip: JSZip, formData: SKUFormData) => {
 			};
 			const fileData: JSONFileData = {
 				fileName: `${productName}.json`,
-				json: JSON.stringify(donutEntry),
+				json: JSON.stringify(donutEntry, null, 4),
 			};
 
 			// Add only if there's not already existing with same productName
@@ -364,7 +290,7 @@ const zipDonutLicenses = (zip: JSZip, formData: SKUFormData) => {
 			});
 		});
 
-	licenses.file('pureCloudLicenses.json', JSON.stringify(licenseEntries));
+	licenses.file('pureCloudLicenses.json', JSON.stringify(licenseEntries, null, 4));
 };
 
 // Create the CSV file representation for the form values
@@ -379,8 +305,10 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 	// Create an array of strings representing the required or optional add-ons
 	// This also checks the possible special entry of a quickstart 'product'
 	const createDependencyArr = (product: UsageProduct | MeteredProduct | FlatFeeProduct, requiredDeps: boolean): string => {
+		// Add the dependencies (except startup fee)
 		const ret = requiredDeps ? product.requires?.map((p) => p.name) || [] : product.optional?.map((p) => p.name) || [];
-		if (product.startupFee) ret.push(product.startupFee.name);
+		// Add startup fee
+		if (product.startupFee && product.startupFee.required === requiredDeps) ret.push(product.startupFee.name);
 
 		return ret.join(', ');
 	};

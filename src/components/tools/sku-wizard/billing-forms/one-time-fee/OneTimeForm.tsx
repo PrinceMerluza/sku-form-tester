@@ -42,6 +42,7 @@ export default function OneTimeForm(props: IProps) {
 									inputType="text"
 									label="Quickstart Display Name"
 									placeholder="Product Quickstart"
+									initialValue={oneTimeFee?.name}
 									onChange={(val) => {
 										setOneTimeFee((prevData) => {
 											const tmpObj = Object.assign({}, prevData);
@@ -59,6 +60,7 @@ export default function OneTimeForm(props: IProps) {
 									inputType="text"
 									label="Quickstart Description"
 									placeholder="Description of what the quickstart includes"
+									initialValue={oneTimeFee?.description}
 									onChange={(val) => {
 										setOneTimeFee((prevData) => {
 											const tmpObj = Object.assign({}, prevData);
@@ -75,7 +77,7 @@ export default function OneTimeForm(props: IProps) {
 								<DxTextbox
 									inputType="decimal"
 									label="Amount"
-									initialValue="0"
+									initialValue={oneTimeFee?.oneTimeFee.toString()}
 									onChange={(val) => {
 										setOneTimeFee((prevData) => {
 											const tmpObj = Object.assign({}, prevData);

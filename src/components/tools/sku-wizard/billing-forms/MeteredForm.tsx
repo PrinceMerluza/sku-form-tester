@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ValidationFieldContainer from '../../utils/validation/ValidationFieldContainer';
 import { DxTextbox, DxToggle } from 'genesys-react-components';
 import SKUTierBillingForm from './tier-billing/SKUTierBillingForm';
-import { BillingData } from '../types';
+import { BillingData, MeteredProduct } from '../types';
 import Validator from '../../utils/validation/Validator';
 import { UnitOfMeasure } from '../types';
 import { DxItemGroupItem, DxItemGroup } from 'genesys-react-components';
@@ -10,6 +10,7 @@ import { DxItemGroupItem, DxItemGroup } from 'genesys-react-components';
 interface IProps {
 	setBillingData: React.Dispatch<React.SetStateAction<BillingData[]>>;
 	setFormHasErrors: React.Dispatch<React.SetStateAction<boolean>>;
+	prefill?: MeteredProduct;
 }
 
 const unitsOfMeasure: DxItemGroupItem[] = [
@@ -34,6 +35,7 @@ const unitsOfMeasure: DxItemGroupItem[] = [
 ];
 
 export default function MeteredForm(props: IProps) {
+	const prefill = props.prefill;
 	const setBillingData = props.setBillingData;
 	const setFormHasErrors = props.setFormHasErrors;
 	const [localBillingData, setLocalBillingData] = useState<BillingData>({
@@ -44,8 +46,31 @@ export default function MeteredForm(props: IProps) {
 	const [hasMonthlyCommit, setHasMonthlyCommit] = useState<boolean | undefined>(false);
 	const [useTieredBilling, setUseTieredBilling] = useState<boolean | undefined>(false);
 	const [unitOfMeasure, setUnitOfMeasure] = useState<string>(UnitOfMeasure.UNIT);
+	const [prefillsLoaded, setPrefillsLoaded] = useState<boolean>(false);
 
 	const [errors, setErrors] = useState<{ [key: string]: Array<string> }>({});
+
+	// Prefill
+	useEffect(() => {
+		if (!prefill) {
+			setPrefillsLoaded(true);
+			return;
+		}
+
+		setLocalBillingData(() => {
+			const billing = prefill.billing;
+			const ret: BillingData = {
+				annualPrepay: billing.annualPrepay,
+				annualMonthToMonth: billing.annualMonthToMonth,
+			};
+			if (billing.monthToMonth) {
+				ret.monthToMonth = billing.monthToMonth;
+			}
+			return ret;
+		});
+
+		setPrefillsLoaded(true);
+	}, [prefill]);
 
 	// VALIDATION
 	useEffect(() => {
@@ -171,5 +196,5 @@ export default function MeteredForm(props: IProps) {
 		);
 	};
 
-	return <div>{getAmountsForm()}</div>;
+	return <div>{prefillsLoaded ? getAmountsForm() : null}</div>;
 }
