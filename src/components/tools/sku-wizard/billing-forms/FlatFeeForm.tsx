@@ -12,6 +12,7 @@ interface IProps {
 }
 
 export default function FlatFeeForm(props: IProps) {
+	const prefill = props.prefill;
 	const setBillingData = props.setBillingData;
 	const setFormHasErrors = props.setFormHasErrors;
 	const [localBillingData, setLocalBillingData] = useState<BillingData>({
@@ -19,8 +20,34 @@ export default function FlatFeeForm(props: IProps) {
 		annualMonthToMonth: 0,
 	});
 	const [m2mEnabled, setM2mEnabled] = useState<boolean | undefined>(false);
+	const [prefillsLoaded, setPrefillsLoaded] = useState<boolean>(false);
 
 	const [errors, setErrors] = useState<{ [key: string]: Array<string> }>({});
+
+	// Prefill
+	useEffect(() => {
+		if (!prefill) {
+			setPrefillsLoaded(true);
+			return;
+		}
+
+		// billing values
+		setLocalBillingData(() => {
+			const billing = prefill.billing;
+			const ret: BillingData = {
+				annualPrepay: billing.annualPrepay,
+				annualMonthToMonth: billing.annualMonthToMonth,
+				monthToMonth: billing.monthToMonth,
+			};
+			if (billing.monthToMonth) {
+				ret.monthToMonth = billing.monthToMonth;
+				setM2mEnabled(true);
+			}
+			return ret;
+		});
+
+		setPrefillsLoaded(true);
+	}, [prefill]);
 
 	// VALIDATION
 	useEffect(() => {
@@ -79,7 +106,7 @@ export default function FlatFeeForm(props: IProps) {
 								<DxTextbox
 									inputType="decimal"
 									label="Annual Prepay (per month)"
-									initialValue="0"
+									initialValue={localBillingData.annualPrepay.toString()}
 									onChange={(val) => updateLocalBillingData('annualPrepay', parseFloat(val))}
 								/>
 							</ValidationFieldContainer>
@@ -87,7 +114,7 @@ export default function FlatFeeForm(props: IProps) {
 								<DxTextbox
 									inputType="decimal"
 									label="Annual Month-to-month (per month)"
-									initialValue="0"
+									initialValue={localBillingData.annualMonthToMonth.toString()}
 									onChange={(val) => updateLocalBillingData('annualMonthToMonth', parseFloat(val))}
 								/>
 							</ValidationFieldContainer>
@@ -106,7 +133,7 @@ export default function FlatFeeForm(props: IProps) {
 									<DxTextbox
 										inputType="decimal"
 										label="Month-to-month"
-										initialValue="0"
+										initialValue={localBillingData.monthToMonth?.toString()}
 										className="optional-item"
 										onChange={(val) => updateLocalBillingData('monthToMonth', parseFloat(val))}
 									/>
@@ -119,5 +146,5 @@ export default function FlatFeeForm(props: IProps) {
 		);
 	};
 
-	return <div>{getAmountsForm()}</div>;
+	return <div>{prefillsLoaded ? getAmountsForm() : null}</div>;
 }

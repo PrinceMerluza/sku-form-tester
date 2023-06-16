@@ -336,6 +336,38 @@ export default function SKUFormRoot() {
 						isAddOn={false}
 						prefill={{
 							id: '1',
+							name: 'test license name',
+							description: 'test license description',
+							type: BillingType.FLAT_FEE,
+							billing: {
+								annualPrepay: 1,
+								annualMonthToMonth: 2,
+								monthToMonth: 3,
+							},
+							startupFee: {
+								name: 'startup fee',
+								description: 'startup fee desc',
+								oneTimeFee: 99,
+								required: true,
+							},
+							notes: 'license notes',
+						}}
+					/>
+					<SKUForm
+						onSave={() => {
+							console.log('a');
+						}}
+						onDelete={() => {
+							console.log('a');
+						}}
+						onEdit={() => {
+							console.log('a');
+						}}
+						allProducts={[]}
+						skuId="1"
+						isAddOn={false}
+						prefill={{
+							id: '1',
 							name: 'test metered name',
 							description: 'test metered description',
 							type: BillingType.METERED_SUM,
