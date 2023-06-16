@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DxButton, DxTextbox, DxToggle } from 'genesys-react-components';
-import { BillingTier, SKU } from '../../types';
+import { BillingTier } from '../../types';
 
 import './SKUTierBillingEntry.scss';
 
@@ -61,6 +61,7 @@ export default function SKUTierBillingEntry(props: IProps) {
 				className="tier-entry-textbox"
 				inputType="decimal"
 				label="To"
+				initialValue={String(tier.range.to)}
 				disabled={disableToInput}
 				changeDebounceMs={100}
 				onChange={(val) => updateTo(parseFloat(val))}
@@ -69,6 +70,7 @@ export default function SKUTierBillingEntry(props: IProps) {
 				className="tier-entry-textbox"
 				inputType="decimal"
 				label="Annual Prepay (per month)"
+				initialValue={String(tier.annualPrepay)}
 				changeDebounceMs={100}
 				onChange={(val) => updateAnnualPrepay(parseFloat(val))}
 			/>
@@ -76,6 +78,7 @@ export default function SKUTierBillingEntry(props: IProps) {
 				className="tier-entry-textbox"
 				inputType="decimal"
 				label="Annual Month-to-month (per month)"
+				initialValue={String(tier.annualMonthToMonth)}
 				changeDebounceMs={100}
 				onChange={(val) => updateAnnualM2M(parseFloat(val))}
 			/>

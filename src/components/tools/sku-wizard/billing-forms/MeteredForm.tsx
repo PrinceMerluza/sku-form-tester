@@ -70,6 +70,11 @@ export default function MeteredForm(props: IProps) {
 				ret.minMonthlyCommit = billing.minMonthlyCommit;
 				setHasMonthlyCommit(true);
 			}
+			if (billing.useTiers && billing.tiers) {
+				ret.useTiers = true;
+				ret.tiers = billing.tiers;
+				setUseTieredBilling(true);
+			}
 			return ret;
 		});
 
@@ -191,7 +196,7 @@ export default function MeteredForm(props: IProps) {
 					<div>
 						<DxToggle
 							label="Enable Volume Discounts"
-							value={useTieredBilling}
+							initialValue={useTieredBilling}
 							onChange={(val) => {
 								setUseTieredBilling(val);
 								updateLocalBillingData('useTiers', val);

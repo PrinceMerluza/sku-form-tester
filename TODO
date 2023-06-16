@@ -4,4 +4,4 @@ TODO Implement friendly HTML export for viewing SKUs
 
 BUG STieredbilling on form in metered is set to show annual prepay/m2m but currently not implemented for metered.
 
-TODO Load tiered billing
+TODO Load add-ons

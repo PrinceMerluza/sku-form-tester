@@ -58,6 +58,11 @@ export default function UsageForm(props: IProps) {
 				ret.minMonthlyCommit = billing.minMonthlyCommit;
 				setNamedHasMonthlyCommit(true);
 			}
+			if (billing.useTiers && billing.tiers) {
+				ret.useTiers = true;
+				ret.tiers = billing.tiers;
+				setNamedUseTieredBilling(true);
+			}
 			return ret;
 		});
 		setConcBillingData(() => {
@@ -73,6 +78,11 @@ export default function UsageForm(props: IProps) {
 			if (billing.minMonthlyCommit) {
 				ret.minMonthlyCommit = billing.minMonthlyCommit;
 				setConcHasMonthlyCommit(true);
+			}
+			if (billing.useTiers && billing.tiers) {
+				ret.useTiers = true;
+				ret.tiers = billing.tiers;
+				setConcUseTieredBilling(true);
 			}
 			return ret;
 		});
@@ -151,16 +161,6 @@ export default function UsageForm(props: IProps) {
 		setFormHasErrors(Object.keys(newErrors).length > 0);
 		setBillingData([namedBillingData, concBillingData]);
 	}, [setBillingData, setFormHasErrors, namedBillingData, concBillingData]);
-
-	// Reset tier values if toggle is disabled
-	useEffect(() => {
-		if (namedUseTieredBilling) return;
-		updateNamedBillingData('tiers', []);
-	}, [namedUseTieredBilling]);
-	useEffect(() => {
-		if (concUseTieredBilling) return;
-		updateConcBillingData('tiers', []);
-	}, [concUseTieredBilling]);
 
 	const updateNamedBillingData = (name: string, value: any) => {
 		setNamedBillingData((prevData) => {
@@ -247,7 +247,7 @@ export default function UsageForm(props: IProps) {
 					<div>
 						<DxToggle
 							label="Enable Volume Discounts"
-							value={namedUseTieredBilling}
+							initialValue={namedUseTieredBilling}
 							onChange={(val) => {
 								setNamedUseTieredBilling(val);
 								updateNamedBillingData('useTiers', val);
@@ -322,7 +322,7 @@ export default function UsageForm(props: IProps) {
 					<div>
 						<DxToggle
 							label="Enable Volume Discounts"
-							value={concUseTieredBilling}
+							initialValue={concUseTieredBilling}
 							onChange={(val) => {
 								setConcUseTieredBilling(val);
 								updateConcBillingData('useTiers', val);

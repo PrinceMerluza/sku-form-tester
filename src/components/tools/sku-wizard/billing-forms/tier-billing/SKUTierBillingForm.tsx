@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DxButton, DxTextbox, DxToggle } from 'genesys-react-components';
 import ValidationFieldContainer from '../../../utils/validation/ValidationFieldContainer';
-import { BillingTier, BillingData, SKU } from '../../types';
+import { BillingTier, BillingData } from '../../types';
 import SKUTierBillingEntry from './SKUTierBillingEntry';
 
 import './SKUTierBillingForm.scss';
@@ -12,14 +12,21 @@ interface IProps {
 	errors: { [key: string]: Array<string> };
 }
 
+/**
+ * The tieredbilling component uses the parent form's billing data (props). It has no 'local' data
+ * to store and save unlike the billing form themselves.
+ * @param props
+ * @returns
+ */
 export default function SKUTierBillingForm(props: IProps) {
 	const errors = props.errors;
 	const billingData = props.billingData;
-	const tiers = billingData.tiers;
 	const setBillingData = props.setBillingData;
+	const tiers = billingData.tiers;
 	const [startingTo, setStartingTo] = useState<number>(); // The 'To' of the first billing tier
 	const [startingToDisabled, setStartingToDisabled] = useState<boolean>(false);
 
+	// Disable the first 'To' when there are other tiers
 	useEffect(() => {
 		setStartingToDisabled((tiers?.length || 0) > 0);
 	}, [billingData, tiers, setStartingToDisabled]);
@@ -99,22 +106,20 @@ export default function SKUTierBillingForm(props: IProps) {
 	};
 
 	// The view components for the tiers
-	const tierList = tiers
-		? tiers.map((tier, idx) => {
-				return (
-					<ValidationFieldContainer errors={errors} key={tier.id} name={`tier-${tier.id}`}>
-						<SKUTierBillingEntry
-							errors={errors}
-							tier={tier}
-							setTierValue={(tierVal) => updateTier(idx, tierVal)}
-							onDelete={() => deleteTier(idx)}
-							disableDelete={idx !== tiers.length - 1}
-							disableToInput={idx !== tiers.length - 1}
-						/>
-					</ValidationFieldContainer>
-				);
-		  })
-		: null;
+	const tierList = tiers?.map((tier, idx) => {
+		return (
+			<ValidationFieldContainer errors={errors} key={tier.id} name={`tier-${tier.id}`}>
+				<SKUTierBillingEntry
+					errors={errors}
+					tier={tier}
+					setTierValue={(tierVal) => updateTier(idx, tierVal)}
+					onDelete={() => deleteTier(idx)}
+					disableDelete={idx !== tiers.length - 1}
+					disableToInput={idx !== tiers.length - 1}
+				/>
+			</ValidationFieldContainer>
+		);
+	});
 
 	return (
 		<div className={'billing-form'}>
