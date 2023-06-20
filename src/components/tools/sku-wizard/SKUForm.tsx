@@ -21,7 +21,7 @@ interface IProps {
 	isAddOn: boolean;
 	productName?: string;
 	description?: string;
-	prefill?: UsageProduct | MeteredProduct | FlatFeeProduct;
+	prefill?: UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct | undefined;
 }
 
 export default function SKUForm(props: IProps) {

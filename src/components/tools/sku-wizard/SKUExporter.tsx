@@ -12,6 +12,7 @@ import {
 	QuickStartJSON,
 	DonutProduct,
 	LicenseEntry,
+	UsageUnit,
 } from './types';
 import camelCase from 'camelcase';
 import JSZip from 'jszip';
@@ -375,7 +376,7 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 					usageP.name,
 					usageP.description,
 					usageP.type,
-					'User',
+					UsageUnit.NAMED,
 					usageP.namedBilling.annualPrepay.toString(),
 					usageP.namedBilling.annualMonthToMonth.toString(),
 					usageP.namedBilling.monthToMonth?.toString() || 'n/a',
@@ -389,7 +390,7 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 					usageP.name,
 					usageP.description,
 					usageP.type,
-					'User',
+					UsageUnit.CONCURRENT,
 					usageP.concurrentBilling.annualPrepay.toString(),
 					usageP.concurrentBilling.annualMonthToMonth.toString(),
 					usageP.concurrentBilling.monthToMonth?.toString() || 'n/a',

@@ -222,3 +222,9 @@ export interface SKUTemplateCSV {
 	'Optional Add-ons': string;
 	Notes: string;
 }
+
+// For export as 'unit of measurement'
+export enum UsageUnit {
+	NAMED = 'User (Named)',
+	CONCURRENT = 'User (Concurrent)',
+}

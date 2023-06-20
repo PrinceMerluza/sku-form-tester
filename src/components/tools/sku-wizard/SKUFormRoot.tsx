@@ -129,6 +129,7 @@ export default function SKUFormRoot() {
 					setFormStatus(product.id, false);
 				}}
 				allProducts={products}
+				prefill={product.type ? product : undefined}
 			/>
 		);
 	};
@@ -265,7 +266,11 @@ export default function SKUFormRoot() {
 				return importer.getProducts();
 			})
 			.then((data) => {
+				console.log(data);
 				setProducts(data);
+			})
+			.catch((e) => {
+				console.error(e);
 			});
 	};
 
