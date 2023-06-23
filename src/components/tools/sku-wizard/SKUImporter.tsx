@@ -10,10 +10,11 @@ export default class SKUImporter {
 		this.zipObj = zipObj;
 	}
 
+	// Get and build the products from the CSV file
 	async getProducts(): Promise<(UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[]> {
 		const products: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[] = [];
 
-		// GLoad the SKUTemplate file
+		// Load the SKUTemplate file
 		const skuTemp = this.zipObj.file('SKUTemplate.csv');
 		if (!skuTemp) {
 			throw new Error('cannot open SKUTemplate csv file');
@@ -28,11 +29,12 @@ export default class SKUImporter {
 			.then((csvData) => csvData);
 
 		// Read the rows objects
-		csvData.forEach((row) => {
+		csvData.forEach((row, i) => {
 			const skuData: SKUTemplateCSV = row as SKUTemplateCSV;
 			let product: UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct | null = null;
 
 			switch (skuData.premiumAppType) {
+				// TODO: Other Billign Types
 				case BillingType.USAGE_TYPE:
 				case BillingType.MIMIC: {
 					// Usage Type is special. Check first if product name already in array,
@@ -47,7 +49,7 @@ export default class SKUImporter {
 						product = existingUsageP;
 					} else {
 						product = {
-							id: '4',
+							id: i.toString(),
 							name: skuData.productName,
 							description: skuData.productDescription,
 							type: BillingType.USAGE_TYPE,
@@ -64,6 +66,9 @@ export default class SKUImporter {
 						if (Number(skuData.m2m) > 0) {
 							product.namedBilling.monthToMonth = Number(skuData.m2m);
 						}
+						if (Number(skuData.minMonthlyCommit) > 0) {
+							product.namedBilling.minMonthlyCommit = Number(skuData.minMonthlyCommit);
+						}
 					}
 					if (skuData.unitOfMeasure == UsageUnit.CONCURRENT) {
 						product.concurrentBilling = {
@@ -72,6 +77,9 @@ export default class SKUImporter {
 						};
 						if (Number(skuData.m2m) > 0) {
 							product.concurrentBilling.monthToMonth = Number(skuData.m2m);
+						}
+						if (Number(skuData.minMonthlyCommit) > 0) {
+							product.concurrentBilling.minMonthlyCommit = Number(skuData.minMonthlyCommit);
 						}
 					}
 
