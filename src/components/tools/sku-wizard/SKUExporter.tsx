@@ -22,6 +22,7 @@ import {
 	MimicDefinition,
 	MeteredHWMDefinition,
 	MeteredSumDefinition,
+	TIERED_PREFIX,
 } from './types';
 import camelCase from 'camelcase';
 import JSZip from 'jszip';
@@ -377,7 +378,7 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 	const addTieredBillingCsv = (zip: JSZip, product: UsageProduct | MeteredProduct | FlatFeeProduct, billingData: BillingData): string => {
 		// make sure there is tiers data
 		if (!billingData.useTiers || billingData.tiers?.length === undefined || billingData.tiers.length === 0) return 'n/a';
-		const fileName = `tiered-${product.id}-${camelCase(product.name)}.csv`;
+		const fileName = `${TIERED_PREFIX}${product.id}-${camelCase(product.name)}.csv`;
 
 		const tieredCSVGen = new CSVGenerator<TieredBillingCSV>(['from', 'to', 'annualPrepay', 'annualM2M']);
 		tieredCSVGen.addRow({

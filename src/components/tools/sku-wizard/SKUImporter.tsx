@@ -1,13 +1,84 @@
-import { UsageProduct, MeteredProduct, FlatFeeProduct, EmptyProduct, SKUFormData, SKUTemplateCSV, BillingType, UsageUnit } from './types';
+import {
+	UsageProduct,
+	MeteredProduct,
+	FlatFeeProduct,
+	EmptyProduct,
+	SKUFormData,
+	SKUTemplateCSV,
+	BillingType,
+	UsageUnit,
+	TIERED_PREFIX,
+	TieredBillingCSV,
+	BillingData,
+	BillingTier,
+} from './types';
 import camelCase from 'camelcase';
 import csv from 'csvtojson';
-import JSZip from 'jszip';
+import JSZip, { JSZipObject } from 'jszip';
 
 export default class SKUImporter {
 	zipObj: JSZip;
+	tieredBillingData: { [key: string]: TieredBillingCSV[] } = {};
 
 	constructor(zipObj: JSZip) {
 		this.zipObj = zipObj;
+	}
+
+	// Load the tiered-* csvs and the results will be in tieredBillingData
+	// with key being the filename (tiered-1-appname) which is also the value in SKUTemplate.csv
+	// for reference. And the value is the array of TieredBillingCSV rows
+	private async loadTieredCSVData() {
+		const tieredZipNames: string[] = [];
+		const tieredZipObjs: Promise<any[] | void>[] = [];
+		this.zipObj.forEach((relPath, zipObj) => {
+			if (!(relPath.startsWith(TIERED_PREFIX) && relPath.endsWith('.csv'))) return;
+
+			tieredZipNames.push(relPath);
+			tieredZipObjs.push(
+				zipObj
+					.async('text')
+					.then((csvData) => {
+						return csv().fromString(csvData);
+					})
+					.then((csvData) => csvData)
+					.catch((e) => console.error(e))
+			);
+		});
+		const tieredBillingArr = await Promise.all(tieredZipObjs);
+		for (let i = 0; i < tieredZipNames.length; i++) {
+			this.tieredBillingData[tieredZipNames[i]] = tieredBillingArr[i] as TieredBillingCSV[];
+		}
+	}
+
+	private buildBillingData(skuData: SKUTemplateCSV): BillingData {
+		const billingData: BillingData = {
+			annualPrepay: Number(skuData.annualPrepay),
+			annualMonthToMonth: Number(skuData.annualM2M),
+		};
+		if (Number(skuData.m2m) > 0) {
+			billingData.monthToMonth = Number(skuData.m2m);
+		}
+		if (Number(skuData.minMonthlyCommit) > 0) {
+			billingData.minMonthlyCommit = Number(skuData.minMonthlyCommit);
+		}
+		if (this.tieredBillingData[skuData.tieredBilling]) {
+			billingData.useTiers = true;
+			const tempTiers = this.tieredBillingData[skuData.tieredBilling].map((tierRow, i) => {
+				return {
+					id: i.toString(),
+					range: {
+						from: Number(tierRow.from),
+						to: Number(tierRow.to),
+					},
+					annualPrepay: Number(tierRow.annualPrepay),
+					annualMonthToMonth: Number(tierRow.annualM2M),
+				};
+			});
+			tempTiers.shift(); // remove first tier which is base (0-n).
+			billingData.tiers = tempTiers;
+		}
+		console.log(billingData);
+		return billingData;
 	}
 
 	// Get and build the products from the CSV file
@@ -23,10 +94,16 @@ export default class SKUImporter {
 		// Get and parse the CSV data to object form
 		const csvData = await skuTemp
 			.async('text')
-			.then((csvData) => {
-				return csv().fromString(csvData);
+			.then((data) => {
+				return csv().fromString(data);
 			})
-			.then((csvData) => csvData);
+			.then((data) => data)
+			.catch((e) => {
+				throw e;
+			});
+
+		// Load the Tiered CSVs
+		await this.loadTieredCSVData();
 
 		// Read the rows objects
 		csvData.forEach((row, i) => {
@@ -59,28 +136,10 @@ export default class SKUImporter {
 
 					// Add the billing
 					if (skuData.unitOfMeasure == UsageUnit.NAMED) {
-						product.namedBilling = {
-							annualPrepay: Number(skuData.annualPrepay),
-							annualMonthToMonth: Number(skuData.annualM2M),
-						};
-						if (Number(skuData.m2m) > 0) {
-							product.namedBilling.monthToMonth = Number(skuData.m2m);
-						}
-						if (Number(skuData.minMonthlyCommit) > 0) {
-							product.namedBilling.minMonthlyCommit = Number(skuData.minMonthlyCommit);
-						}
+						product.namedBilling = this.buildBillingData(skuData);
 					}
 					if (skuData.unitOfMeasure == UsageUnit.CONCURRENT) {
-						product.concurrentBilling = {
-							annualPrepay: Number(skuData.annualPrepay),
-							annualMonthToMonth: Number(skuData.annualM2M),
-						};
-						if (Number(skuData.m2m) > 0) {
-							product.concurrentBilling.monthToMonth = Number(skuData.m2m);
-						}
-						if (Number(skuData.minMonthlyCommit) > 0) {
-							product.concurrentBilling.minMonthlyCommit = Number(skuData.minMonthlyCommit);
-						}
+						product.concurrentBilling = this.buildBillingData(skuData);
 					}
 
 					// Add only if not already esting product

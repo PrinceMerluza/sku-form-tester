@@ -258,3 +258,5 @@ export enum UsageUnit {
 	NAMED = 'User (Named)',
 	CONCURRENT = 'User (Concurrent)',
 }
+
+export const TIERED_PREFIX = 'tiered-';
