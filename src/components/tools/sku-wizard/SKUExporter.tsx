@@ -13,11 +13,52 @@ import {
 	DonutProduct,
 	LicenseEntry,
 	UsageUnit,
+	SKUTemplateHeaders,
+	TieredBillingCSV,
+	GeneralDetails,
+	SKUTemplateCSV,
+	UsageNamedDefinition,
+	UsageConcurrentDefinition,
+	MimicDefinition,
+	MeteredHWMDefinition,
+	MeteredSumDefinition,
 } from './types';
 import camelCase from 'camelcase';
 import JSZip from 'jszip';
 import FileSaver from 'file-saver';
 import { StartUpFee } from './types';
+
+class CSVGenerator<T> {
+	// sheaderOrdering should exaclty match T properties.
+	// validated on generateCSV. keys not on headerOrdering won't be in csv
+	headerOrdering: string[];
+	rows: T[] = [];
+
+	constructor(headerOrdering: string[]) {
+		if (headerOrdering.length === 0) {
+			throw new Error('headerOrdering is required');
+		}
+		this.headerOrdering = headerOrdering;
+	}
+
+	addRow(row: T): void {
+		this.rows.push(row);
+	}
+
+	generateCSV(): string {
+		let ret = '';
+		if (this.rows.length === 0) return ret;
+
+		ret += `${this.headerOrdering.toString()}\n`;
+		this.rows.forEach((r) => {
+			const objR = r as { [key: string]: any };
+			const rowString = this.headerOrdering.map((h) => objR[h]).toString() + '\n';
+			ret += rowString;
+		});
+
+		return ret;
+	}
+}
 
 const getLicenseName = (productName: string): string => {
 	return `${camelCase(productName)}License`;
@@ -72,7 +113,7 @@ const serializeProducts = (products: (UsageProduct | MeteredProduct | FlatFeePro
 	return ret;
 };
 
-// Serialize the product and returns an array with json data.
+// Serialize the product (for billable files) and returns an array with json data.
 // The array can include the optional quickstart json file.
 // NOTE: If addon, ignore the productNames for now.
 const serializeProduct = (
@@ -91,60 +132,83 @@ const serializeProduct = (
 	};
 
 	// Build the definitions part of the product
-	let tmpObj; // for temporary casting to specific interfaces
 	switch (product.type) {
-		case BillingType.USAGE_TYPE:
-			billableAppContent.definitions.push({
+		case BillingType.USAGE_TYPE: {
+			const usageProduct = product as UsageProduct;
+			const namedDefinition: UsageNamedDefinition = {
 				partNumber: '',
 				type: 'usage',
 				licenseName: licenseName,
 				productNames: isAddOn ? [] : [productName],
 				unitOfMeasure: 'user',
-			});
-			billableAppContent.definitions.push({
+			};
+			const concDefinition: UsageConcurrentDefinition = {
 				partNumber: '',
 				type: 'concurrent',
 				licenseName: licenseName,
 				productNames: isAddOn ? [] : [productName],
 				unitOfMeasure: 'user',
-			});
+			};
+
+			// monthly commits
+			if (usageProduct.namedBilling.minMonthlyCommit) namedDefinition.qualifiesForMinimumCommit = true;
+			if (usageProduct.concurrentBilling.minMonthlyCommit) concDefinition.qualifiesForMinimumCommit = true;
+
+			billableAppContent.definitions.push(namedDefinition);
+			billableAppContent.definitions.push(concDefinition);
 			break;
-		case BillingType.MIMIC:
-			billableAppContent.definitions.push({
+		}
+		case BillingType.MIMIC: {
+			const mimicProduct = product as UsageProduct;
+			const namedDefinition: MimicDefinition = {
 				partNumber: '',
 				type: 'mimic',
 				mimicPartNumbers: ['', '', '', '', '', '', '', '', '', ''],
 				productNames: isAddOn ? [] : [productName],
 				unitOfMeasure: 'user',
-			});
-			billableAppContent.definitions.push({
+			};
+			const concDefinition: MimicDefinition = {
 				partNumber: '',
 				type: 'mimic',
 				mimicPartNumbers: ['', '', '', '', ''],
 				productNames: isAddOn ? [] : [productName],
 				unitOfMeasure: 'user',
-			});
+			};
+			// monthly commits
+			if (mimicProduct.namedBilling.minMonthlyCommit) namedDefinition.qualifiesForMinimumCommit = true;
+			if (mimicProduct.concurrentBilling.minMonthlyCommit) concDefinition.qualifiesForMinimumCommit = true;
+
+			billableAppContent.definitions.push(namedDefinition);
+			billableAppContent.definitions.push(concDefinition);
 			break;
-		case BillingType.METERED_HIGHWATER:
-			tmpObj = product as MeteredProduct;
-			billableAppContent.definitions.push({
+		}
+		case BillingType.METERED_HIGHWATER: {
+			const meteredProduct = product as MeteredProduct;
+			const definition: MeteredHWMDefinition = {
 				partNumber: '',
 				type: 'meteredHighwaterMark',
 				productNames: isAddOn ? [] : [productName],
-				unitOfMeasure: tmpObj.billing?.unitOfMeasure || UnitOfMeasure.UNIT,
-			});
+				unitOfMeasure: meteredProduct.billing?.unitOfMeasure || UnitOfMeasure.UNIT,
+			};
+			if (meteredProduct.billing.minMonthlyCommit) definition.qualifiesForMinimumCommit = true;
+
+			billableAppContent.definitions.push(definition);
 			break;
-		case BillingType.METERED_SUM:
-			tmpObj = product as MeteredProduct;
-			billableAppContent.definitions.push({
+		}
+		case BillingType.METERED_SUM: {
+			const meteredProduct = product as MeteredProduct;
+			const definition: MeteredSumDefinition = {
 				partNumber: '',
 				type: 'meteredSum',
 				productNames: isAddOn ? [] : [productName],
-				unitOfMeasure: tmpObj.billing?.unitOfMeasure || UnitOfMeasure.UNIT,
-			});
+				unitOfMeasure: meteredProduct.billing?.unitOfMeasure || UnitOfMeasure.UNIT,
+			};
+			if (meteredProduct.billing.minMonthlyCommit) definition.qualifiesForMinimumCommit = true;
+
+			billableAppContent.definitions.push(definition);
 			break;
+		}
 		case BillingType.FLAT_FEE:
-			tmpObj = product as FlatFeeProduct;
 			billableAppContent.definitions.push({
 				partNumber: '',
 				type: 'recurring',
@@ -297,12 +361,6 @@ const zipDonutLicenses = (zip: JSZip, formData: SKUFormData) => {
 // Create the CSV file representation for the form values
 // TODO: Getting chunky. Probably move this as its own class
 const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
-	// Add a CSV row to an existing csv string.
-	const addCSVRow = (targetCsv: string, srcArr: string[]): string => {
-		// TODO: add some handling and csv validation. if becomes more complicated jsut use some library
-		return targetCsv + `${srcArr.join()}\n`;
-	};
-
 	// Create an array of strings representing the required or optional add-ons
 	// This also checks the possible special entry of a quickstart 'product'
 	const createDependencyArr = (product: UsageProduct | MeteredProduct | FlatFeeProduct, requiredDeps: boolean): string => {
@@ -321,49 +379,50 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 		if (!billingData.useTiers || billingData.tiers?.length === undefined || billingData.tiers.length === 0) return 'n/a';
 		const fileName = `tiered-${product.id}-${camelCase(product.name)}.csv`;
 
-		// build csv
-		let tieredCsv = addCSVRow('', ['From', 'To', 'Annual Prepay', 'Annual Month-to-Month']);
-		tieredCsv = addCSVRow(tieredCsv, [
-			'0',
-			(billingData.tiers[0].range.from - 1).toString(),
-			billingData.annualPrepay.toString(),
-			billingData.annualMonthToMonth.toString(),
-		]);
-		billingData.tiers.forEach((t) => {
-			tieredCsv = addCSVRow(tieredCsv, [
-				t.range.from.toString(),
-				t.range.to.toString(),
-				t.annualPrepay.toString(),
-				t.annualMonthToMonth.toString(),
-			]);
+		const tieredCSVGen = new CSVGenerator<TieredBillingCSV>(['from', 'to', 'annualPrepay', 'annualM2M']);
+		tieredCSVGen.addRow({
+			from: '0',
+			to: (billingData.tiers[0].range.from - 1).toString(),
+			annualPrepay: billingData.annualPrepay.toString(),
+			annualM2M: billingData.annualMonthToMonth.toString(),
 		});
 
-		zip.file(fileName, tieredCsv);
+		billingData.tiers.forEach((t) => {
+			tieredCSVGen.addRow({
+				from: t.range.from.toString(),
+				to: t.range.to.toString(),
+				annualPrepay: t.annualPrepay.toString(),
+				annualM2M: t.annualMonthToMonth.toString(),
+			});
+		});
+
+		zip.file(fileName, tieredCSVGen.generateCSV());
 		return fileName;
 	};
 
 	// ------- Contact Details -------------
 	const details = formData.details;
-	let detailsCSV = addCSVRow('', ['Subscription Notification Email', 'Sales Lead Email', 'TOS', 'How to Quote the Product']);
-	detailsCSV = addCSVRow(detailsCSV, [details.subNotificationEmail, details.salesLeadEmail, details.productTOS, details.quoteNotes]);
-	zip.file('contactDetails.csv', detailsCSV);
+	const contactCSVGen = new CSVGenerator<GeneralDetails>([
+		'subNotificationEmail',
+		'salesLeadEmail',
+		'productTOS',
+		'quoteNotes',
+		'currency',
+	]);
+	contactCSVGen.addRow({
+		subNotificationEmail: details.subNotificationEmail,
+		salesLeadEmail: details.salesLeadEmail,
+		productTOS: details.productTOS,
+		quoteNotes: details.quoteNotes,
+		currency: details.currency,
+	});
+	zip.file('contactDetails.csv', contactCSVGen.generateCSV());
 
 	// ------- Billing Entries -----------
 	// Header Part
 	const products = formData.products;
-	let billingCSV = addCSVRow('', [
-		'Product Name',
-		'Product Description',
-		'Premium App Type',
-		'Unit of Measure',
-		'Annual Prepay',
-		'Annual Month-to-Month',
-		'Month-to-month',
-		'Discount Billing (Tiered)',
-		'Required Add-ons',
-		'Optional Add-ons',
-		'Notes',
-	]);
+	const appsCSVGen = new CSVGenerator<SKUTemplateCSV>(SKUTemplateHeaders);
+
 	// Billing content
 	products.forEach((p) => {
 		// Products and reference to the addons
@@ -371,53 +430,59 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 			case BillingType.USAGE_TYPE:
 			case BillingType.MIMIC: {
 				const usageP = p as UsageProduct;
+
 				// Usage named billing
-				billingCSV = addCSVRow(billingCSV, [
-					usageP.name,
-					usageP.description,
-					usageP.type,
-					UsageUnit.NAMED,
-					usageP.namedBilling.annualPrepay.toString(),
-					usageP.namedBilling.annualMonthToMonth.toString(),
-					usageP.namedBilling.monthToMonth?.toString() || 'n/a',
-					addTieredBillingCsv(zip, usageP, usageP.namedBilling),
-					createDependencyArr(usageP, true),
-					createDependencyArr(usageP, false),
-					usageP.notes || 'none',
-				]);
+				appsCSVGen.addRow({
+					productName: usageP.name,
+					productDescription: usageP.description,
+					premiumAppType: usageP.type,
+					unitOfMeasure: UsageUnit.NAMED,
+					annualPrepay: usageP.namedBilling.annualPrepay.toString(),
+					annualM2M: usageP.namedBilling.annualMonthToMonth.toString(),
+					m2m: usageP.namedBilling.monthToMonth?.toString() || 'n/a',
+					tieredBilling: addTieredBillingCsv(zip, usageP, usageP.namedBilling),
+					minMonthlyCommit: usageP.namedBilling.minMonthlyCommit?.toString() || 'n/a',
+					required: createDependencyArr(usageP, true),
+					optional: createDependencyArr(usageP, false),
+					notes: usageP.notes || 'none',
+				});
+
 				// Usage concurrent billing
-				billingCSV = addCSVRow(billingCSV, [
-					usageP.name,
-					usageP.description,
-					usageP.type,
-					UsageUnit.CONCURRENT,
-					usageP.concurrentBilling.annualPrepay.toString(),
-					usageP.concurrentBilling.annualMonthToMonth.toString(),
-					usageP.concurrentBilling.monthToMonth?.toString() || 'n/a',
-					addTieredBillingCsv(zip, usageP, usageP.concurrentBilling),
-					createDependencyArr(usageP, true),
-					createDependencyArr(usageP, false),
-					usageP.notes || 'none',
-				]);
+				appsCSVGen.addRow({
+					productName: usageP.name,
+					productDescription: usageP.description,
+					premiumAppType: usageP.type,
+					unitOfMeasure: UsageUnit.CONCURRENT,
+					annualPrepay: usageP.concurrentBilling.annualPrepay.toString(),
+					annualM2M: usageP.concurrentBilling.annualMonthToMonth.toString(),
+					m2m: usageP.concurrentBilling.monthToMonth?.toString() || 'n/a',
+					tieredBilling: addTieredBillingCsv(zip, usageP, usageP.concurrentBilling),
+					minMonthlyCommit: usageP.concurrentBilling.minMonthlyCommit?.toString() || 'n/a',
+					required: createDependencyArr(usageP, true),
+					optional: createDependencyArr(usageP, false),
+					notes: usageP.notes || 'none',
+				});
+
 				break;
 			}
 			case BillingType.METERED_SUM:
 			case BillingType.METERED_HIGHWATER: {
 				const meteredP = p as MeteredProduct;
-				billingCSV = addCSVRow(billingCSV, [
-					meteredP.name,
-					meteredP.description,
-					meteredP.type,
-					meteredP.billing.unitOfMeasure || 'ERROR',
-					meteredP.billing.annualPrepay.toString(),
-					meteredP.billing.annualMonthToMonth.toString(),
-					meteredP.billing.monthToMonth?.toString() || 'n/a',
-					// TODO: Metered billing only uses M2M. So need to refactor somewhere to correctly serialize it.
-					addTieredBillingCsv(zip, meteredP, meteredP.billing),
-					createDependencyArr(meteredP, true),
-					createDependencyArr(meteredP, false),
-					meteredP.notes || 'none',
-				]);
+				appsCSVGen.addRow({
+					productName: meteredP.name,
+					productDescription: meteredP.description,
+					premiumAppType: meteredP.type,
+					unitOfMeasure: meteredP.billing.unitOfMeasure || 'ERROR',
+					annualPrepay: meteredP.billing.annualPrepay.toString(),
+					annualM2M: meteredP.billing.annualMonthToMonth.toString(),
+					m2m: meteredP.billing.monthToMonth?.toString() || 'n/a',
+					tieredBilling: addTieredBillingCsv(zip, meteredP, meteredP.billing),
+					minMonthlyCommit: meteredP.billing.minMonthlyCommit?.toString() || 'n/a',
+					required: createDependencyArr(meteredP, true),
+					optional: createDependencyArr(meteredP, false),
+					notes: meteredP.notes || 'none',
+				});
+
 				break;
 			}
 		}
@@ -425,20 +490,23 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 		// Quickstart Fee
 		if (!p.startupFee) return;
 		const quickStart = p.startupFee as StartUpFee;
-		billingCSV = addCSVRow(billingCSV, [
-			quickStart.name,
-			quickStart.description,
-			'QuickStart',
-			'',
-			quickStart.oneTimeFee.toString(),
-			quickStart.oneTimeFee.toString(),
-			'',
-			'',
-			'',
-			'',
-		]);
+
+		appsCSVGen.addRow({
+			productName: quickStart.name,
+			productDescription: quickStart.description,
+			premiumAppType: 'QuickStart',
+			unitOfMeasure: '',
+			annualPrepay: quickStart.oneTimeFee.toString(),
+			annualM2M: quickStart.oneTimeFee.toString(),
+			m2m: '',
+			tieredBilling: '',
+			minMonthlyCommit: '',
+			required: '',
+			optional: '',
+			notes: '',
+		});
 	});
-	zip.file('SKUTemplate.csv', billingCSV);
+	zip.file('SKUTemplate.csv', appsCSVGen.generateCSV());
 };
 
 // Zip the json files and download the zip file

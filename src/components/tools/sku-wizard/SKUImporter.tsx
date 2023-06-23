@@ -32,14 +32,14 @@ export default class SKUImporter {
 			const skuData: SKUTemplateCSV = row as SKUTemplateCSV;
 			let product: UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct | null = null;
 
-			switch (skuData['Premium App Type']) {
+			switch (skuData.premiumAppType) {
 				case BillingType.USAGE_TYPE:
 				case BillingType.MIMIC: {
 					// Usage Type is special. Check first if product name already in array,
 					// if so that means either named or concurrent part was already converted
 					// add the missing billing then add to final arr.
 					const existingUsageP = products.find((p) => {
-						return p.name === skuData['Product Name'];
+						return p.name === skuData.productName;
 					}) as UsageProduct;
 
 					// Create or use existing usage product name
@@ -48,30 +48,30 @@ export default class SKUImporter {
 					} else {
 						product = {
 							id: '4',
-							name: skuData['Product Name'],
-							description: skuData['Product Description'],
+							name: skuData.productName,
+							description: skuData.productDescription,
 							type: BillingType.USAGE_TYPE,
-							notes: skuData.Notes,
+							notes: skuData.notes,
 						};
 					}
 
 					// Add the billing
-					if (skuData['Unit of Measure'] == UsageUnit.NAMED) {
+					if (skuData.unitOfMeasure == UsageUnit.NAMED) {
 						product.namedBilling = {
-							annualPrepay: Number(skuData['Annual Prepay']),
-							annualMonthToMonth: Number(skuData['Annual Month-to-Month']),
+							annualPrepay: Number(skuData.annualPrepay),
+							annualMonthToMonth: Number(skuData.annualM2M),
 						};
-						if (Number(skuData['Month-to-month']) > 0) {
-							product.namedBilling.monthToMonth = Number(skuData['Month-to-month']);
+						if (Number(skuData.m2m) > 0) {
+							product.namedBilling.monthToMonth = Number(skuData.m2m);
 						}
 					}
-					if (skuData['Unit of Measure'] == UsageUnit.CONCURRENT) {
+					if (skuData.unitOfMeasure == UsageUnit.CONCURRENT) {
 						product.concurrentBilling = {
-							annualPrepay: Number(skuData['Annual Prepay']),
-							annualMonthToMonth: Number(skuData['Annual Month-to-Month']),
+							annualPrepay: Number(skuData.annualPrepay),
+							annualMonthToMonth: Number(skuData.annualM2M),
 						};
-						if (Number(skuData['Month-to-month']) > 0) {
-							product.concurrentBilling.monthToMonth = Number(skuData['Month-to-month']);
+						if (Number(skuData.m2m) > 0) {
+							product.concurrentBilling.monthToMonth = Number(skuData.m2m);
 						}
 					}
 

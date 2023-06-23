@@ -151,6 +151,7 @@ export interface UsageNamedDefinition {
 	licenseName: string;
 	productNames: string[];
 	unitOfMeasure: 'user';
+	qualifiesForMinimumCommit?: boolean;
 }
 
 export interface UsageConcurrentDefinition {
@@ -159,6 +160,7 @@ export interface UsageConcurrentDefinition {
 	licenseName: string;
 	productNames: string[];
 	unitOfMeasure: 'user';
+	qualifiesForMinimumCommit?: boolean;
 }
 
 export interface MimicDefinition {
@@ -167,6 +169,7 @@ export interface MimicDefinition {
 	mimicPartNumbers: string[];
 	unitOfMeasure: 'user';
 	productNames?: string[];
+	qualifiesForMinimumCommit?: boolean;
 }
 
 export interface MeteredHWMDefinition {
@@ -174,6 +177,7 @@ export interface MeteredHWMDefinition {
 	type: 'meteredHighwaterMark';
 	unitOfMeasure: UnitOfMeasure;
 	productNames?: string[];
+	qualifiesForMinimumCommit?: boolean;
 }
 
 export interface MeteredSumDefinition {
@@ -181,6 +185,7 @@ export interface MeteredSumDefinition {
 	type: 'meteredSum';
 	unitOfMeasure: UnitOfMeasure;
 	productNames?: string[];
+	qualifiesForMinimumCommit?: boolean;
 }
 
 export interface LicenseDefinition {
@@ -188,6 +193,7 @@ export interface LicenseDefinition {
 	type: 'recurring';
 	unitOfMeasure: 'license';
 	productNames?: string[];
+	qualifiesForMinimumCommit?: boolean;
 }
 
 export interface QuickStartDefinition {
@@ -209,18 +215,42 @@ export interface DonutProduct {
 	description: string;
 }
 
+// NOTE: Should match the interface SKUTemplateCSV below
+export const SKUTemplateHeaders = [
+	'productName',
+	'productDescription',
+	'premiumAppType',
+	'unitOfMeasure',
+	'annualPrepay',
+	'annualM2M',
+	'm2m',
+	'tieredBilling',
+	'minMonthlyCommit',
+	'required',
+	'optional',
+	'notes',
+];
+
 export interface SKUTemplateCSV {
-	'Product Name': string;
-	'Product Description': string;
-	'Premium App Type': string;
-	'Unit of Measure': string;
-	'Annual Prepay': string;
-	'Annual Month-to-Month': string;
-	'Month-to-month': string;
-	'Discount Billing (Tiered)': string;
-	'Required Add-ons': string;
-	'Optional Add-ons': string;
-	Notes: string;
+	productName: string;
+	productDescription: string;
+	premiumAppType: string;
+	unitOfMeasure: string;
+	annualPrepay: string;
+	annualM2M: string;
+	m2m: string;
+	tieredBilling: string;
+	minMonthlyCommit: string;
+	required: string;
+	optional: string;
+	notes: string;
+}
+
+export interface TieredBillingCSV {
+	from: string;
+	to: string;
+	annualPrepay: string;
+	annualM2M: string;
 }
 
 // For export as 'unit of measurement'
