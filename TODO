@@ -7,3 +7,5 @@ BUG Importing from zip file: If biling has tiered, "1st" tier (virtual ) has bla
 
 TODO Load add-ons
 TODO clean properties on export (trim strings)
+
+BUG Metered unit of measurements doesn;t match imported original

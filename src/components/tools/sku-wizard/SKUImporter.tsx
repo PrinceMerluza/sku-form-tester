@@ -9,6 +9,7 @@ import {
 	TIERED_PREFIX,
 	TieredBillingCSV,
 	BillingData,
+	UnitOfMeasure,
 } from './types';
 import csv from 'csvtojson';
 import JSZip from 'jszip';
@@ -81,6 +82,13 @@ export default class SKUImporter {
 		if (Number(skuData.minMonthlyCommit) > 0) {
 			billingData.minMonthlyCommit = Number(skuData.minMonthlyCommit);
 		}
+
+		// Unit of measure
+		if (skuData.premiumAppType === BillingType.METERED_HIGHWATER || skuData.premiumAppType === BillingType.METERED_SUM) {
+			billingData.unitOfMeasure = skuData.unitOfMeasure as UnitOfMeasure;
+		}
+
+		// Tiered Billing
 		if (this.tieredBillingData[skuData.tieredBilling]) {
 			billingData.useTiers = true;
 			const tempTiers = this.tieredBillingData[skuData.tieredBilling].map((tierRow, i) => {
@@ -116,6 +124,10 @@ export default class SKUImporter {
 				if (!this.addonIds.includes(ao) && !this.quickStarts.includes(ao)) this.addonIds.push(ao);
 			});
 		});
+
+		// Clean quickstart and addons (remove balnk string that result form empty original value)
+		this.quickStarts = this.quickStarts.filter((x) => x !== '');
+		this.addonIds = this.addonIds.filter((x) => x !== '');
 	}
 
 	// Get and build the products from the CSV file
@@ -219,6 +231,42 @@ export default class SKUImporter {
 					break;
 				}
 			}
+		});
+
+		// Toggle products that are add-ons
+		products.forEach((product) => {
+			if (this.addonIds.includes(product.name)) product.isAddOn = true;
+		});
+
+		//  Apply dependencies (Add-ons)
+		this.csvData.forEach((row) => {
+			const product = products.find((p) => p.name === row.productName) as UsageProduct | MeteredProduct | FlatFeeProduct;
+			if (!product && !this.quickStarts.includes(row.productName))
+				throw new Error(`unexpected error. product ${row.productName} cannot be found`);
+
+			row.required
+				.split(',')
+				.map((ao) => ao.trim())
+				.forEach((ao) => {
+					if (!ao || this.quickStarts.includes(ao)) return;
+
+					const addOn = products.find((p) => p.name === ao);
+					if (!addOn) throw new Error(`unexpected error. addon ${ao} cannot be found`);
+					if (!product.requires) product.requires = [];
+					product.requires.push(addOn);
+				});
+
+			row.optional
+				.split(',')
+				.map((ao) => ao.trim())
+				.forEach((ao) => {
+					if (!ao || this.quickStarts.includes(ao)) return;
+
+					const addOn = products.find((p) => p.name === ao);
+					if (!addOn) throw new Error(`unexpected error. addon ${ao} cannot be found`);
+					if (!product.optional) product.optional = [];
+					product.optional.push(addOn);
+				});
 		});
 
 		return products;
