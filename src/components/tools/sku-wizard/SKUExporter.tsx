@@ -495,7 +495,7 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 		appsCSVGen.addRow({
 			productName: quickStart.name,
 			productDescription: quickStart.description,
-			premiumAppType: 'QuickStart',
+			premiumAppType: BillingType.QUICKSTART,
 			unitOfMeasure: '',
 			annualPrepay: quickStart.oneTimeFee.toString(),
 			annualM2M: quickStart.oneTimeFee.toString(),

@@ -3,22 +3,22 @@ import {
 	MeteredProduct,
 	FlatFeeProduct,
 	EmptyProduct,
-	SKUFormData,
 	SKUTemplateCSV,
 	BillingType,
 	UsageUnit,
 	TIERED_PREFIX,
 	TieredBillingCSV,
 	BillingData,
-	BillingTier,
 } from './types';
-import camelCase from 'camelcase';
 import csv from 'csvtojson';
-import JSZip, { JSZipObject } from 'jszip';
+import JSZip from 'jszip';
 
 export default class SKUImporter {
-	zipObj: JSZip;
-	tieredBillingData: { [key: string]: TieredBillingCSV[] } = {};
+	private zipObj: JSZip;
+	private csvData: SKUTemplateCSV[] = [];
+	private tieredBillingData: { [key: string]: TieredBillingCSV[] } = {};
+	private addonIds: string[] = []; // id of addons
+	private quickStarts: string[] = []; // id of quickstart 'products'
 
 	constructor(zipObj: JSZip) {
 		this.zipObj = zipObj;
@@ -50,6 +50,26 @@ export default class SKUImporter {
 		}
 	}
 
+	// Load the array of csvtojson data.
+	private async loadCSVData() {
+		// Load the SKUTemplate file
+		const skuTemp = this.zipObj.file('SKUTemplate.csv');
+		if (!skuTemp) {
+			throw new Error('cannot open SKUTemplate csv file');
+		}
+
+		// Get and parse the CSV data to object form
+		this.csvData = await skuTemp
+			.async('text')
+			.then((data) => {
+				return csv().fromString(data);
+			})
+			.then((data) => data)
+			.catch((e) => {
+				throw e;
+			});
+	}
+
 	private buildBillingData(skuData: SKUTemplateCSV): BillingData {
 		const billingData: BillingData = {
 			annualPrepay: Number(skuData.annualPrepay),
@@ -77,43 +97,68 @@ export default class SKUImporter {
 			tempTiers.shift(); // remove first tier which is base (0-n).
 			billingData.tiers = tempTiers;
 		}
-		console.log(billingData);
+
 		return billingData;
+	}
+
+	private async loadAddons() {
+		// Get the quickstarts first since they'll be exceptions when determining addons
+		this.csvData.forEach((row) => {
+			if (row.premiumAppType === BillingType.QUICKSTART) this.quickStarts.push(row.productName);
+		});
+
+		// Determine the apps that are add-ons.
+		this.csvData.forEach((row) => {
+			let tempAos = row.required.split(',').concat(row.optional.split(','));
+			tempAos = tempAos.map((ao) => ao.trim());
+
+			tempAos.forEach((ao) => {
+				if (!this.addonIds.includes(ao) && !this.quickStarts.includes(ao)) this.addonIds.push(ao);
+			});
+		});
 	}
 
 	// Get and build the products from the CSV file
 	async getProducts(): Promise<(UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[]> {
-		const products: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[] = [];
-
-		// Load the SKUTemplate file
-		const skuTemp = this.zipObj.file('SKUTemplate.csv');
-		if (!skuTemp) {
-			throw new Error('cannot open SKUTemplate csv file');
-		}
-
-		// Get and parse the CSV data to object form
-		const csvData = await skuTemp
-			.async('text')
-			.then((data) => {
-				return csv().fromString(data);
-			})
-			.then((data) => data)
-			.catch((e) => {
-				throw e;
-			});
-
-		// Load the Tiered CSVs
+		// Do some required processing first on the files
+		await this.loadCSVData();
+		await this.loadAddons();
 		await this.loadTieredCSVData();
 
+		const products: (UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct)[] = [];
+
+		// Apply the StartUpFee property to a product. Should be provided a dependency string
+		// from csv, this means calling this method two time: required and optional deps.
+		const applyQuickstart = (product: UsageProduct | MeteredProduct | FlatFeeProduct, dependencyArr: string, required: boolean) => {
+			dependencyArr
+				.split(',')
+				.map((ao) => ao.trim())
+				.forEach((ao) => {
+					if (this.quickStarts.includes(ao)) {
+						if (!product) return;
+						const qsData = this.csvData.find((d) => d.productName === ao);
+						if (!qsData) return;
+
+						product.startupFee = {
+							name: qsData.productName,
+							description: qsData.productDescription,
+							oneTimeFee: Number(qsData.annualPrepay),
+							required: required,
+						};
+					}
+				});
+		};
+
 		// Read the rows objects
-		csvData.forEach((row, i) => {
+		this.csvData.forEach((row, i) => {
 			const skuData: SKUTemplateCSV = row as SKUTemplateCSV;
-			let product: UsageProduct | MeteredProduct | FlatFeeProduct | EmptyProduct | null = null;
 
 			switch (skuData.premiumAppType) {
 				// TODO: Other Billign Types
 				case BillingType.USAGE_TYPE:
 				case BillingType.MIMIC: {
+					let product: UsageProduct | null;
+
 					// Usage Type is special. Check first if product name already in array,
 					// if so that means either named or concurrent part was already converted
 					// add the missing billing then add to final arr.
@@ -129,9 +174,9 @@ export default class SKUImporter {
 							id: i.toString(),
 							name: skuData.productName,
 							description: skuData.productDescription,
-							type: BillingType.USAGE_TYPE,
+							type: skuData.premiumAppType,
 							notes: skuData.notes,
-						};
+						} as UsageProduct;
 					}
 
 					// Add the billing
@@ -142,8 +187,36 @@ export default class SKUImporter {
 						product.concurrentBilling = this.buildBillingData(skuData);
 					}
 
-					// Add only if not already esting product
-					if (!existingUsageP) products.push(product);
+					// Add only if not already existing in product
+					// also apply quickstart
+					if (!existingUsageP && product) {
+						products.push(product);
+
+						applyQuickstart(product, skuData.required, true);
+						applyQuickstart(product, skuData.optional, false);
+					}
+
+					break;
+				}
+				case BillingType.FLAT_FEE:
+				case BillingType.METERED_HIGHWATER:
+				case BillingType.METERED_SUM: {
+					const product = {
+						id: i.toString(),
+						name: skuData.productName,
+						description: skuData.productDescription,
+						type: skuData.premiumAppType,
+						billing: this.buildBillingData(skuData),
+						notes: skuData.notes,
+					} as MeteredProduct | FlatFeeProduct;
+
+					// Quickstart
+					applyQuickstart(product, skuData.required, true);
+					applyQuickstart(product, skuData.optional, false);
+
+					products.push(product);
+
+					break;
 				}
 			}
 		});

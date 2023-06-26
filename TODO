@@ -3,7 +3,7 @@ TODO Add a wizard option if named/concurrent will have same billing
 TODO Implement friendly HTML export for viewing SKUs
 
 BUG STieredbilling on form in metered is set to show annual prepay/m2m but currently not implemented for metered.
+BUG Importing from zip file: If biling has tiered, "1st" tier (virtual ) has blank "To" instead of actual-first-from - 1
 
 TODO Load add-ons
-TODO Tiered billing import
-
+TODO clean properties on export (trim strings)

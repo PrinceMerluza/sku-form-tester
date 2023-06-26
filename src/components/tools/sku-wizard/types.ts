@@ -96,6 +96,7 @@ export enum BillingType {
 	METERED_SUM = 'Metered Sum',
 	ONE_TIME = 'One-Time Fee',
 	FLAT_FEE = 'Flat Fee',
+	QUICKSTART = 'QuickStart',
 }
 
 // based on billing-billable-apps/src/BillableAppUnitOfMeasureTypes.js
