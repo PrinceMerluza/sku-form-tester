@@ -260,14 +260,27 @@ export default function SKUFormRoot() {
 		const fileObj = target.files[0];
 		if (!fileObj) return;
 
+		let importer: SKUImporter | undefined;
+
 		JSZip.loadAsync(fileObj)
 			.then((zip) => {
-				const importer = new SKUImporter(zip);
+				importer = new SKUImporter(zip);
+
 				return importer.getProducts();
 			})
 			.then((data) => {
 				console.log(data);
 				setProducts(data);
+
+				return importer?.getContactDetails();
+			})
+			.then((data) => {
+				if (!data) return;
+
+				setSubNotificationEmail(data.subNotificationEmail);
+				setSalesLeadEmail(data.salesLeadEmail);
+				setProductTOS(data.productTOS);
+				setQuoteNotes(data.quoteNotes);
 			})
 			.catch((e) => {
 				console.error(e);

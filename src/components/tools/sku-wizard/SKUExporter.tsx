@@ -486,6 +486,28 @@ const zipCSVFile = (zip: JSZip, formData: SKUFormData) => {
 
 				break;
 			}
+			case BillingType.FLAT_FEE: {
+				const licenseP = p as FlatFeeProduct;
+				appsCSVGen.addRow({
+					productName: licenseP.name,
+					productDescription: licenseP.description,
+					premiumAppType: licenseP.type,
+					unitOfMeasure: UnitOfMeasure.LICENSE,
+					annualPrepay: licenseP.billing.annualPrepay.toString(),
+					annualM2M: licenseP.billing.annualMonthToMonth.toString(),
+					m2m: licenseP.billing.monthToMonth?.toString() || 'n/a',
+					tieredBilling: '',
+					minMonthlyCommit: licenseP.billing.minMonthlyCommit?.toString() || 'n/a',
+					required: createDependencyArr(licenseP, true),
+					optional: createDependencyArr(licenseP, false),
+					notes: licenseP.notes || 'none',
+				});
+
+				break;
+			}
+			default:
+				console.error('unknown billing type');
+				break;
 		}
 
 		// Quickstart Fee

@@ -10,6 +10,7 @@ import {
 	TieredBillingCSV,
 	BillingData,
 	UnitOfMeasure,
+	GeneralDetails,
 } from './types';
 import csv from 'csvtojson';
 import JSZip from 'jszip';
@@ -270,5 +271,25 @@ export default class SKUImporter {
 		});
 
 		return products;
+	}
+
+	async getContactDetails(): Promise<GeneralDetails> {
+		// Load the SKUTemplate file
+		const contactsCSV = this.zipObj.file('contactDetails.csv');
+		if (!contactsCSV) {
+			throw new Error('cannot open contactDetails csv file');
+		}
+
+		// Get and parse the CSV data to object form
+		return contactsCSV
+			.async('text')
+			.then((data) => {
+				return csv().fromString(data);
+			})
+			.then((data) => {
+				if (data.length < 1) throw new Error('contact details row missing');
+
+				return data[0] as GeneralDetails;
+			});
 	}
 }
